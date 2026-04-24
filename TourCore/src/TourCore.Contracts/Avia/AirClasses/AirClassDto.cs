@@ -1,0 +1,17 @@
+﻿namespace TourCore.Contracts.Avia.AirClasses
+{
+    public class AirClassDto
+    {
+        public int Id { get; set; }
+
+        public string Code { get; set; }
+
+        public string Name { get; set; }
+
+        public string NameEn { get; set; }
+
+        public string Group { get; set; }
+
+        public int SortOrder { get; set; }
+    }
+}

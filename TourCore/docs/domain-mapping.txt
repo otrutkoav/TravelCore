@@ -1,0 +1,327 @@
+# TourCore Domain Mapping (Legacy → New Domain)
+
+Документ фиксирует трансформацию legacy-модели в новую доменную модель.
+Нужен для:
+- понимания архитектурных решений
+- маппинга БД → Domain
+- избежания путаницы при дальнейшем развитии системы
+
+---
+
+# 🧭 Общие принципы
+
+- Убираем универсальные "магические" поля (`SubCode1`, `SubCode2`, `PointType`)
+- Уходим от полиморфных связей к типобезопасным
+- Разделяем:
+  - справочники (Dictionary)
+  - маршруты (Route)
+  - услуги (Service)
+- Не тащим legacy-структуру 1 в 1
+- Закладываем основу под:
+  - pricing
+  - offer
+  - кеши
+
+---
+
+# 🌍 Geography
+
+## GeoCustomPointClass → GeoPointClass
+
+Было:
+- GeoCustomPointClass (GCPC)
+
+Стало:
+- GeoPointClass
+
+Изменения:
+- только переименование
+
+Причина:
+- убрать legacy-нейминг
+- сделать универсальным справочником типов гео-точек
+
+---
+
+## GeoCustomPoint → GeoPoint
+
+Было:
+- GeoCustomPoint
+- привязка:
+  - Country
+  - City
+  - GeoCustomPointClass
+
+Стало:
+- GeoPoint
+
+Изменения:
+- переименование
+- сохранена структура
+
+Причина:
+- убрать "Custom"
+- сделать базовой сущностью географии
+
+---
+
+# 🧭 Service Routing (маршруты услуг)
+
+## GeoServicePointsLink → ServiceRouteDefinition
+
+Было:
+- GeoServicePointsLink
+- поля:
+  - GSPL_SvKey
+  - GSPL_ServiceId
+  - GSPL_PointFromType
+  - GSPL_PointFromId
+  - GSPL_PointToType
+  - GSPL_PointToId
+
+Стало:
+- ServiceRouteDefinition
+- поля:
+  - ServiceId
+  - FromPointId (GeoPoint)
+  - ToPointId (GeoPoint)
+
+Изменения:
+- удалены:
+  - PointFromType
+  - PointToType
+- убран полиморфизм
+- нормализация через GeoPoint
+
+Причина:
+- убрать "магические" типы
+- упростить кеш и поиск
+- повысить типобезопасность
+- подготовить к pricing/offer
+
+---
+
+# 🏨 Hotels
+
+## HotelRooms → HotelRoomCombination
+
+Было:
+- таблица связки:
+  - RoomType
+  - RoomCategory
+  - AccommodationType
+  - ограничения по возрасту
+
+Стало:
+- HotelRoomCombination
+
+Изменения:
+- явная доменная сущность комбинации
+
+Причина:
+- убрать неявные комбинации
+- сделать основу для ценообразования
+
+---
+
+# 🍽 MealType
+
+Было:
+- Code мог быть nullable
+
+Стало:
+- Code обязателен (в домене)
+
+Причина:
+- используется как бизнес-идентификатор
+
+Примечание:
+- возможна корректировка после реальных кейсов
+
+---
+
+# ✈️ Avia
+
+## AirService → AirClass
+
+Было:
+- AirService (неочевидное назначение)
+
+Стало:
+- AirClass
+
+Причина:
+- ближе к реальному смыслу (класс обслуживания / тариф)
+
+---
+
+# 🔁 Transfers
+
+## TransferDirection
+
+Было:
+- поле TF_Direction
+
+Стало:
+- отдельная сущность TransferDirection
+
+Статус:
+- optional (может быть удалена)
+
+Причина:
+- не используется явно в UI
+- оставлена как потенциально полезная
+
+---
+
+# 🚍 Transport / Seating
+
+## Seat → SeatingCell
+
+Было:
+- Seat
+
+Стало:
+- SeatingCell
+
+Причина:
+- отражает не только сиденье, но и:
+  - блок
+  - занятое место
+  - пустую ячейку
+
+---
+
+## VehiclePlans → VehiclePlan
+
+Было:
+- VehiclePlans
+
+Стало:
+- VehiclePlan
+
+Изменения:
+- нормализация имени
+
+---
+
+# 🚆 Railway / Bus
+
+## TrainSchedules → TrainSchedule
+
+## BusTransfers / BusTransferPoints
+
+Изменения:
+- нормализация нейминга
+- выделение расписания отдельно
+
+Причина:
+- унификация структуры:
+  - Transfer
+  - Schedule
+  - Points
+
+---
+
+# 💰 Finance
+
+## Rates → Rate
+
+Было:
+- Rates
+
+Стало:
+- Rate
+
+---
+
+## RealCourses → RealCourse
+
+Было:
+- RealCourses
+
+Стало:
+- RealCourse
+
+Причина:
+- нормализация имен
+
+---
+
+# ⚙️ Services
+
+## Service (legacy)
+
+Было:
+- перегруженная таблица:
+  - SV_TYPE
+  - SV_CONTROL
+  - SV_ISSUBCODE1
+  - SV_ISSUBCODE2
+  - куча флагов
+
+Стало:
+- ServiceType
+
+Изменения:
+- разнесение логики
+- упрощение
+
+Причина:
+- убрать универсальный монолит
+- подготовить нормальную модель услуг
+
+---
+
+## SubCode1 / SubCode2
+
+Было:
+- универсальные поля для всего
+
+Стало:
+- НЕ используются в новой модели
+
+Причина:
+- анти-паттерн
+- заменяются нормальными связями
+
+---
+
+# ❗ Отложенные решения
+
+## Service (новая сущность)
+- пока не введена
+- будет определена позже
+
+---
+
+## ServiceRouteDefinition
+- введена как концепт
+- будет дорабатываться после появления Service
+
+---
+
+## GeoServicePointsLink
+- НЕ переносится напрямую
+- заменен новой моделью
+
+---
+
+## Удаление (Delete)
+- отложено
+- в legacy:
+  - перенос связанных записей
+
+---
+
+# 📌 Итог
+
+Новая модель:
+- проще
+- типобезопасна
+- не содержит legacy-магии
+- готова к:
+  - CRUD
+  - кешам
+  - pricing
+  - offer

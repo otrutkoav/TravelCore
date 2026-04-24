@@ -1,0 +1,17 @@
+﻿namespace TourCore.Application.Cities.Commands
+{
+    public class CreateCityCommand
+    {
+        public int CountryId { get; set; }
+        public int? RegionId { get; set; }
+
+        public string Name { get; set; }
+        public string NameEn { get; set; }
+        public string Code { get; set; }
+        public int SortOrder { get; set; }
+        public bool IsDeparturePoint { get; set; }
+        public string TimeZone { get; set; }
+        public string IataCode { get; set; }
+        public string Coordinates { get; set; }
+    }
+}

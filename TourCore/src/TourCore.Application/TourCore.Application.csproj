@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TourCore.Contracts\TourCore.Contracts.csproj" />
+    <ProjectReference Include="..\TourCore.Domain\TourCore.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hotels\Handlers\" />
+    <Folder Include="Hotels\Mappings\" />
+    <Folder Include="Hotels\Validators\" />
+    <Folder Include="Hotels\Queries\" />
+  </ItemGroup>
+
+</Project>
