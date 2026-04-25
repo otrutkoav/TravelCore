@@ -4,7 +4,7 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Transports.Commands;
-using TourCore.Application.Transports.DTOs;
+using TourCore.Contracts.Transportation.Transports;
 using TourCore.Application.Transports.Mappings;
 using TourCore.Application.Transports.Validators;
 using TourCore.Domain.Transportation.Entities;

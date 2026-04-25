@@ -14,6 +14,10 @@ namespace TourCore.Contracts.Avia.CharterSeasons
 
         public string DaysOfWeek { get; set; }
 
+        public DateTime? TimeFrom { get; set; }
+
+        public DateTime? TimeTo { get; set; }
+
         public bool IsNextDayArrival { get; set; }
 
         public string Remark { get; set; }

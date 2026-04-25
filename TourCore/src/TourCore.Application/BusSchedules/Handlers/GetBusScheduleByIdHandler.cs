@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.BusSchedules.DTOs;
+using TourCore.Contracts.Bus.BusSchedules;
 using TourCore.Application.BusSchedules.Mappings;
 using TourCore.Application.BusSchedules.Queries;
 using TourCore.Application.Common.Exceptions;

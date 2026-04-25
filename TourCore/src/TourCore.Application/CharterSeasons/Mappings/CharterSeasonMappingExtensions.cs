@@ -30,6 +30,8 @@ namespace TourCore.Application.CharterSeasons.Mappings
                 DateFrom = entity.DateFrom,
                 DateTo = entity.DateTo,
                 DaysOfWeek = entity.DaysOfWeek == null ? null : entity.DaysOfWeek.ToLegacy(),
+                TimeFrom = entity.TimeFrom,
+                TimeTo = entity.TimeTo,
                 IsNextDayArrival = entity.IsNextDayArrival,
                 Remark = entity.Remark
             };

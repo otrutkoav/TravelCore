@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Application.TransferDirections.DTOs;
+using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Application.TransferDirections.Mappings;
 using TourCore.Application.TransferDirections.Queries;
 

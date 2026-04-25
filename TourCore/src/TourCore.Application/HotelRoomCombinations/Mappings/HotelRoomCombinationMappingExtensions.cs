@@ -1,4 +1,4 @@
-﻿using TourCore.Application.HotelRoomCombinations.DTOs;
+﻿using TourCore.Contracts.Hotels.HotelRoomCombinations;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.HotelRoomCombinations.Mappings
@@ -15,9 +15,7 @@ namespace TourCore.Application.HotelRoomCombinations.Mappings
                 AccommodationTypeId = entity.AccommodationTypeId,
                 IsMain = entity.IsMain,
                 AgeFrom = entity.AgeFrom,
-                AgeTo = entity.AgeTo,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                AgeTo = entity.AgeTo
             };
         }
 
@@ -29,7 +27,9 @@ namespace TourCore.Application.HotelRoomCombinations.Mappings
                 RoomTypeId = entity.RoomTypeId,
                 RoomCategoryId = entity.RoomCategoryId,
                 AccommodationTypeId = entity.AccommodationTypeId,
-                IsMain = entity.IsMain
+                IsMain = entity.IsMain,
+                AgeFrom = entity.AgeFrom,
+                AgeTo = entity.AgeTo
             };
         }
     }

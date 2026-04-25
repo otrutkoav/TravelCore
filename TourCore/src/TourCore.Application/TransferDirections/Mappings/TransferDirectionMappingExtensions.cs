@@ -1,4 +1,4 @@
-﻿using TourCore.Application.TransferDirections.DTOs;
+﻿using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Domain.Transfers.Entities;
 
 namespace TourCore.Application.TransferDirections.Mappings
@@ -10,9 +10,7 @@ namespace TourCore.Application.TransferDirections.Mappings
             return new TransferDirectionDto
             {
                 Id = entity.Id,
-                Name = entity.Name,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                Name = entity.Name
             };
         }
 

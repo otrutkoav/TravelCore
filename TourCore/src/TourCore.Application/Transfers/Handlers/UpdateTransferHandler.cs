@@ -5,9 +5,9 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.Commands;
-using TourCore.Application.Transfers.DTOs;
 using TourCore.Application.Transfers.Mappings;
 using TourCore.Application.Transfers.Validators;
+using TourCore.Contracts.Transfers.Transfers;
 
 namespace TourCore.Application.Transfers.Handlers
 {

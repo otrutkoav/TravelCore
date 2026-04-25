@@ -1,4 +1,4 @@
-﻿using TourCore.Application.Transfers.DTOs;
+﻿using TourCore.Contracts.Transfers.Transfers;
 using TourCore.Domain.Transfers.Entities;
 
 namespace TourCore.Application.Transfers.Mappings
@@ -23,9 +23,7 @@ namespace TourCore.Application.Transfers.Mappings
                 Url = entity.Url,
                 ShowOrder = entity.ShowOrder,
                 AutoApplyFrom = entity.AutoApplyFrom,
-                AutoApplyTo = entity.AutoApplyTo,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                AutoApplyTo = entity.AutoApplyTo
             };
         }
 
@@ -35,10 +33,18 @@ namespace TourCore.Application.Transfers.Mappings
             {
                 Id = entity.Id,
                 Name = entity.Name,
+                NameEn = entity.NameEn,
+                TimeFrom = entity.TimeFrom,
+                TimeTo = entity.TimeTo,
+                DurationText = entity.DurationText,
+                PlaceFrom = entity.PlaceFrom,
+                PlaceTo = entity.PlaceTo,
                 IsMain = entity.IsMain,
                 CityId = entity.CityId,
                 DirectionId = entity.DirectionId,
-                ShowOrder = entity.ShowOrder
+                ShowOrder = entity.ShowOrder,
+                AutoApplyFrom = entity.AutoApplyFrom,
+                AutoApplyTo = entity.AutoApplyTo
             };
         }
     }

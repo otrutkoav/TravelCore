@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Application.HotelCategories.DTOs;
+using TourCore.Contracts.Hotels.HotelCategories;
 using TourCore.Application.HotelCategories.Mappings;
 using TourCore.Application.HotelCategories.Queries;
 

@@ -5,9 +5,10 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.RoomTypes.Commands;
-using TourCore.Application.RoomTypes.DTOs;
+using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Application.RoomTypes.Mappings;
 using TourCore.Application.RoomTypes.Validators;
+using TourCore.Contracts.Hotels.RoomTypes;
 
 namespace TourCore.Application.RoomTypes.Handlers
 {

@@ -5,7 +5,7 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.RealCourses.Commands;
-using TourCore.Application.RealCourses.DTOs;
+using TourCore.Contracts.Finance.RealCourses;
 using TourCore.Application.RealCourses.Mappings;
 using TourCore.Application.RealCourses.Validators;
 using TourCore.Domain.Finance.Entities;

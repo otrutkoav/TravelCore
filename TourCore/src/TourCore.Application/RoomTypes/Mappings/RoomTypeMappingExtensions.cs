@@ -1,4 +1,4 @@
-﻿using TourCore.Application.RoomTypes.DTOs;
+﻿using TourCore.Contracts.Hotels.RoomTypes;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.RoomTypes.Mappings
@@ -16,9 +16,7 @@ namespace TourCore.Application.RoomTypes.Mappings
                 Places = entity.Places,
                 ExtraPlaces = entity.ExtraPlaces,
                 SortOrder = entity.SortOrder,
-                Description = entity.Description,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                Description = entity.Description
             };
         }
 
@@ -29,9 +27,11 @@ namespace TourCore.Application.RoomTypes.Mappings
                 Id = entity.Id,
                 Code = entity.Code,
                 Name = entity.Name,
+                NameEn = entity.NameEn,
                 Places = entity.Places,
                 ExtraPlaces = entity.ExtraPlaces,
-                SortOrder = entity.SortOrder
+                SortOrder = entity.SortOrder,
+                Description = entity.Description
             };
         }
     }

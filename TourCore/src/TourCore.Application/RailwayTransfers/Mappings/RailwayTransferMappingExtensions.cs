@@ -24,7 +24,9 @@ namespace TourCore.Application.RailwayTransfers.Mappings
             {
                 Id = entity.Id,
                 Name = entity.Name,
+                CountryFromId = entity.CountryFromId,
                 CityFromId = entity.CityFromId,
+                CountryToId = entity.CountryToId,
                 CityToId = entity.CityToId
             };
         }

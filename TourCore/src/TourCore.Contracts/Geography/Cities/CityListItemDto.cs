@@ -18,6 +18,8 @@
 
         public bool IsDeparturePoint { get; set; }
 
+        public string TimeZone { get; set; }
+
         public string IataCode { get; set; }
     }
 }

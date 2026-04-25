@@ -4,7 +4,7 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.BusSchedules.Commands;
-using TourCore.Application.BusSchedules.DTOs;
+using TourCore.Contracts.Bus.BusSchedules;
 using TourCore.Application.BusSchedules.Mappings;
 using TourCore.Application.BusSchedules.Validators;
 using TourCore.Application.Common.Exceptions;

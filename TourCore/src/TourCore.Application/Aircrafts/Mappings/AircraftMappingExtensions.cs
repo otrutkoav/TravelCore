@@ -22,7 +22,8 @@ namespace TourCore.Application.Aircrafts.Mappings
             {
                 Id = entity.Id,
                 Code = entity.Code,
-                Name = entity.Name
+                Name = entity.Name,
+                NameEn = entity.NameEn
             };
         }
     }

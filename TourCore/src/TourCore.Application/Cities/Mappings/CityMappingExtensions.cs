@@ -34,6 +34,7 @@ namespace TourCore.Application.Cities.Mappings
                 Code = entity.Code,
                 SortOrder = entity.SortOrder,
                 IsDeparturePoint = entity.IsDeparturePoint,
+                TimeZone = entity.TimeZone,
                 IataCode = entity.IataCode
             };
         }

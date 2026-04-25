@@ -1,4 +1,4 @@
-﻿using TourCore.Application.RoomCategories.DTOs;
+﻿using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.RoomCategories.Mappings
@@ -14,9 +14,7 @@ namespace TourCore.Application.RoomCategories.Mappings
                 Name = entity.Name,
                 NameEn = entity.NameEn,
                 SortOrder = entity.SortOrder,
-                Description = entity.Description,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                Description = entity.Description
             };
         }
 
@@ -27,7 +25,9 @@ namespace TourCore.Application.RoomCategories.Mappings
                 Id = entity.Id,
                 Code = entity.Code,
                 Name = entity.Name,
-                SortOrder = entity.SortOrder
+                NameEn = entity.NameEn,
+                SortOrder = entity.SortOrder,
+                Description = entity.Description
             };
         }
     }

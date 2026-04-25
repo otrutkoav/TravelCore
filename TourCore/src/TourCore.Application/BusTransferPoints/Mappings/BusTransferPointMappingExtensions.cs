@@ -1,4 +1,4 @@
-﻿using TourCore.Application.BusTransferPoints.DTOs;
+﻿using TourCore.Contracts.Bus.BusTransferPoints;
 using TourCore.Domain.Bus.Entities;
 
 namespace TourCore.Application.BusTransferPoints.Mappings
@@ -18,9 +18,7 @@ namespace TourCore.Application.BusTransferPoints.Mappings
                 TimeFrom = entity.TimeFrom,
                 TimeTo = entity.TimeTo,
                 DayFrom = entity.DayFrom,
-                DayTo = entity.DayTo,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                DayTo = entity.DayTo
             };
         }
 

@@ -5,7 +5,7 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Rates.Commands;
-using TourCore.Application.Rates.DTOs;
+using TourCore.Contracts.Finance.Rates;
 using TourCore.Application.Rates.Mappings;
 using TourCore.Application.Rates.Validators;
 using TourCore.Domain.Finance.Entities;

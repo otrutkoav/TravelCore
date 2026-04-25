@@ -1,4 +1,4 @@
-﻿using TourCore.Application.HotelCategories.DTOs;
+﻿using TourCore.Contracts.Hotels.HotelCategories;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.HotelCategories.Mappings
@@ -14,9 +14,7 @@ namespace TourCore.Application.HotelCategories.Mappings
                 NameEn = entity.NameEn,
                 PrintOrder = entity.PrintOrder,
                 GlobalCode = entity.GlobalCode,
-                Description = entity.Description,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                Description = entity.Description
             };
         }
 
@@ -26,8 +24,10 @@ namespace TourCore.Application.HotelCategories.Mappings
             {
                 Id = entity.Id,
                 Name = entity.Name,
+                NameEn = entity.NameEn,
+                PrintOrder = entity.PrintOrder,
                 GlobalCode = entity.GlobalCode,
-                PrintOrder = entity.PrintOrder
+                Description = entity.Description
             };
         }
     }

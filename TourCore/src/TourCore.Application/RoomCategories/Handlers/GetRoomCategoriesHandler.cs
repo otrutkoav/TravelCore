@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Models;
-using TourCore.Application.RoomCategories.DTOs;
+using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Application.RoomCategories.Mappings;
 using TourCore.Application.RoomCategories.Queries;
 

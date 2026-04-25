@@ -1,4 +1,4 @@
-﻿using TourCore.Application.Rates.DTOs;
+﻿using TourCore.Contracts.Finance.Rates;
 using TourCore.Domain.Finance.Entities;
 
 namespace TourCore.Application.Rates.Mappings
@@ -16,9 +16,7 @@ namespace TourCore.Application.Rates.Mappings
                 IsMain = entity.IsMain,
                 IsNational = entity.IsNational,
                 ShowInSearch = entity.ShowInSearch,
-                Symbol = entity.Symbol,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                Symbol = entity.Symbol
             };
         }
 

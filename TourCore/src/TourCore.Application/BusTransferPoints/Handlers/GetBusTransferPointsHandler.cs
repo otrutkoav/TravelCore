@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.BusTransferPoints.DTOs;
+using TourCore.Contracts.Bus.BusTransferPoints;
 using TourCore.Application.BusTransferPoints.Mappings;
 using TourCore.Application.BusTransferPoints.Queries;
 using TourCore.Application.Common.Models;

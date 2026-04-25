@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Models;
-using TourCore.Application.Rates.DTOs;
+using TourCore.Contracts.Finance.Rates;
 using TourCore.Application.Rates.Mappings;
 using TourCore.Application.Rates.Queries;
 

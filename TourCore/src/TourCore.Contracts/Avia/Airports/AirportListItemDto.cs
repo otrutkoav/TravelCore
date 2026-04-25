@@ -10,6 +10,8 @@
 
         public string Name { get; set; }
 
+        public string NameEn { get; set; }
+
         public string IcaoCode { get; set; }
 
         public string LetterCode { get; set; }

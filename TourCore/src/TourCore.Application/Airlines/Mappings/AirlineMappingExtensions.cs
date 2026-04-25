@@ -24,6 +24,7 @@ namespace TourCore.Application.Airlines.Mappings
                 Id = entity.Id,
                 Code = entity.Code,
                 Name = entity.Name,
+                NameEn = entity.NameEn,
                 IcaoCode = entity.IcaoCode
             };
         }

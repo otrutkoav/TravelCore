@@ -32,6 +32,9 @@ namespace TourCore.Application.Countries.Mappings
                 Code = entity.Code,
                 IsoCode2 = entity.IsoCode2,
                 IsoCode3 = entity.IsoCode3,
+                DigitalCode = entity.DigitalCode,
+                CitizenshipName = entity.CitizenshipName,
+                CitizenshipNameEn = entity.CitizenshipNameEn,
                 SortOrder = entity.SortOrder
             };
         }

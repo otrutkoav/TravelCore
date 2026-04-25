@@ -29,9 +29,15 @@ namespace TourCore.Application.Charters.Mappings
             {
                 Id = entity.Id,
                 DepartureCityId = entity.DepartureCityId,
+                DepartureAirportCode = entity.DepartureAirportCode,
                 ArrivalCityId = entity.ArrivalCityId,
+                ArrivalAirportCode = entity.ArrivalAirportCode,
+                AirlineCode = entity.AirlineCode,
                 FlightNumber = entity.FlightNumber,
-                AirlineCode = entity.AirlineCode
+                AircraftCode = entity.AircraftCode,
+                AirClassCode = entity.AirClassCode,
+                StopsCount = entity.StopsCount,
+                TimeChangesCode = entity.TimeChangesCode
             };
         }
     }

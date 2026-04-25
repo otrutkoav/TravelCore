@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.BusTransfers.DTOs;
+using TourCore.Contracts.Bus.BusTransfers;
 using TourCore.Application.BusTransfers.Mappings;
 using TourCore.Application.BusTransfers.Queries;
 using TourCore.Application.Common.Exceptions;

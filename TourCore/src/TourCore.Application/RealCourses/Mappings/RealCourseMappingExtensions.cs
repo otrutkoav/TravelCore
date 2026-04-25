@@ -1,4 +1,4 @@
-﻿using TourCore.Application.RealCourses.DTOs;
+﻿using TourCore.Contracts.Finance.RealCourses;
 using TourCore.Domain.Finance.Entities;
 
 namespace TourCore.Application.RealCourses.Mappings
@@ -15,9 +15,7 @@ namespace TourCore.Application.RealCourses.Mappings
                 Course = entity.Course,
                 CentralBankCourse = entity.CentralBankCourse,
                 DateBeg = entity.DateBeg,
-                DateEnd = entity.DateEnd,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                DateEnd = entity.DateEnd
             };
         }
 

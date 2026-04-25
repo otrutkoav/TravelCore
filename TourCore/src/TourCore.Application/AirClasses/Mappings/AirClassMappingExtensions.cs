@@ -25,6 +25,8 @@ namespace TourCore.Application.AirClasses.Mappings
                 Id = entity.Id,
                 Code = entity.Code,
                 Name = entity.Name,
+                NameEn = entity.NameEn,
+                Group = entity.Group,
                 SortOrder = entity.SortOrder
             };
         }

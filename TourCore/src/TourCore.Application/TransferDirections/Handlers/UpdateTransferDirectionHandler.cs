@@ -5,7 +5,7 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.TransferDirections.Commands;
-using TourCore.Application.TransferDirections.DTOs;
+using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Application.TransferDirections.Mappings;
 using TourCore.Application.TransferDirections.Validators;
 

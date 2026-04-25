@@ -1,4 +1,4 @@
-﻿using TourCore.Application.Transports.DTOs;
+﻿using TourCore.Contracts.Transportation.Transports;
 using TourCore.Domain.Transportation.Entities;
 
 namespace TourCore.Application.Transports.Mappings
@@ -13,9 +13,7 @@ namespace TourCore.Application.Transports.Mappings
                 Name = entity.Name,
                 NameEn = entity.NameEn,
                 SeatsCount = entity.SeatsCount,
-                ShowOrder = entity.ShowOrder,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                ShowOrder = entity.ShowOrder
             };
         }
 

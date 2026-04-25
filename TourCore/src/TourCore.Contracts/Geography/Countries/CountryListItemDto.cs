@@ -14,6 +14,12 @@
 
         public string IsoCode3 { get; set; }
 
+        public string DigitalCode { get; set; }
+
+        public string CitizenshipName { get; set; }
+
+        public string CitizenshipNameEn { get; set; }
+
         public int SortOrder { get; set; }
     }
 }

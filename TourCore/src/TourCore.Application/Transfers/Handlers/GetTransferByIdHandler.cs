@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Application.Transfers.DTOs;
 using TourCore.Application.Transfers.Mappings;
 using TourCore.Application.Transfers.Queries;
+using TourCore.Contracts.Transfers.Transfers;
 
 namespace TourCore.Application.Transfers.Handlers
 {

@@ -1,4 +1,4 @@
-﻿using TourCore.Application.MealTypes.DTOs;
+﻿using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.MealTypes.Mappings
@@ -15,9 +15,7 @@ namespace TourCore.Application.MealTypes.Mappings
                 Code = entity.Code,
                 GlobalCode = entity.GlobalCode,
                 SortOrder = entity.SortOrder,
-                Description = entity.Description,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                Description = entity.Description
             };
         }
 
@@ -30,7 +28,8 @@ namespace TourCore.Application.MealTypes.Mappings
                 NameEn = entity.NameEn,
                 Code = entity.Code,
                 GlobalCode = entity.GlobalCode,
-                SortOrder = entity.SortOrder
+                SortOrder = entity.SortOrder,
+                Description = entity.Description
             };
         }
     }

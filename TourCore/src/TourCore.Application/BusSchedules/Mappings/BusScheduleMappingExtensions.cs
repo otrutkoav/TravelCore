@@ -1,4 +1,4 @@
-﻿using TourCore.Application.BusSchedules.DTOs;
+﻿using TourCore.Contracts.Bus.BusSchedules;
 using TourCore.Domain.Bus.Entities;
 
 namespace TourCore.Application.BusSchedules.Mappings
@@ -16,9 +16,7 @@ namespace TourCore.Application.BusSchedules.Mappings
                 TimeFrom = entity.TimeFrom,
                 TimeTo = entity.TimeTo,
                 DaysOfWeek = entity.DaysOfWeek == null ? null : entity.DaysOfWeek.ToLegacy(),
-                DaysOnRoad = entity.DaysOnRoad,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                DaysOnRoad = entity.DaysOnRoad
             };
         }
 
@@ -30,6 +28,8 @@ namespace TourCore.Application.BusSchedules.Mappings
                 BusTransferId = entity.BusTransferId,
                 DateFrom = entity.DateFrom,
                 DateTo = entity.DateTo,
+                TimeFrom = entity.TimeFrom,
+                TimeTo = entity.TimeTo,
                 DaysOfWeek = entity.DaysOfWeek == null ? null : entity.DaysOfWeek.ToLegacy(),
                 DaysOnRoad = entity.DaysOnRoad
             };

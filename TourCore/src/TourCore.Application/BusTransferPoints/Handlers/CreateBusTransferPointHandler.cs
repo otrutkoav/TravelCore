@@ -4,7 +4,7 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.BusTransferPoints.Commands;
-using TourCore.Application.BusTransferPoints.DTOs;
+using TourCore.Contracts.Bus.BusTransferPoints;
 using TourCore.Application.BusTransferPoints.Mappings;
 using TourCore.Application.BusTransferPoints.Validators;
 using TourCore.Application.Common.Exceptions;

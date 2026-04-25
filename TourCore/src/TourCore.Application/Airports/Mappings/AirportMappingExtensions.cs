@@ -27,6 +27,7 @@ namespace TourCore.Application.Airports.Mappings
                 CityId = entity.CityId,
                 Code = entity.Code,
                 Name = entity.Name,
+                NameEn = entity.NameEn,
                 IcaoCode = entity.IcaoCode,
                 LetterCode = entity.LetterCode
             };

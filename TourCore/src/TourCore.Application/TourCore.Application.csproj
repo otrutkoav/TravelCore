@@ -9,11 +9,4 @@
     <ProjectReference Include="..\TourCore.Domain\TourCore.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Hotels\Handlers\" />
-    <Folder Include="Hotels\Mappings\" />
-    <Folder Include="Hotels\Validators\" />
-    <Folder Include="Hotels\Queries\" />
-  </ItemGroup>
-
 </Project>

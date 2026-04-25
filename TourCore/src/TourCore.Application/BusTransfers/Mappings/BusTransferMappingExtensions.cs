@@ -1,4 +1,4 @@
-﻿using TourCore.Application.BusTransfers.DTOs;
+﻿using TourCore.Contracts.Bus.BusTransfers;
 using TourCore.Domain.Bus.Entities;
 
 namespace TourCore.Application.BusTransfers.Mappings
@@ -14,9 +14,7 @@ namespace TourCore.Application.BusTransfers.Mappings
                 CountryFromId = entity.CountryFromId,
                 CityFromId = entity.CityFromId,
                 CountryToId = entity.CountryToId,
-                CityToId = entity.CityToId,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
+                CityToId = entity.CityToId
             };
         }
 

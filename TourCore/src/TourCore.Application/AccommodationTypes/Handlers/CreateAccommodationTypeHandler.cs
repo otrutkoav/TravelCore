@@ -4,7 +4,7 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.AccommodationTypes.Commands;
-using TourCore.Application.AccommodationTypes.DTOs;
+using TourCore.Contracts.Hotels.AccommodationTypes;
 using TourCore.Application.AccommodationTypes.Mappings;
 using TourCore.Application.AccommodationTypes.Validators;
 using TourCore.Application.Common.Exceptions;
