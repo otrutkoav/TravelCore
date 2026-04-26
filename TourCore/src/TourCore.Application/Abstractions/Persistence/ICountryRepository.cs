@@ -22,5 +22,6 @@ namespace TourCore.Application.Abstractions.Persistence
         Task<bool> ExistsByIsoCode3Async(string isoCode3, int excludeId, CancellationToken cancellationToken);
 
         Task AddAsync(Country country, CancellationToken cancellationToken);
+        Task UpdateAsync(Country country, CancellationToken cancellationToken);
     }
 }

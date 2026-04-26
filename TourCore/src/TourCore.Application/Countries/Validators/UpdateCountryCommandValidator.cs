@@ -1,67 +1,92 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Countries.Commands;
 
 namespace TourCore.Application.Countries.Validators
 {
+    /// <summary>
+    /// Валидатор команды обновления страны.
+    /// </summary>
     public class UpdateCountryCommandValidator
     {
         public void ValidateAndThrow(UpdateCountryCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateCountryCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateCountryCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 25)
-                errors.Add("Name must be 25 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 25)
-                errors.Add("NameEn must be 25 characters or less.");
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Code))
-                errors.Add("Code is required.");
+                AddError(errors, "Code", ErrorCode.Required);
             else if (command.Code.Trim().Length > 3)
-                errors.Add("Code must be 3 characters or less.");
+                AddError(errors, "Code", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.IsoCode2))
-                errors.Add("IsoCode2 is required.");
+                AddError(errors, "IsoCode2", ErrorCode.Required);
             else if (command.IsoCode2.Trim().Length != 2)
-                errors.Add("IsoCode2 must contain exactly 2 characters.");
+                AddError(errors, "IsoCode2", ErrorCode.ExactLength);
 
             if (string.IsNullOrWhiteSpace(command.IsoCode3))
-                errors.Add("IsoCode3 is required.");
+                AddError(errors, "IsoCode3", ErrorCode.Required);
             else if (command.IsoCode3.Trim().Length != 3)
-                errors.Add("IsoCode3 must contain exactly 3 characters.");
+                AddError(errors, "IsoCode3", ErrorCode.ExactLength);
 
             if (command.SortOrder < 0)
-                errors.Add("SortOrder cannot be negative.");
+                AddError(errors, "SortOrder", ErrorCode.Negative);
 
             if (!string.IsNullOrWhiteSpace(command.DigitalCode) && command.DigitalCode.Trim().Length > 3)
-                errors.Add("DigitalCode must be 3 characters or less.");
+                AddError(errors, "DigitalCode", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.CitizenshipName) && command.CitizenshipName.Trim().Length > 50)
-                errors.Add("CitizenshipName must be 50 characters or less.");
+                AddError(errors, "CitizenshipName", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.CitizenshipNameEn) && command.CitizenshipNameEn.Trim().Length > 50)
-                errors.Add("CitizenshipNameEn must be 50 characters or less.");
+                AddError(errors, "CitizenshipNameEn", ErrorCode.MaxLength);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

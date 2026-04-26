@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Geography.Countries;
 using TourCore.Application.Countries.Mappings;
 using TourCore.Application.Countries.Queries;
+using TourCore.Contracts.Geography.Countries;
 
 namespace TourCore.Application.Countries.Handlers
 {
@@ -21,8 +22,9 @@ namespace TourCore.Application.Countries.Handlers
         public async Task<CountryDto> Handle(GetCountryByIdQuery query, CancellationToken cancellationToken)
         {
             var entity = await _countryRepository.GetByIdAsync(query.Id, cancellationToken);
+
             if (entity == null)
-                throw new NotFoundException("Country was not found.");
+                throw new NotFoundException(ErrorMessages.CountryNotFound, ErrorCode.CountryNotFound);
 
             return entity.ToDto();
         }

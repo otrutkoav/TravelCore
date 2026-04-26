@@ -6,18 +6,30 @@ namespace TourCore.Application.Common.Exceptions
 {
     public class ValidationException : Exception
     {
+        public IReadOnlyDictionary<string, string[]> Errors { get; }
+
         public ValidationException(string message)
             : base(message)
         {
-            Errors = new string[0];
+            Errors = new Dictionary<string, string[]>
+            {
+                { "General", new[] { message } }
+            };
         }
 
         public ValidationException(IEnumerable<string> errors)
-            : base("One or more validation errors occurred.")
+            : base("Validation failed.")
         {
-            Errors = errors == null ? new string[0] : errors.ToArray();
+            Errors = new Dictionary<string, string[]>
+            {
+                { "General", errors?.ToArray() ?? new string[0] }
+            };
         }
 
-        public IReadOnlyCollection<string> Errors { get; private set; }
+        public ValidationException(IReadOnlyDictionary<string, string[]> errors)
+            : base("Validation failed.")
+        {
+            Errors = errors ?? new Dictionary<string, string[]>();
+        }
     }
 }

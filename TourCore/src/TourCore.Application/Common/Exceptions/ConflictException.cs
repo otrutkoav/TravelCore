@@ -1,11 +1,14 @@
-﻿using System;
-
-namespace TourCore.Application.Common.Exceptions
+﻿namespace TourCore.Application.Common.Exceptions
 {
-    public class ConflictException : Exception
+    public class ConflictException : ApplicationExceptionBase
     {
         public ConflictException(string message)
-            : base(message)
+            : base(message, "conflict")
+        {
+        }
+
+        public ConflictException(string message, string code)
+            : base(message, code)
         {
         }
     }

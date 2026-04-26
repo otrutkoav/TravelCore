@@ -5,6 +5,6 @@ namespace TourCore.Application.Abstractions.Persistence
 {
     public interface IUnitOfWork
     {
-        Task SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
