@@ -98,12 +98,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configurations\CityConfiguration.cs" />
-    <Compile Include="Configurations\CountryConfiguration.cs" />
-    <Compile Include="Configurations\MealTypeConfiguration.cs" />
-    <Compile Include="Configurations\RegionConfiguration.cs" />
-    <Compile Include="Configurations\ResortConfiguration.cs" />
-    <Compile Include="Configurations\RoomCategoryConfiguration.cs" />
+    <Compile Include="Configurations\Geography\CityConfiguration.cs" />
+    <Compile Include="Configurations\Geography\CountryConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\MealTypeConfiguration.cs" />
+    <Compile Include="Configurations\Geography\RegionConfiguration.cs" />
+    <Compile Include="Configurations\Geography\ResortConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\RoomCategoryConfiguration.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.designer.cs">
       <DependentUpon>202604251137439_InitialCreate.cs</DependentUpon>
@@ -129,12 +129,12 @@
       <DependentUpon>202605011202072_AddRoomCategories.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Persistence\Repositories\CityRepository.cs" />
-    <Compile Include="Persistence\Repositories\CountryRepository.cs" />
-    <Compile Include="Persistence\Repositories\MealTypeRepository.cs" />
-    <Compile Include="Persistence\Repositories\RegionRepository.cs" />
-    <Compile Include="Persistence\Repositories\ResortRepository.cs" />
-    <Compile Include="Persistence\Repositories\RoomCategoryRepository.cs" />
+    <Compile Include="Persistence\Repositories\Geography\CityRepository.cs" />
+    <Compile Include="Persistence\Repositories\Geography\CountryRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\MealTypeRepository.cs" />
+    <Compile Include="Persistence\Repositories\Geography\RegionRepository.cs" />
+    <Compile Include="Persistence\Repositories\Geography\ResortRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\RoomCategoryRepository.cs" />
     <Compile Include="Persistence\TourCoreDbContext.cs" />
     <Compile Include="Persistence\UnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

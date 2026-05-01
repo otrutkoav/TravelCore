@@ -4,8 +4,8 @@ using System.Web.Http;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
-using TourCore.Application.MealTypes.Commands;
-using TourCore.Application.MealTypes.Queries;
+using TourCore.Application.Hotels.MealTypes.Commands;
+using TourCore.Application.Hotels.MealTypes.Queries;
 using TourCore.Contracts.Hotels.MealTypes;
 
 namespace TourCore.Api.Legacy.Controllers

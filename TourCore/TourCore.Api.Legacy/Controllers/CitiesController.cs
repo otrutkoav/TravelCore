@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Cities.Commands;
-using TourCore.Application.Cities.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
+using TourCore.Application.Geography.Cities.Commands;
+using TourCore.Application.Geography.Cities.Queries;
 using TourCore.Contracts.Geography.Cities;
 
 namespace TourCore.Api.Legacy.Controllers

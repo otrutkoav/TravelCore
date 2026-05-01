@@ -4,8 +4,8 @@ using System.Web.Http;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
-using TourCore.Application.Regions.Commands;
-using TourCore.Application.Regions.Queries;
+using TourCore.Application.Geography.Regions.Commands;
+using TourCore.Application.Geography.Regions.Queries;
 using TourCore.Contracts.Geography.Regions;
 
 namespace TourCore.Api.Legacy.Controllers

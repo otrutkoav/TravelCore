@@ -4,8 +4,8 @@ using System.Web.Http;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
-using TourCore.Application.RoomCategories.Commands;
-using TourCore.Application.RoomCategories.Queries;
+using TourCore.Application.Hotels.RoomCategories.Commands;
+using TourCore.Application.Hotels.RoomCategories.Queries;
 using TourCore.Contracts.Hotels.RoomCategories;
 
 namespace TourCore.Api.Legacy.Controllers

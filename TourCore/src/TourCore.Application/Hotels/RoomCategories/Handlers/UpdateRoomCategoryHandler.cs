@@ -1,0 +1,61 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+using TourCore.Application.Abstractions;
+using TourCore.Application.Abstractions.Persistence;
+using TourCore.Application.Abstractions.Persistence.Hotels;
+using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Application.Hotels.RoomCategories.Commands;
+using TourCore.Application.Hotels.RoomCategories.Mappings;
+using TourCore.Application.Hotels.RoomCategories.Validators;
+using TourCore.Contracts.Hotels.RoomCategories;
+
+namespace TourCore.Application.Hotels.RoomCategories.Handlers
+{
+    public class UpdateRoomCategoryHandler : ICommandHandler<UpdateRoomCategoryCommand, RoomCategoryDto>
+    {
+        private readonly IRoomCategoryRepository _roomCategoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly UpdateRoomCategoryCommandValidator _validator;
+
+        public UpdateRoomCategoryHandler(
+            IRoomCategoryRepository roomCategoryRepository,
+            IUnitOfWork unitOfWork,
+            IDateTimeProvider dateTimeProvider,
+            UpdateRoomCategoryCommandValidator validator)
+        {
+            _roomCategoryRepository = roomCategoryRepository;
+            _unitOfWork = unitOfWork;
+            _dateTimeProvider = dateTimeProvider;
+            _validator = validator;
+        }
+
+        public async Task<RoomCategoryDto> Handle(UpdateRoomCategoryCommand command, CancellationToken cancellationToken)
+        {
+            _validator.ValidateAndThrow(command);
+
+            var entity = await _roomCategoryRepository.GetByIdAsync(command.Id, cancellationToken);
+            if (entity == null)
+                throw new NotFoundException(ErrorMessages.RoomCategoryNotFound, ErrorCode.RoomCategoryNotFound);
+
+            var normalizedCode = command.Code.Trim().ToUpperInvariant();
+
+            if (await _roomCategoryRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
+                throw new ConflictException(ErrorMessages.RoomCategoryCodeExists, ErrorCode.RoomCategoryCodeExists);
+
+            entity.Update(
+                command.Name,
+                _dateTimeProvider.UtcNow,
+                normalizedCode,
+                command.NameEn,
+                command.SortOrder,
+                command.Description);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return entity.ToDto();
+        }
+    }
+}

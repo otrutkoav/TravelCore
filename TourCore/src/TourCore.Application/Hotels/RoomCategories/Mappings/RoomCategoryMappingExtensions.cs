@@ -1,0 +1,34 @@
+﻿using TourCore.Contracts.Hotels.RoomCategories;
+using TourCore.Domain.Hotels.Entities;
+
+namespace TourCore.Application.Hotels.RoomCategories.Mappings
+{
+    public static class RoomCategoryMappingExtensions
+    {
+        public static RoomCategoryDto ToDto(this RoomCategory entity)
+        {
+            return new RoomCategoryDto
+            {
+                Id = entity.Id,
+                Code = entity.Code,
+                Name = entity.Name,
+                NameEn = entity.NameEn,
+                SortOrder = entity.SortOrder,
+                Description = entity.Description
+            };
+        }
+
+        public static RoomCategoryListItemDto ToListItemDto(this RoomCategory entity)
+        {
+            return new RoomCategoryListItemDto
+            {
+                Id = entity.Id,
+                Code = entity.Code,
+                Name = entity.Name,
+                NameEn = entity.NameEn,
+                SortOrder = entity.SortOrder,
+                Description = entity.Description
+            };
+        }
+    }
+}
