@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Finance.Rates.Commands;
 
@@ -9,34 +11,54 @@ namespace TourCore.Application.Finance.Rates.Validators
         public void ValidateAndThrow(CreateRateCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateRateCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateRateCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (string.IsNullOrWhiteSpace(command.Code))
-                errors.Add("Code is required.");
+                AddError(errors, "Code", ErrorCode.Required);
             else if (command.Code.Trim().Length > 3)
-                errors.Add("Code must be 3 characters or less.");
+                AddError(errors, "Code", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 50)
-                errors.Add("Name must be 50 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.IsoCode) && command.IsoCode.Trim().Length > 3)
-                errors.Add("IsoCode must be 3 characters or less.");
+                AddError(errors, "IsoCode", ErrorCode.MaxLength);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

@@ -155,13 +155,20 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AirClassesController.cs" />
+    <Compile Include="Controllers\AircraftsController.cs" />
+    <Compile Include="Controllers\AirlinesController.cs" />
     <Compile Include="Controllers\CitiesController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HotelCategoriesController.cs" />
     <Compile Include="Controllers\MealTypesController.cs" />
+    <Compile Include="Controllers\RatesController.cs" />
+    <Compile Include="Controllers\RealCoursesController.cs" />
     <Compile Include="Controllers\RegionsController.cs" />
     <Compile Include="Controllers\ResortsController.cs" />
     <Compile Include="Controllers\RoomCategoriesController.cs" />
+    <Compile Include="Controllers\RoomTypesController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Filters\ApiExceptionFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -182,12 +189,19 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AirClasses\" />
+    <Folder Include="Views\Aircrafts\" />
+    <Folder Include="Views\Airlines\" />
     <Folder Include="Views\Cities\" />
     <Folder Include="Views\Countries\" />
+    <Folder Include="Views\HotelCategories\" />
     <Folder Include="Views\MealTypes\" />
+    <Folder Include="Views\Rates\" />
+    <Folder Include="Views\RealCourses\" />
     <Folder Include="Views\Regions\" />
     <Folder Include="Views\Resorts\" />
     <Folder Include="Views\RoomCategories\" />
+    <Folder Include="Views\RoomTypes\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

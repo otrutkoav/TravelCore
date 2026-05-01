@@ -1,9 +1,12 @@
-﻿using TourCore.Contracts.Avia.AirClasses;
-
-namespace TourCore.Application.Avia.AirClasses.Queries
+﻿namespace TourCore.Application.Avia.AirClasses.Queries
 {
     public class GetAirClassByIdQuery
     {
-        public int Id { get; set; }
+        public GetAirClassByIdQuery(int id)
+        {
+            Id = id;
+        }
+
+        public int Id { get; private set; }
     }
 }

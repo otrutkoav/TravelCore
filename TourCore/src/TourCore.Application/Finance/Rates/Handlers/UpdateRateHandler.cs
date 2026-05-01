@@ -9,6 +9,7 @@ using TourCore.Application.Abstractions.Persistence.Finance;
 using TourCore.Application.Finance.Rates.Commands;
 using TourCore.Application.Finance.Rates.Mappings;
 using TourCore.Application.Finance.Rates.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Finance.Rates.Handlers
 {
@@ -37,18 +38,28 @@ namespace TourCore.Application.Finance.Rates.Handlers
 
             var entity = await _rateRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Rate was not found.");
+                throw new NotFoundException(ErrorMessages.RateNotFound, ErrorCode.RateNotFound);
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _rateRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
-                throw new ConflictException("Rate with same code already exists.");
+                throw new ConflictException(ErrorMessages.RateCodeExists, ErrorCode.RateCodeExists);
+
+            string normalizedIsoCode = null;
+
+            if (!string.IsNullOrWhiteSpace(command.IsoCode))
+            {
+                normalizedIsoCode = command.IsoCode.Trim().ToUpperInvariant();
+
+                if (await _rateRepository.ExistsByIsoCodeAsync(normalizedIsoCode, command.Id, cancellationToken))
+                    throw new ConflictException(ErrorMessages.RateIsoCodeExists, ErrorCode.RateIsoCodeExists);
+            }
 
             entity.Update(
                 normalizedCode,
                 command.Name,
                 _dateTimeProvider.UtcNow,
-                command.IsoCode,
+                normalizedIsoCode,
                 command.IsMain,
                 command.IsNational,
                 command.ShowInSearch,

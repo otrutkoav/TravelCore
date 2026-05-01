@@ -6,6 +6,7 @@ using TourCore.Contracts.Finance.Rates;
 using TourCore.Application.Abstractions.Persistence.Finance;
 using TourCore.Application.Finance.Rates.Mappings;
 using TourCore.Application.Finance.Rates.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Finance.Rates.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Finance.Rates.Handlers
         {
             var entity = await _rateRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Rate was not found.");
+                throw new NotFoundException(ErrorMessages.RateNotFound, ErrorCode.RateNotFound);
 
             return entity.ToDto();
         }

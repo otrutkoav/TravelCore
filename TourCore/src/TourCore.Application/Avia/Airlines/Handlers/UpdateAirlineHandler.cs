@@ -9,6 +9,7 @@ using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.Airlines.Commands;
 using TourCore.Application.Avia.Airlines.Mappings;
 using TourCore.Application.Avia.Airlines.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Avia.Airlines.Handlers
 {
@@ -37,19 +38,21 @@ namespace TourCore.Application.Avia.Airlines.Handlers
 
             var entity = await _airlineRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Airline was not found.");
+                throw new NotFoundException(ErrorMessages.AirlineNotFound, ErrorCode.AirlineNotFound);
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _airlineRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
-                throw new ConflictException("Airline with same code already exists.");
+                throw new ConflictException(ErrorMessages.AirlineCodeExists, ErrorCode.AirlineCodeExists);
+
+            string normalizedIcaoCode = null;
 
             if (!string.IsNullOrWhiteSpace(command.IcaoCode))
             {
-                var normalizedIcaoCode = command.IcaoCode.Trim().ToUpperInvariant();
+                normalizedIcaoCode = command.IcaoCode.Trim().ToUpperInvariant();
 
                 if (await _airlineRepository.ExistsByIcaoCodeAsync(normalizedIcaoCode, command.Id, cancellationToken))
-                    throw new ConflictException("Airline with same ICAO code already exists.");
+                    throw new ConflictException(ErrorMessages.AirlineIcaoCodeExists, ErrorCode.AirlineIcaoCodeExists);
             }
 
             entity.Update(
@@ -57,7 +60,7 @@ namespace TourCore.Application.Avia.Airlines.Handlers
                 command.Name,
                 _dateTimeProvider.UtcNow,
                 command.NameEn,
-                command.IcaoCode);
+                normalizedIcaoCode);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

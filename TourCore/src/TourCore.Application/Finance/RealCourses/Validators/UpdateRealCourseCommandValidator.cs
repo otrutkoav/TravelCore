@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Finance.RealCourses.Commands;
 
@@ -9,46 +11,67 @@ namespace TourCore.Application.Finance.RealCourses.Validators
         public void ValidateAndThrow(UpdateRealCourseCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateRealCourseCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateRealCourseCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
             if (string.IsNullOrWhiteSpace(command.FromRateCode))
-                errors.Add("FromRateCode is required.");
+                AddError(errors, "FromRateCode", ErrorCode.Required);
             else if (command.FromRateCode.Trim().Length > 3)
-                errors.Add("FromRateCode must be 3 characters or less.");
+                AddError(errors, "FromRateCode", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.ToRateCode))
-                errors.Add("ToRateCode is required.");
+                AddError(errors, "ToRateCode", ErrorCode.Required);
             else if (command.ToRateCode.Trim().Length > 3)
-                errors.Add("ToRateCode must be 3 characters or less.");
+                AddError(errors, "ToRateCode", ErrorCode.MaxLength);
 
             if (command.Course.HasValue && command.Course.Value < 0)
-                errors.Add("Course cannot be negative.");
+                AddError(errors, "Course", ErrorCode.Negative);
 
             if (command.CentralBankCourse.HasValue && command.CentralBankCourse.Value < 0)
-                errors.Add("CentralBankCourse cannot be negative.");
+                AddError(errors, "CentralBankCourse", ErrorCode.Negative);
 
-            if (command.DateBeg.HasValue && command.DateEnd.HasValue &&
+            if (command.DateBeg.HasValue &&
+                command.DateEnd.HasValue &&
                 command.DateBeg.Value.Date > command.DateEnd.Value.Date)
             {
-                errors.Add("DateBeg cannot be greater than DateEnd.");
+                AddError(errors, "DateBeg", ErrorCode.DateRangeInvalid);
             }
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

@@ -6,6 +6,7 @@ using TourCore.Contracts.Finance.RealCourses;
 using TourCore.Application.Abstractions.Persistence.Finance;
 using TourCore.Application.Finance.RealCourses.Mappings;
 using TourCore.Application.Finance.RealCourses.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Finance.RealCourses.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Finance.RealCourses.Handlers
         {
             var entity = await _realCourseRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Real course was not found.");
+                throw new NotFoundException(ErrorMessages.RealCourseNotFound, ErrorCode.RealCourseNotFound);
 
             return entity.ToDto();
         }

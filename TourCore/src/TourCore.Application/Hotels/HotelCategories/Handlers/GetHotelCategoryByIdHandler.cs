@@ -6,6 +6,7 @@ using TourCore.Contracts.Hotels.HotelCategories;
 using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Hotels.HotelCategories.Mappings;
 using TourCore.Application.Hotels.HotelCategories.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Hotels.HotelCategories.Handlers
 {
@@ -22,7 +23,9 @@ namespace TourCore.Application.Hotels.HotelCategories.Handlers
         {
             var entity = await _hotelCategoryRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Hotel category was not found.");
+                throw new NotFoundException(
+                    ErrorMessages.HotelCategoryNotFound,
+                    ErrorCode.HotelCategoryNotFound);
 
             return entity.ToDto();
         }

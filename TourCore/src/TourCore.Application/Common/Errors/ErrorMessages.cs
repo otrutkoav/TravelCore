@@ -32,5 +32,38 @@
         // Категория номера
         public const string RoomCategoryNotFound = "Категория номера не найдена.";
         public const string RoomCategoryCodeExists = "Категория номера с таким кодом уже существует.";
+
+        // Тип номера
+        public const string RoomTypeNotFound = "Тип номера не найден.";
+        public const string RoomTypeCodeExists = "Тип номера с таким кодом уже существует.";
+
+        // Категория отеля
+        public const string HotelCategoryNotFound = "Категория отеля не найдена.";
+        public const string HotelCategoryNameExists = "Категория отеля с таким названием уже существует.";
+        public const string HotelCategoryGlobalCodeExists = "Категория отеля с таким глобальным кодом уже существует.";
+
+        // Валюта
+        public const string RateNotFound = "Валюта не найдена.";
+        public const string RateCodeExists = "Валюта с таким кодом уже существует.";
+        public const string RateIsoCodeExists = "Валюта с таким ISO кодом уже существует.";
+
+        // Реальный курс
+        public const string RealCourseNotFound = "Курс валют не найден.";
+        public const string RealCourseExists = "Курс для выбранной пары валют и периода уже существует.";
+        public const string FromRateNotFound = "Исходная валюта не найдена.";
+        public const string ToRateNotFound = "Целевая валюта не найдена.";
+
+        // Класс обслуживания
+        public const string AirClassNotFound = "Класс обслуживания не найден.";
+        public const string AirClassCodeExists = "Класс обслуживания с таким кодом уже существует.";
+
+        // Воздушное судно
+        public const string AircraftNotFound = "Воздушное судно не найдено.";
+        public const string AircraftCodeExists = "Воздушное судно с таким кодом уже существует.";
+
+        // Авиакомпания
+        public const string AirlineNotFound = "Авиакомпания не найдена.";
+        public const string AirlineCodeExists = "Авиакомпания с таким кодом уже существует.";
+        public const string AirlineIcaoCodeExists = "Авиакомпания с таким ICAO кодом уже существует.";
     }
 }

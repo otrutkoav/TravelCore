@@ -41,4 +41,40 @@
     // RoomCategory
     public const string RoomCategoryNotFound = "room_category_not_found";
     public const string RoomCategoryCodeExists = "room_category_code_exists";
+
+    // RoomType
+    public const string RoomTypeNotFound = "room_type_not_found";
+    public const string RoomTypeCodeExists = "room_type_code_exists";
+
+    // HotelCategory
+    public const string HotelCategoryNotFound = "hotel_category_not_found";
+    public const string HotelCategoryNameExists = "hotel_category_name_exists";
+    public const string HotelCategoryGlobalCodeExists = "hotel_category_global_code_exists";
+
+    // Rate
+    public const string RateNotFound = "rate_not_found";
+    public const string RateCodeExists = "rate_code_exists";
+    public const string RateIsoCodeExists = "rate_iso_code_exists";
+
+    // RealCourse
+    public const string RealCourseNotFound = "real_course_not_found";
+    public const string RealCourseExists = "real_course_exists";
+    public const string FromRateNotFound = "from_rate_not_found";
+    public const string ToRateNotFound = "to_rate_not_found";
+    public const string SameRateCodes = "same_rate_codes";
+    public const string DateRangeInvalid = "date_range_invalid";
+
+    // AirClass
+    public const string AirClassNotFound = "air_class_not_found";
+    public const string AirClassCodeExists = "air_class_code_exists";
+
+    // Aircraft
+    public const string AircraftNotFound = "aircraft_not_found";
+    public const string AircraftCodeExists = "aircraft_code_exists";
+
+    // Airline
+    // Airline
+    public const string AirlineNotFound = "airline_not_found";
+    public const string AirlineCodeExists = "airline_code_exists";
+    public const string AirlineIcaoCodeExists = "airline_icao_code_exists";
 }

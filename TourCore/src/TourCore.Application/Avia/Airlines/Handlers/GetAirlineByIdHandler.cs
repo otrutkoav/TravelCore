@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.Airlines.Mappings;
 using TourCore.Application.Avia.Airlines.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Avia.Airlines.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Avia.Airlines.Handlers
         {
             var entity = await _airlineRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Airline was not found.");
+                throw new NotFoundException(ErrorMessages.AirlineNotFound, ErrorCode.AirlineNotFound);
 
             return entity.ToDto();
         }

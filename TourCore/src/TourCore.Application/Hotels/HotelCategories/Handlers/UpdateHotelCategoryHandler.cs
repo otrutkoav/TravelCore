@@ -9,6 +9,7 @@ using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Hotels.HotelCategories.Commands;
 using TourCore.Application.Hotels.HotelCategories.Mappings;
 using TourCore.Application.Hotels.HotelCategories.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Hotels.HotelCategories.Handlers
 {
@@ -37,7 +38,9 @@ namespace TourCore.Application.Hotels.HotelCategories.Handlers
 
             var entity = await _hotelCategoryRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Hotel category was not found.");
+                throw new ConflictException(
+                    ErrorMessages.HotelCategoryGlobalCodeExists,
+                    ErrorCode.HotelCategoryGlobalCodeExists);
 
             string normalizedGlobalCode = null;
 
@@ -46,7 +49,9 @@ namespace TourCore.Application.Hotels.HotelCategories.Handlers
                 normalizedGlobalCode = command.GlobalCode.Trim().ToUpperInvariant();
 
                 if (await _hotelCategoryRepository.ExistsByGlobalCodeAsync(normalizedGlobalCode, command.Id, cancellationToken))
-                    throw new ConflictException("Hotel category with same global code already exists.");
+                    throw new NotFoundException(
+                        ErrorMessages.HotelCategoryNotFound,
+                        ErrorCode.HotelCategoryNotFound);
             }
 
             entity.Update(

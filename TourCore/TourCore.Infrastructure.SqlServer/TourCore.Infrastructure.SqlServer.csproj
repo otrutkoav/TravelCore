@@ -98,12 +98,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configurations\Avia\AirClassConfiguration.cs" />
+    <Compile Include="Configurations\Avia\AircraftConfiguration.cs" />
+    <Compile Include="Configurations\Avia\AirlineConfiguration.cs" />
+    <Compile Include="Configurations\Finance\RateConfiguration.cs" />
+    <Compile Include="Configurations\Finance\RealCourseConfiguration.cs" />
     <Compile Include="Configurations\Geography\CityConfiguration.cs" />
     <Compile Include="Configurations\Geography\CountryConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\HotelCategoryConfiguration.cs" />
     <Compile Include="Configurations\Hotels\MealTypeConfiguration.cs" />
     <Compile Include="Configurations\Geography\RegionConfiguration.cs" />
     <Compile Include="Configurations\Geography\ResortConfiguration.cs" />
     <Compile Include="Configurations\Hotels\RoomCategoryConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\RoomTypeConfiguration.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.designer.cs">
       <DependentUpon>202604251137439_InitialCreate.cs</DependentUpon>
@@ -128,13 +135,48 @@
     <Compile Include="Migrations\202605011202072_AddRoomCategories.Designer.cs">
       <DependentUpon>202605011202072_AddRoomCategories.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605011703015_AddRoomTypes.cs" />
+    <Compile Include="Migrations\202605011703015_AddRoomTypes.designer.cs">
+      <DependentUpon>202605011703015_AddRoomTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011716498_AddHotelCategories.cs" />
+    <Compile Include="Migrations\202605011716498_AddHotelCategories.designer.cs">
+      <DependentUpon>202605011716498_AddHotelCategories.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011822519_AddRates.cs" />
+    <Compile Include="Migrations\202605011822519_AddRates.designer.cs">
+      <DependentUpon>202605011822519_AddRates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011846240_AddRealCourses.cs" />
+    <Compile Include="Migrations\202605011846240_AddRealCourses.designer.cs">
+      <DependentUpon>202605011846240_AddRealCourses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011914338_AddAirClasses.cs" />
+    <Compile Include="Migrations\202605011914338_AddAirClasses.designer.cs">
+      <DependentUpon>202605011914338_AddAirClasses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011942421_AddAircrafts.cs" />
+    <Compile Include="Migrations\202605011942421_AddAircrafts.designer.cs">
+      <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605012017224_AddAirlines.cs" />
+    <Compile Include="Migrations\202605012017224_AddAirlines.designer.cs">
+      <DependentUpon>202605012017224_AddAirlines.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Persistence\Repositories\Avia\AirClassRepository.cs" />
+    <Compile Include="Persistence\Repositories\Avia\AircraftRepository.cs" />
+    <Compile Include="Persistence\Repositories\Avia\AirlineRepository.cs" />
+    <Compile Include="Persistence\Repositories\Finance\RateRepository.cs" />
+    <Compile Include="Persistence\Repositories\Finance\RealCourseRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\CityRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\CountryRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\HotelCategoryRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\MealTypeRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\RegionRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\ResortRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomCategoryRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\RoomTypeRepository.cs" />
     <Compile Include="Persistence\TourCoreDbContext.cs" />
     <Compile Include="Persistence\UnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -175,6 +217,27 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605011202072_AddRoomCategories.resx">
       <DependentUpon>202605011202072_AddRoomCategories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011703015_AddRoomTypes.resx">
+      <DependentUpon>202605011703015_AddRoomTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011716498_AddHotelCategories.resx">
+      <DependentUpon>202605011716498_AddHotelCategories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011822519_AddRates.resx">
+      <DependentUpon>202605011822519_AddRates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011846240_AddRealCourses.resx">
+      <DependentUpon>202605011846240_AddRealCourses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011914338_AddAirClasses.resx">
+      <DependentUpon>202605011914338_AddAirClasses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011942421_AddAircrafts.resx">
+      <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605012017224_AddAirlines.resx">
+      <DependentUpon>202605012017224_AddAirlines.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

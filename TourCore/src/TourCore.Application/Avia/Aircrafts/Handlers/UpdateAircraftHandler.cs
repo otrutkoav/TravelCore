@@ -9,6 +9,7 @@ using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.Aircrafts.Commands;
 using TourCore.Application.Avia.Aircrafts.Mappings;
 using TourCore.Application.Avia.Aircrafts.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Avia.Aircrafts.Handlers
 {
@@ -37,12 +38,16 @@ namespace TourCore.Application.Avia.Aircrafts.Handlers
 
             var entity = await _aircraftRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Aircraft was not found.");
+                throw new NotFoundException(
+                 ErrorMessages.AircraftNotFound,
+                 ErrorCode.AircraftNotFound);
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _aircraftRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
-                throw new ConflictException("Aircraft with same code already exists.");
+                throw new ConflictException(
+                    ErrorMessages.AircraftCodeExists,
+                    ErrorCode.AircraftCodeExists);
 
             entity.Update(
                 normalizedCode,

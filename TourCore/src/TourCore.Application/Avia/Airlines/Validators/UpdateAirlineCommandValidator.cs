@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TourCore.Application.Avia.Airlines.Commands;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 
 namespace TourCore.Application.Avia.Airlines.Validators
@@ -9,40 +11,66 @@ namespace TourCore.Application.Avia.Airlines.Validators
         public void ValidateAndThrow(UpdateAirlineCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateAirlineCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateAirlineCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
             if (string.IsNullOrWhiteSpace(command.Code))
-                errors.Add("Code is required.");
+                AddError(errors, "Code", ErrorCode.Required);
             else if (command.Code.Trim().Length > 3)
-                errors.Add("Code must be 3 characters or less.");
+                AddError(errors, "Code", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 100)
-                errors.Add("Name must be 100 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
-            if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 100)
-                errors.Add("NameEn must be 100 characters or less.");
+            if (!string.IsNullOrWhiteSpace(command.NameEn) &&
+                command.NameEn.Trim().Length > 100)
+            {
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
+            }
 
-            if (!string.IsNullOrWhiteSpace(command.IcaoCode) && command.IcaoCode.Trim().Length > 4)
-                errors.Add("IcaoCode must be 4 characters or less.");
+            if (!string.IsNullOrWhiteSpace(command.IcaoCode) &&
+                command.IcaoCode.Trim().Length > 4)
+            {
+                AddError(errors, "IcaoCode", ErrorCode.MaxLength);
+            }
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

@@ -4,6 +4,7 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.AirClasses.Mappings;
 using TourCore.Application.Avia.AirClasses.Queries;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Contracts.Avia.AirClasses;
 
@@ -23,7 +24,7 @@ namespace TourCore.Application.Avia.AirClasses.Handlers
             var entity = await _repository.GetByIdAsync(query.Id, cancellationToken);
 
             if (entity == null)
-                throw new NotFoundException("AirClass not found");
+                throw new NotFoundException(ErrorMessages.AirClassNotFound, ErrorCode.AirClassNotFound);
 
             return entity.ToDto();
         }

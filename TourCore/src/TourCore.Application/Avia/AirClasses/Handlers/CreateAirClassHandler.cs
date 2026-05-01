@@ -10,6 +10,7 @@ using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.AirClasses.Commands;
 using TourCore.Application.Avia.AirClasses.Mappings;
 using TourCore.Application.Avia.AirClasses.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Avia.AirClasses.Handlers
 {
@@ -39,7 +40,7 @@ namespace TourCore.Application.Avia.AirClasses.Handlers
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _airClassRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
-                throw new ConflictException("Air class with same code already exists.");
+                throw new ConflictException(ErrorMessages.AirClassCodeExists, ErrorCode.AirClassCodeExists);
 
             var entity = new AirClass(
                 normalizedCode,

@@ -130,7 +130,7 @@ namespace TourCore.Domain.Hotels.Entities
         private void SetCode(string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new DomainException("Meal type code is required.");
+                throw new DomainException("Accommodation type code is required.");
 
             code = code.Trim().ToUpperInvariant();
 

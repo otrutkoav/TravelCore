@@ -7,6 +7,7 @@ using TourCore.Contracts.Hotels.RoomTypes;
 using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Hotels.RoomTypes.Mappings;
 using TourCore.Application.Hotels.RoomTypes.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Hotels.RoomTypes.Handlers
 {
@@ -23,7 +24,7 @@ namespace TourCore.Application.Hotels.RoomTypes.Handlers
         {
             var entity = await _roomTypeRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Room type was not found.");
+                throw new NotFoundException(ErrorMessages.RoomTypeNotFound, ErrorCode.RoomTypeNotFound);
 
             return entity.ToDto();
         }

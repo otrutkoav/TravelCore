@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Hotels.HotelCategories.Commands;
 
@@ -9,35 +11,55 @@ namespace TourCore.Application.Hotels.HotelCategories.Validators
         public void ValidateAndThrow(CreateHotelCategoryCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateHotelCategoryCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateHotelCategoryCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 50)
-                errors.Add("Name must be 50 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 50)
-                errors.Add("NameEn must be 50 characters or less.");
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
 
             if (command.PrintOrder.HasValue && command.PrintOrder.Value < 0)
-                errors.Add("PrintOrder cannot be negative.");
+                AddError(errors, "PrintOrder", ErrorCode.Negative);
 
             if (!string.IsNullOrWhiteSpace(command.GlobalCode) && command.GlobalCode.Trim().Length > 20)
-                errors.Add("GlobalCode must be 20 characters or less.");
+                AddError(errors, "GlobalCode", ErrorCode.MaxLength);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

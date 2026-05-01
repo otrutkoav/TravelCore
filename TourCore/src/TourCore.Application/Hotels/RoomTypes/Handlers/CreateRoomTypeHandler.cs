@@ -11,6 +11,7 @@ using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Hotels.RoomTypes.Commands;
 using TourCore.Application.Hotels.RoomTypes.Mappings;
 using TourCore.Application.Hotels.RoomTypes.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Hotels.RoomTypes.Handlers
 {
@@ -40,7 +41,7 @@ namespace TourCore.Application.Hotels.RoomTypes.Handlers
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _roomTypeRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
-                throw new ConflictException("Room type with same code already exists.");
+                throw new ConflictException(ErrorMessages.RoomTypeCodeExists, ErrorCode.RoomTypeCodeExists);
 
             var entity = new RoomType(
                 command.Name,

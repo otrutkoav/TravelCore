@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.Aircrafts.Mappings;
 using TourCore.Application.Avia.Aircrafts.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Avia.Aircrafts.Handlers
 {
@@ -22,7 +23,9 @@ namespace TourCore.Application.Avia.Aircrafts.Handlers
         {
             var entity = await _aircraftRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Aircraft was not found.");
+                throw new NotFoundException(
+                    ErrorMessages.AircraftNotFound,
+                    ErrorCode.AircraftNotFound);
 
             return entity.ToDto();
         }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
@@ -19,11 +20,39 @@ namespace TourCore.Application.Avia.AirClasses.Handlers
             _repository = repository;
         }
 
-        public async Task<ListResult<AirClassListItemDto>> Handle(GetAirClassesQuery query, CancellationToken cancellationToken)
+        public async Task<ListResult<AirClassListItemDto>> Handle(
+            GetAirClassesQuery query,
+            CancellationToken cancellationToken)
         {
             var entities = await _repository.ListAsync(cancellationToken);
+            var items = entities.AsEnumerable();
 
-            var result = entities
+            if (query != null && query.Filter != null)
+            {
+                if (!string.IsNullOrWhiteSpace(query.Filter.Search))
+                {
+                    var search = query.Filter.Search.Trim();
+
+                    items = items.Where(x =>
+                        (!string.IsNullOrWhiteSpace(x.Code) &&
+                         x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                        (!string.IsNullOrWhiteSpace(x.Name) &&
+                         x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                        (!string.IsNullOrWhiteSpace(x.NameEn) &&
+                         x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0));
+                }
+
+                if (!string.IsNullOrWhiteSpace(query.Filter.Group))
+                {
+                    var group = query.Filter.Group.Trim();
+
+                    items = items.Where(x =>
+                        !string.IsNullOrWhiteSpace(x.Group) &&
+                        x.Group.IndexOf(group, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+            }
+
+            var result = items
                 .OrderBy(x => x.SortOrder)
                 .ThenBy(x => x.Name)
                 .Select(x => x.ToListItemDto())

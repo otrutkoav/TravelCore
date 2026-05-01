@@ -9,6 +9,8 @@ using TourCore.Application.Abstractions.Persistence.Finance;
 using TourCore.Application.Finance.RealCourses.Commands;
 using TourCore.Application.Finance.RealCourses.Mappings;
 using TourCore.Application.Finance.RealCourses.Validators;
+using System.Collections.Generic;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Finance.RealCourses.Handlers
 {
@@ -40,19 +42,22 @@ namespace TourCore.Application.Finance.RealCourses.Handlers
 
             var entity = await _realCourseRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Real course was not found.");
+                throw new NotFoundException(ErrorMessages.RealCourseNotFound, ErrorCode.RealCourseNotFound);
 
-            var fromRateCode = command.FromRateCode.Trim();
-            var toRateCode = command.ToRateCode.Trim();
+            var fromRateCode = command.FromRateCode.Trim().ToUpperInvariant();
+            var toRateCode = command.ToRateCode.Trim().ToUpperInvariant();
 
             if (fromRateCode == toRateCode)
-                throw new ValidationException(new[] { "FromRateCode and ToRateCode must be different." });
+                throw new ValidationException(new Dictionary<string, string[]>
+        {
+            { "ToRateCode", new[] { ErrorCode.SameRateCodes } }
+        });
 
             if (!await _rateRepository.ExistsByCodeValueAsync(fromRateCode, cancellationToken))
-                throw new NotFoundException("Source rate was not found.");
+                throw new NotFoundException(ErrorMessages.FromRateNotFound, ErrorCode.FromRateNotFound);
 
             if (!await _rateRepository.ExistsByCodeValueAsync(toRateCode, cancellationToken))
-                throw new NotFoundException("Target rate was not found.");
+                throw new NotFoundException(ErrorMessages.ToRateNotFound, ErrorCode.ToRateNotFound);
 
             if (await _realCourseRepository.ExistsAsync(
                 fromRateCode,
@@ -62,12 +67,12 @@ namespace TourCore.Application.Finance.RealCourses.Handlers
                 command.Id,
                 cancellationToken))
             {
-                throw new ConflictException("Real course with the same rate pair and period already exists.");
+                throw new ConflictException(ErrorMessages.RealCourseExists, ErrorCode.RealCourseExists);
             }
 
             entity.Update(
-                command.FromRateCode,
-                command.ToRateCode,
+                fromRateCode,
+                toRateCode,
                 _dateTimeProvider.UtcNow,
                 command.Course,
                 command.CentralBankCourse,
