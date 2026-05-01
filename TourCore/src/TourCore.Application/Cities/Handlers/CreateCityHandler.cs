@@ -4,10 +4,11 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Cities.Commands;
-using TourCore.Contracts.Geography.Cities;
 using TourCore.Application.Cities.Mappings;
 using TourCore.Application.Cities.Validators;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
+using TourCore.Contracts.Geography.Cities;
 using TourCore.Domain.Geography.Entities;
 
 namespace TourCore.Application.Cities.Handlers
@@ -42,23 +43,28 @@ namespace TourCore.Application.Cities.Handlers
             _validator.ValidateAndThrow(command);
 
             if (!await _countryRepository.ExistsAsync(command.CountryId, cancellationToken))
-                throw new NotFoundException("Country was not found.");
+                throw new NotFoundException(ErrorMessages.CountryNotFound, ErrorCode.CountryNotFound);
 
             if (command.RegionId.HasValue)
             {
                 var region = await _regionRepository.GetByIdAsync(command.RegionId.Value, cancellationToken);
 
                 if (region == null)
-                    throw new NotFoundException("Region was not found.");
+                    throw new NotFoundException(ErrorMessages.RegionNotFound, ErrorCode.RegionNotFound);
 
                 if (region.CountryId != command.CountryId)
-                    throw new ValidationException(new[] { "Region must belong to the selected country." });
+                    throw new ConflictException(ErrorMessages.RegionCountryMismatch, ErrorCode.RegionCountryMismatch);
             }
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
-            if (await _cityRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
-                throw new ConflictException("City with the same code already exists.");
+            if (await _cityRepository.ExistsByCodeAsync(
+                 command.CountryId,
+                 normalizedCode,
+                 cancellationToken))
+            {
+                throw new ConflictException(ErrorMessages.CityCodeExists, ErrorCode.CityCodeExists);
+            }
 
             var entity = new City(
                 command.CountryId,

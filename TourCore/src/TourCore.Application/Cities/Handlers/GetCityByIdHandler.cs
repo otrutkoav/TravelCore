@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Contracts.Geography.Cities;
 using TourCore.Application.Cities.Mappings;
 using TourCore.Application.Cities.Queries;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
+using TourCore.Contracts.Geography.Cities;
 
 namespace TourCore.Application.Cities.Handlers
 {
@@ -21,8 +22,9 @@ namespace TourCore.Application.Cities.Handlers
         public async Task<CityDto> Handle(GetCityByIdQuery query, CancellationToken cancellationToken)
         {
             var entity = await _cityRepository.GetByIdAsync(query.Id, cancellationToken);
+
             if (entity == null)
-                throw new NotFoundException("City was not found.");
+                throw new NotFoundException(ErrorMessages.CityNotFound, ErrorCode.CityNotFound);
 
             return entity.ToDto();
         }

@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Application.MealTypes.Mappings;
 using TourCore.Application.MealTypes.Queries;
+using TourCore.Contracts.Hotels.MealTypes;
 
 namespace TourCore.Application.MealTypes.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.MealTypes.Handlers
         {
             var entity = await _mealTypeRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Meal type was not found.");
+                throw new NotFoundException(ErrorMessages.MealTypeNotFound, ErrorCode.MealTypeNotFound);
 
             return entity.ToDto();
         }

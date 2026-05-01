@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
@@ -107,3 +109,5 @@ namespace TourCore.Api.Legacy.Filters
         public object Details { get; set; }
     }
 }
+
+#pragma warning restore 1591

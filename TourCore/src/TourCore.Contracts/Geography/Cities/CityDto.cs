@@ -21,5 +21,7 @@
         public string TimeZone { get; set; }
 
         public string IataCode { get; set; }
+
+        public string Coordinates { get; set; }
     }
 }

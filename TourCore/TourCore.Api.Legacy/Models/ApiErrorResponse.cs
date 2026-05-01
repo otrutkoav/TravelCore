@@ -1,4 +1,6 @@
-﻿namespace TourCore.Api.Legacy.Models
+﻿#pragma warning disable 1591
+
+namespace TourCore.Api.Legacy.Models
 {
     public class ApiErrorResponse
     {
@@ -9,3 +11,5 @@
         public object Details { get; set; }
     }
 }
+
+#pragma warning restore 1591

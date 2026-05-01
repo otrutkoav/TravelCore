@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Regions.Commands;
-using TourCore.Contracts.Geography.Regions;
 using TourCore.Application.Regions.Mappings;
 using TourCore.Application.Regions.Validators;
+using TourCore.Contracts.Geography.Regions;
 using TourCore.Domain.Geography.Entities;
 
 namespace TourCore.Application.Regions.Handlers
@@ -39,19 +40,19 @@ namespace TourCore.Application.Regions.Handlers
             _validator.ValidateAndThrow(command);
 
             if (!await _countryRepository.ExistsAsync(command.CountryId, cancellationToken))
-                throw new NotFoundException("Country was not found.");
+                throw new NotFoundException(ErrorMessages.CountryNotFound, ErrorCode.CountryNotFound);
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
-            if (await _regionRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
-                throw new ConflictException("Region with the same code already exists.");
+            if (await _regionRepository.ExistsByCodeAsync(command.CountryId, normalizedCode, cancellationToken))
+                throw new ConflictException(ErrorMessages.RegionCodeExists, ErrorCode.RegionCodeExists);
 
             var entity = new Region(
                 command.CountryId,
                 command.Name,
+                command.Code,
                 _dateTimeProvider.UtcNow,
                 command.NameEn,
-                command.Code,
                 command.SortOrder);
 
             await _regionRepository.AddAsync(entity, cancellationToken);

@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Geography.Resorts;
 using TourCore.Application.Resorts.Mappings;
 using TourCore.Application.Resorts.Queries;
+using TourCore.Contracts.Geography.Resorts;
 
 namespace TourCore.Application.Resorts.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Resorts.Handlers
         {
             var entity = await _resortRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Resort was not found.");
+                throw new NotFoundException(ErrorMessages.ResortNotFound, ErrorCode.ResortNotFound);
 
             return entity.ToDto();
         }

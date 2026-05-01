@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Application.RoomCategories.Mappings;
 using TourCore.Application.RoomCategories.Queries;
+using TourCore.Contracts.Hotels.RoomCategories;
 
 namespace TourCore.Application.RoomCategories.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.RoomCategories.Handlers
         {
             var entity = await _roomCategoryRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Room category was not found.");
+                throw new NotFoundException(ErrorMessages.RoomCategoryNotFound, ErrorCode.RoomCategoryNotFound);
 
             return entity.ToDto();
         }

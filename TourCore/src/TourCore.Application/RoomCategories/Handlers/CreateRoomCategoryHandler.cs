@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.RoomCategories.Commands;
-using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Application.RoomCategories.Mappings;
 using TourCore.Application.RoomCategories.Validators;
+using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.RoomCategories.Handlers
@@ -38,7 +39,7 @@ namespace TourCore.Application.RoomCategories.Handlers
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _roomCategoryRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
-                throw new ConflictException("Room category with same code already exists.");
+                throw new ConflictException(ErrorMessages.RoomCategoryCodeExists, ErrorCode.RoomCategoryCodeExists);
 
             var entity = new RoomCategory(
                 command.Name,

@@ -98,13 +98,43 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configurations\CityConfiguration.cs" />
     <Compile Include="Configurations\CountryConfiguration.cs" />
+    <Compile Include="Configurations\MealTypeConfiguration.cs" />
+    <Compile Include="Configurations\RegionConfiguration.cs" />
+    <Compile Include="Configurations\ResortConfiguration.cs" />
+    <Compile Include="Configurations\RoomCategoryConfiguration.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.designer.cs">
       <DependentUpon>202604251137439_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605010942248_AddCities.cs" />
+    <Compile Include="Migrations\202605010942248_AddCities.Designer.cs">
+      <DependentUpon>202605010942248_AddCities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011043512_AddRegions.cs" />
+    <Compile Include="Migrations\202605011043512_AddRegions.Designer.cs">
+      <DependentUpon>202605011043512_AddRegions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011123149_AddResorts.cs" />
+    <Compile Include="Migrations\202605011123149_AddResorts.Designer.cs">
+      <DependentUpon>202605011123149_AddResorts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011151193_AddMealTypes.cs" />
+    <Compile Include="Migrations\202605011151193_AddMealTypes.Designer.cs">
+      <DependentUpon>202605011151193_AddMealTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605011202072_AddRoomCategories.cs" />
+    <Compile Include="Migrations\202605011202072_AddRoomCategories.Designer.cs">
+      <DependentUpon>202605011202072_AddRoomCategories.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Persistence\Repositories\CityRepository.cs" />
     <Compile Include="Persistence\Repositories\CountryRepository.cs" />
+    <Compile Include="Persistence\Repositories\MealTypeRepository.cs" />
+    <Compile Include="Persistence\Repositories\RegionRepository.cs" />
+    <Compile Include="Persistence\Repositories\ResortRepository.cs" />
+    <Compile Include="Persistence\Repositories\RoomCategoryRepository.cs" />
     <Compile Include="Persistence\TourCoreDbContext.cs" />
     <Compile Include="Persistence\UnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,6 +160,21 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202604251137439_InitialCreate.resx">
       <DependentUpon>202604251137439_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605010942248_AddCities.resx">
+      <DependentUpon>202605010942248_AddCities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011043512_AddRegions.resx">
+      <DependentUpon>202605011043512_AddRegions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011123149_AddResorts.resx">
+      <DependentUpon>202605011123149_AddResorts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011151193_AddMealTypes.resx">
+      <DependentUpon>202605011151193_AddMealTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605011202072_AddRoomCategories.resx">
+      <DependentUpon>202605011202072_AddRoomCategories.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

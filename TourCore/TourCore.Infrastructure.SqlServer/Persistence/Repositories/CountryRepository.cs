@@ -29,7 +29,8 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories
 
         public async Task<bool> ExistsAsync(int id, CancellationToken ct)
         {
-            return await _context.Countries.AnyAsync(x => x.Id == id, ct);
+            var result = await _context.Countries.AnyAsync(x => x.Id == id, ct);
+            return result;
         }
 
         public async Task<bool> ExistsByCodeAsync(string code, CancellationToken ct)

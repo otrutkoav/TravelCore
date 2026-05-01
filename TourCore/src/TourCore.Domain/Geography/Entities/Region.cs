@@ -19,12 +19,12 @@ namespace TourCore.Domain.Geography.Entities
         }
 
         public Region(
-            int countryId,
-            string name,
-            DateTime createdAt,
-            string nameEn = null,
-            string code = null,
-            int sortOrder = 0)
+             int countryId,
+             string name,
+             string code,
+             DateTime createdAt,
+             string nameEn = null,
+             int sortOrder = 0)
         {
             SetCountryId(countryId);
             SetName(name);
@@ -38,9 +38,9 @@ namespace TourCore.Domain.Geography.Entities
         public void Update(
             int countryId,
             string name,
+            string code,
             DateTime updatedAt,
             string nameEn = null,
-            string code = null,
             int sortOrder = 0)
         {
             SetCountryId(countryId);

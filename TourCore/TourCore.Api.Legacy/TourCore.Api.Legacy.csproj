@@ -155,8 +155,13 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CitiesController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MealTypesController.cs" />
+    <Compile Include="Controllers\RegionsController.cs" />
+    <Compile Include="Controllers\ResortsController.cs" />
+    <Compile Include="Controllers\RoomCategoriesController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Filters\ApiExceptionFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -177,7 +182,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Cities\" />
     <Folder Include="Views\Countries\" />
+    <Folder Include="Views\MealTypes\" />
+    <Folder Include="Views\Regions\" />
+    <Folder Include="Views\Resorts\" />
+    <Folder Include="Views\RoomCategories\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

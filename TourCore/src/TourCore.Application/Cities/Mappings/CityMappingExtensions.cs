@@ -18,7 +18,8 @@ namespace TourCore.Application.Cities.Mappings
                 SortOrder = entity.SortOrder,
                 IsDeparturePoint = entity.IsDeparturePoint,
                 TimeZone = entity.TimeZone,
-                IataCode = entity.IataCode
+                IataCode = entity.IataCode,
+                Coordinates = entity.Coordinates,
             };
         }
 
@@ -35,7 +36,8 @@ namespace TourCore.Application.Cities.Mappings
                 SortOrder = entity.SortOrder,
                 IsDeparturePoint = entity.IsDeparturePoint,
                 TimeZone = entity.TimeZone,
-                IataCode = entity.IataCode
+                IataCode = entity.IataCode,
+                Coordinates = entity.Coordinates,
             };
         }
     }

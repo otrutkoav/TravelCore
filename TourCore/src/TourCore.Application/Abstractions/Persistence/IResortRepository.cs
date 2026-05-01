@@ -10,6 +10,17 @@ namespace TourCore.Application.Abstractions.Persistence
         Task<Resort> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<Resort>> ListAsync(CancellationToken cancellationToken);
 
+        Task<bool> ExistsByNameAsync(
+            int countryId,
+            string name,
+            CancellationToken cancellationToken);
+
+        Task<bool> ExistsByNameExceptIdAsync(
+            int id,
+            int countryId,
+            string name,
+            CancellationToken cancellationToken);
+
         Task AddAsync(Resort resort, CancellationToken cancellationToken);
     }
 }

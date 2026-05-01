@@ -21,6 +21,13 @@ namespace TourCore.Api.Legacy.Controllers
         private readonly IQueryHandler<GetCountriesQuery, ListResult<CountryListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetCountryByIdQuery, CountryDto> _getByIdHandler;
 
+        /// <summary>
+        /// Создает экземпляр контроллера стран.
+        /// </summary>
+        /// <param name="createHandler">Обработчик создания страны.</param>
+        /// <param name="updateHandler">Обработчик обновления страны.</param>
+        /// <param name="getListHandler">Обработчик получения списка стран.</param>
+        /// <param name="getByIdHandler">Обработчик получения страны по идентификатору.</param>
         public CountriesController(
             ICommandHandler<CreateCountryCommand, CountryDto> createHandler,
             ICommandHandler<UpdateCountryCommand, CountryDto> updateHandler,

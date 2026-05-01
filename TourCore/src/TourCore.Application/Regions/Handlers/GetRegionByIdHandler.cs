@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Geography.Regions;
 using TourCore.Application.Regions.Mappings;
 using TourCore.Application.Regions.Queries;
+using TourCore.Contracts.Geography.Regions;
 
 namespace TourCore.Application.Regions.Handlers
 {
@@ -21,8 +22,9 @@ namespace TourCore.Application.Regions.Handlers
         public async Task<RegionDto> Handle(GetRegionByIdQuery query, CancellationToken cancellationToken)
         {
             var entity = await _regionRepository.GetByIdAsync(query.Id, cancellationToken);
+
             if (entity == null)
-                throw new NotFoundException("Region was not found.");
+                throw new NotFoundException(ErrorMessages.RegionNotFound, ErrorCode.RegionNotFound);
 
             return entity.ToDto();
         }

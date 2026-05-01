@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Resorts.Commands;
-using TourCore.Contracts.Geography.Resorts;
 using TourCore.Application.Resorts.Mappings;
 using TourCore.Application.Resorts.Validators;
+using TourCore.Contracts.Geography.Resorts;
 
 namespace TourCore.Application.Resorts.Handlers
 {
@@ -39,10 +40,15 @@ namespace TourCore.Application.Resorts.Handlers
 
             var entity = await _resortRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Resort was not found.");
+                throw new NotFoundException(ErrorMessages.ResortNotFound, ErrorCode.ResortNotFound);
 
             if (!await _countryRepository.ExistsAsync(command.CountryId, cancellationToken))
-                throw new NotFoundException("Country was not found.");
+                throw new NotFoundException(ErrorMessages.CountryNotFound, ErrorCode.CountryNotFound);
+
+            var normalizedName = command.Name.Trim();
+
+            if (await _resortRepository.ExistsByNameExceptIdAsync(command.Id, command.CountryId, normalizedName, cancellationToken))
+                throw new ConflictException(ErrorMessages.ResortNameExists, ErrorCode.ResortNameExists);
 
             entity.Update(
                 command.CountryId,

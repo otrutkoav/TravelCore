@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿#pragma warning disable 1591
+
+using System.Web.Http;
 
 namespace TourCore.Api.Legacy
 {
@@ -11,3 +13,5 @@ namespace TourCore.Api.Legacy
         }
     }
 }
+
+#pragma warning restore 1591

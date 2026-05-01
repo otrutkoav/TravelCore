@@ -1,20 +1,47 @@
+#pragma warning disable 1591
+
 using System.Collections.Generic;
 using System.Web.Http;
 using TourCore.Application.Abstractions;
+using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Cities.Commands;
+using TourCore.Application.Cities.Handlers;
+using TourCore.Application.Cities.Queries;
+using TourCore.Application.Cities.Validators;
+using TourCore.Application.Common.Models;
 using TourCore.Application.Countries.Commands;
 using TourCore.Application.Countries.Handlers;
 using TourCore.Application.Countries.Queries;
 using TourCore.Application.Countries.Validators;
+using TourCore.Application.MealTypes.Commands;
+using TourCore.Application.MealTypes.Handlers;
+using TourCore.Application.MealTypes.Queries;
+using TourCore.Application.MealTypes.Validators;
+using TourCore.Application.Regions.Commands;
+using TourCore.Application.Regions.Handlers;
+using TourCore.Application.Regions.Queries;
+using TourCore.Application.Regions.Validators;
+using TourCore.Application.Resorts.Commands;
+using TourCore.Application.Resorts.Handlers;
+using TourCore.Application.Resorts.Queries;
+using TourCore.Application.Resorts.Validators;
+using TourCore.Application.RoomCategories.Commands;
+using TourCore.Application.RoomCategories.Handlers;
+using TourCore.Application.RoomCategories.Queries;
+using TourCore.Application.RoomCategories.Validators;
+using TourCore.Contracts.Geography.Cities;
 using TourCore.Contracts.Geography.Countries;
-using Unity;
-using Unity.WebApi;
+using TourCore.Contracts.Geography.Regions;
+using TourCore.Contracts.Geography.Resorts;
+using TourCore.Contracts.Hotels.MealTypes;
+using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Infrastructure.Services;
-using TourCore.Application.Common.Models;
-using TourCore.Application.Abstractions.Persistence;
 using TourCore.Infrastructure.SqlServer.Persistence;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories;
+using Unity;
 using Unity.Lifetime;
+using Unity.WebApi;
 
 namespace TourCore.Api.Legacy
 {
@@ -35,9 +62,35 @@ namespace TourCore.Api.Legacy
             // Services
             container.RegisterType<IDateTimeProvider, DateTimeProvider>();
 
-            // Validators
+            #region  Validators
+
+            // Country Validators
             container.RegisterType<CreateCountryCommandValidator>();
             container.RegisterType<UpdateCountryCommandValidator>();
+
+            // Region validators
+            container.RegisterType<CreateRegionCommandValidator>();
+            container.RegisterType<UpdateRegionCommandValidator>();
+
+            // City validators
+            container.RegisterType<CreateCityCommandValidator>();
+            container.RegisterType<UpdateCityCommandValidator>();
+
+            // Resort validators
+            container.RegisterType<CreateResortCommandValidator>();
+            container.RegisterType<UpdateResortCommandValidator>();
+
+            // MealType validators
+            container.RegisterType<CreateMealTypeCommandValidator>();
+            container.RegisterType<UpdateMealTypeCommandValidator>();
+
+            // RoomCategory validators
+            container.RegisterType<CreateRoomCategoryCommandValidator>();
+            container.RegisterType<UpdateRoomCategoryCommandValidator>();
+
+            #endregion
+
+            #region Commands
 
             // Country commands
             container.RegisterType<
@@ -48,6 +101,55 @@ namespace TourCore.Api.Legacy
                 ICommandHandler<UpdateCountryCommand, CountryDto>,
                 UpdateCountryHandler>();
 
+            // Region commands
+            container.RegisterType<
+                ICommandHandler<CreateRegionCommand, RegionDto>,
+                CreateRegionHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateRegionCommand, RegionDto>,
+                UpdateRegionHandler>();
+
+            // City commands
+            container.RegisterType<
+                ICommandHandler<CreateCityCommand, CityDto>,
+                CreateCityHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateCityCommand, CityDto>,
+                UpdateCityHandler>();
+
+            // Resort commands
+            container.RegisterType<
+                ICommandHandler<CreateResortCommand, ResortDto>,
+                CreateResortHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateResortCommand, ResortDto>,
+                UpdateResortHandler>();
+
+            // MealType commands
+            container.RegisterType<
+                ICommandHandler<CreateMealTypeCommand, MealTypeDto>,
+                CreateMealTypeHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateMealTypeCommand, MealTypeDto>,
+                UpdateMealTypeHandler>();
+
+            // RoomCategory commands
+            container.RegisterType<
+                ICommandHandler<CreateRoomCategoryCommand, RoomCategoryDto>,
+                CreateRoomCategoryHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateRoomCategoryCommand, RoomCategoryDto>,
+                UpdateRoomCategoryHandler>();
+
+            #endregion
+
+            #region Queries
+
             // Country queries
             container.RegisterType<
                 IQueryHandler<GetCountriesQuery, ListResult<CountryListItemDto>>,
@@ -57,7 +159,55 @@ namespace TourCore.Api.Legacy
                 IQueryHandler<GetCountryByIdQuery, CountryDto>,
                 GetCountryByIdHandler>();
 
-            // Persistence
+            // Region queries
+            container.RegisterType<
+                IQueryHandler<GetRegionsQuery, ListResult<RegionListItemDto>>,
+                GetRegionsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetRegionByIdQuery, RegionDto>,
+                GetRegionByIdHandler>();
+
+            // City queries
+            container.RegisterType<
+                IQueryHandler<GetCitiesQuery, ListResult<CityListItemDto>>,
+                GetCitiesHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetCityByIdQuery, CityDto>,
+                GetCityByIdHandler>();
+
+            // Resort queries
+            container.RegisterType<
+                IQueryHandler<GetResortsQuery, ListResult<ResortListItemDto>>,
+                GetResortsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetResortByIdQuery, ResortDto>,
+                GetResortByIdHandler>();
+
+            // MealType queries
+            container.RegisterType<
+                IQueryHandler<GetMealTypesQuery, ListResult<MealTypeListItemDto>>,
+                GetMealTypesHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetMealTypeByIdQuery, MealTypeDto>,
+                GetMealTypeByIdHandler>();
+
+            // RoomCategory queries
+            container.RegisterType<
+                IQueryHandler<GetRoomCategoriesQuery, ListResult<RoomCategoryListItemDto>>,
+                GetRoomCategoriesHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetRoomCategoryByIdQuery, RoomCategoryDto>,
+                GetRoomCategoryByIdHandler>();
+
+            #endregion
+
+            #region Persistence
+
             // Persistence
             container.RegisterType<TourCoreDbContext>(
                 new HierarchicalLifetimeManager());
@@ -65,8 +215,27 @@ namespace TourCore.Api.Legacy
             container.RegisterType<ICountryRepository, CountryRepository>(
                 new HierarchicalLifetimeManager());
 
+            container.RegisterType<IRegionRepository, RegionRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<ICityRepository, CityRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IResortRepository, ResortRepository>(
+                new HierarchicalLifetimeManager());
+
             container.RegisterType<IUnitOfWork, UnitOfWork>(
                 new HierarchicalLifetimeManager());
+
+            container.RegisterType<IMealTypeRepository, MealTypeRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IRoomCategoryRepository, RoomCategoryRepository>(
+                new HierarchicalLifetimeManager());
+
+            #endregion
         }
     }
 }
+
+#pragma warning restore 1591

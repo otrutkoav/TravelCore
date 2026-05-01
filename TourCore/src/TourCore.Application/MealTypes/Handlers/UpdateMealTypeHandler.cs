@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.MealTypes.Commands;
-using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Application.MealTypes.Mappings;
 using TourCore.Application.MealTypes.Validators;
+using TourCore.Contracts.Hotels.MealTypes;
 
 namespace TourCore.Application.MealTypes.Handlers
 {
@@ -36,19 +37,19 @@ namespace TourCore.Application.MealTypes.Handlers
 
             var entity = await _mealTypeRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Meal type was not found.");
+                throw new NotFoundException(ErrorMessages.MealTypeNotFound, ErrorCode.MealTypeNotFound);
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _mealTypeRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
-                throw new ConflictException("Meal type with the same code already exists.");
+                throw new ConflictException(ErrorMessages.MealTypeCodeExists, ErrorCode.MealTypeCodeExists);
 
             if (!string.IsNullOrWhiteSpace(command.GlobalCode))
             {
                 var normalizedGlobalCode = command.GlobalCode.Trim().ToUpperInvariant();
 
                 if (await _mealTypeRepository.ExistsByGlobalCodeAsync(normalizedGlobalCode, command.Id, cancellationToken))
-                    throw new ConflictException("Meal type with the same global code already exists.");
+                    throw new ConflictException(ErrorMessages.MealTypeGlobalCodeExists, ErrorCode.MealTypeGlobalCodeExists);
             }
 
             entity.Update(

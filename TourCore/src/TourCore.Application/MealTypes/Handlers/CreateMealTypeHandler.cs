@@ -3,11 +3,12 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.MealTypes.Commands;
-using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Application.MealTypes.Mappings;
 using TourCore.Application.MealTypes.Validators;
+using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.MealTypes.Handlers
@@ -38,14 +39,14 @@ namespace TourCore.Application.MealTypes.Handlers
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _mealTypeRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
-                throw new ConflictException("Meal type with the same code already exists.");
+                throw new ConflictException(ErrorMessages.MealTypeCodeExists, ErrorCode.MealTypeCodeExists);
 
             if (!string.IsNullOrWhiteSpace(command.GlobalCode))
             {
                 var normalizedGlobalCode = command.GlobalCode.Trim().ToUpperInvariant();
 
                 if (await _mealTypeRepository.ExistsByGlobalCodeAsync(normalizedGlobalCode, cancellationToken))
-                    throw new ConflictException("Meal type with the same global code already exists.");
+                    throw new ConflictException(ErrorMessages.MealTypeGlobalCodeExists, ErrorCode.MealTypeGlobalCodeExists);
             }
 
             var entity = new MealType(

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -26,3 +28,5 @@ namespace TourCore.Api.Legacy
         }
     }
 }
+
+#pragma warning restore 1591
