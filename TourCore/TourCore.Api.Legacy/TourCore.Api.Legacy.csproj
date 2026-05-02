@@ -158,6 +158,7 @@
     <Compile Include="Controllers\AirClassesController.cs" />
     <Compile Include="Controllers\AircraftsController.cs" />
     <Compile Include="Controllers\AirlinesController.cs" />
+    <Compile Include="Controllers\AirportsController.cs" />
     <Compile Include="Controllers\CitiesController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -192,6 +193,7 @@
     <Folder Include="Views\AirClasses\" />
     <Folder Include="Views\Aircrafts\" />
     <Folder Include="Views\Airlines\" />
+    <Folder Include="Views\Airports\" />
     <Folder Include="Views\Cities\" />
     <Folder Include="Views\Countries\" />
     <Folder Include="Views\HotelCategories\" />

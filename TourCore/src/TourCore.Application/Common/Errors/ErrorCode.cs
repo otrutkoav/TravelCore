@@ -73,8 +73,20 @@
     public const string AircraftCodeExists = "aircraft_code_exists";
 
     // Airline
-    // Airline
     public const string AirlineNotFound = "airline_not_found";
     public const string AirlineCodeExists = "airline_code_exists";
     public const string AirlineIcaoCodeExists = "airline_icao_code_exists";
+
+    // Airport
+    public const string AirportNotFound = "airport_not_found";
+    public const string AirportCodeExists = "airport_code_exists";
+    public const string AirportIcaoCodeExists = "airport_icao_code_exists";
+
+    // Charter
+    public const string CharterNotFound = "charter_not_found";
+    public const string CharterExists = "charter_exists";
+    public const string DepartureCityNotFound = "departure_city_not_found";
+    public const string ArrivalCityNotFound = "arrival_city_not_found";
+    public const string DepartureAirportNotFound = "departure_airport_not_found";
+    public const string ArrivalAirportNotFound = "arrival_airport_not_found";
 }

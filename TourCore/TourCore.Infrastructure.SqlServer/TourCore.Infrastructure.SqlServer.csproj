@@ -101,6 +101,7 @@
     <Compile Include="Configurations\Avia\AirClassConfiguration.cs" />
     <Compile Include="Configurations\Avia\AircraftConfiguration.cs" />
     <Compile Include="Configurations\Avia\AirlineConfiguration.cs" />
+    <Compile Include="Configurations\Avia\AirportConfiguration.cs" />
     <Compile Include="Configurations\Finance\RateConfiguration.cs" />
     <Compile Include="Configurations\Finance\RealCourseConfiguration.cs" />
     <Compile Include="Configurations\Geography\CityConfiguration.cs" />
@@ -163,10 +164,15 @@
     <Compile Include="Migrations\202605012017224_AddAirlines.designer.cs">
       <DependentUpon>202605012017224_AddAirlines.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605021558321_AddAirports.cs" />
+    <Compile Include="Migrations\202605021558321_AddAirports.designer.cs">
+      <DependentUpon>202605021558321_AddAirports.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Persistence\Repositories\Avia\AirClassRepository.cs" />
     <Compile Include="Persistence\Repositories\Avia\AircraftRepository.cs" />
     <Compile Include="Persistence\Repositories\Avia\AirlineRepository.cs" />
+    <Compile Include="Persistence\Repositories\Avia\AirportRepository.cs" />
     <Compile Include="Persistence\Repositories\Finance\RateRepository.cs" />
     <Compile Include="Persistence\Repositories\Finance\RealCourseRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\CityRepository.cs" />
@@ -238,6 +244,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605012017224_AddAirlines.resx">
       <DependentUpon>202605012017224_AddAirlines.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605021558321_AddAirports.resx">
+      <DependentUpon>202605021558321_AddAirports.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,6 @@
-﻿namespace TourCore.Application.Avia.Charters.Commands
+﻿using System;
+
+namespace TourCore.Application.Avia.Charters.Commands
 {
     public class CreateCharterCommand
     {

@@ -65,5 +65,18 @@
         public const string AirlineNotFound = "Авиакомпания не найдена.";
         public const string AirlineCodeExists = "Авиакомпания с таким кодом уже существует.";
         public const string AirlineIcaoCodeExists = "Авиакомпания с таким ICAO кодом уже существует.";
+
+        // Аэропорт
+        public const string AirportNotFound = "Аэропорт не найден.";
+        public const string AirportCodeExists = "Аэропорт с таким кодом уже существует.";
+        public const string AirportIcaoCodeExists = "Аэропорт с таким ICAO кодом уже существует.";
+
+        // Чартер
+        public const string CharterNotFound = "Чартер не найден.";
+        public const string CharterExists = "Такой чартер уже существует.";
+        public const string DepartureCityNotFound = "Город вылета не найден.";
+        public const string ArrivalCityNotFound = "Город прилета не найден.";
+        public const string DepartureAirportNotFound = "Аэропорт вылета не найден.";
+        public const string ArrivalAirportNotFound = "Аэропорт прилета не найден.";
     }
 }

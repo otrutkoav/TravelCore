@@ -2,14 +2,15 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Contracts.Avia.Airports;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Avia;
+using TourCore.Application.Abstractions.Persistence.Geography;
+using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Avia.Airports.Commands;
 using TourCore.Application.Avia.Airports.Mappings;
 using TourCore.Application.Avia.Airports.Validators;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Contracts.Avia.Airports;
 
 namespace TourCore.Application.Avia.Airports.Handlers
 {
@@ -41,24 +42,31 @@ namespace TourCore.Application.Avia.Airports.Handlers
 
             var entity = await _airportRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Airport was not found.");
+                throw new NotFoundException(ErrorMessages.AirportNotFound, ErrorCode.AirportNotFound);
 
             var city = await _cityRepository.GetByIdAsync(command.CityId, cancellationToken);
             if (city == null)
-                throw new NotFoundException("City was not found.");
+                throw new NotFoundException(ErrorMessages.CityNotFound, ErrorCode.CityNotFound);
 
             var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
             if (await _airportRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
-                throw new ConflictException("Airport with same code already exists.");
+                throw new ConflictException(ErrorMessages.AirportCodeExists, ErrorCode.AirportCodeExists);
+
+            string normalizedIcaoCode = null;
 
             if (!string.IsNullOrWhiteSpace(command.IcaoCode))
             {
-                var normalizedIcaoCode = command.IcaoCode.Trim().ToUpperInvariant();
+                normalizedIcaoCode = command.IcaoCode.Trim().ToUpperInvariant();
 
                 if (await _airportRepository.ExistsByIcaoCodeAsync(normalizedIcaoCode, command.Id, cancellationToken))
-                    throw new ConflictException("Airport with same ICAO code already exists.");
+                    throw new ConflictException(ErrorMessages.AirportIcaoCodeExists, ErrorCode.AirportIcaoCodeExists);
             }
+
+            string normalizedLetterCode = null;
+
+            if (!string.IsNullOrWhiteSpace(command.LetterCode))
+                normalizedLetterCode = command.LetterCode.Trim().ToUpperInvariant();
 
             entity.Update(
                 command.CityId,
@@ -66,8 +74,8 @@ namespace TourCore.Application.Avia.Airports.Handlers
                 command.Name,
                 _dateTimeProvider.UtcNow,
                 command.NameEn,
-                command.IcaoCode,
-                command.LetterCode);
+                normalizedIcaoCode,
+                normalizedLetterCode);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

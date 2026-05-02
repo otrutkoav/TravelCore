@@ -34,6 +34,7 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
         public DbSet<AirClass> AirClasses { get; set; }
         public DbSet<Aircraft> Aircrafts { get; set; }
         public DbSet<Airline> Airlines { get; set; }
+        public DbSet<Airport> Airports { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -53,6 +54,7 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
             modelBuilder.Configurations.Add(new AirClassConfiguration());
             modelBuilder.Configurations.Add(new AircraftConfiguration());
             modelBuilder.Configurations.Add(new AirlineConfiguration());
+            modelBuilder.Configurations.Add(new AirportConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

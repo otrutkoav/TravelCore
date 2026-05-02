@@ -21,6 +21,10 @@ using TourCore.Application.Avia.Airlines.Commands;
 using TourCore.Application.Avia.Airlines.Handlers;
 using TourCore.Application.Avia.Airlines.Queries;
 using TourCore.Application.Avia.Airlines.Validators;
+using TourCore.Application.Avia.Airports.Commands;
+using TourCore.Application.Avia.Airports.Handlers;
+using TourCore.Application.Avia.Airports.Queries;
+using TourCore.Application.Avia.Airports.Validators;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Finance.Rates.Commands;
 using TourCore.Application.Finance.Rates.Handlers;
@@ -65,6 +69,7 @@ using TourCore.Application.Hotels.RoomTypes.Validators;
 using TourCore.Contracts.Avia.AirClasses;
 using TourCore.Contracts.Avia.Aircrafts;
 using TourCore.Contracts.Avia.Airlines;
+using TourCore.Contracts.Avia.Airports;
 using TourCore.Contracts.Finance.Rates;
 using TourCore.Contracts.Finance.RealCourses;
 using TourCore.Contracts.Geography.Cities;
@@ -157,6 +162,10 @@ namespace TourCore.Api.Legacy
             // Airline validators
             container.RegisterType<CreateAirlineCommandValidator>();
             container.RegisterType<UpdateAirlineCommandValidator>();
+
+            // Airport validators
+            container.RegisterType<CreateAirportCommandValidator>();
+            container.RegisterType<UpdateAirportCommandValidator>();
 
             #endregion
 
@@ -279,6 +288,15 @@ namespace TourCore.Api.Legacy
                 ICommandHandler<UpdateAirlineCommand, AirlineDto>,
                 UpdateAirlineHandler>();
 
+            // Airport commands
+            container.RegisterType<
+                ICommandHandler<CreateAirportCommand, AirportDto>,
+                CreateAirportHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateAirportCommand, AirportDto>,
+                UpdateAirportHandler>();
+
             #endregion
 
             #region Queries
@@ -400,6 +418,15 @@ namespace TourCore.Api.Legacy
                 IQueryHandler<GetAirlineByIdQuery, AirlineDto>,
                 GetAirlineByIdHandler>();
 
+            // Airport queries
+            container.RegisterType<
+                IQueryHandler<GetAirportsQuery, ListResult<AirportListItemDto>>,
+                GetAirportsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetAirportByIdQuery, AirportDto>,
+                GetAirportByIdHandler>();
+
             #endregion
 
             #region Persistence
@@ -448,6 +475,9 @@ namespace TourCore.Api.Legacy
                 new HierarchicalLifetimeManager());
 
             container.RegisterType<IAirlineRepository, AirlineRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IAirportRepository, AirportRepository>(
                 new HierarchicalLifetimeManager());
 
             #endregion

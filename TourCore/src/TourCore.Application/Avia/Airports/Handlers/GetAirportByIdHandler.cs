@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.Airports.Mappings;
 using TourCore.Application.Avia.Airports.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Avia.Airports.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Avia.Airports.Handlers
         {
             var entity = await _airportRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Airport was not found.");
+                throw new NotFoundException(ErrorMessages.AirportNotFound, ErrorCode.AirportNotFound);
 
             return entity.ToDto();
         }
