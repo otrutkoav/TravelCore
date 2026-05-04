@@ -1,5 +1,4 @@
 ﻿using System;
-using TourCore.Domain.Common.ValueObjects;
 
 namespace TourCore.Application.Bus.BusSchedules.Commands
 {

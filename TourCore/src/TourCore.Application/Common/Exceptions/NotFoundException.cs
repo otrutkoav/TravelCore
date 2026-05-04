@@ -1,20 +1,17 @@
-﻿using System;
+﻿using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Common.Exceptions
 {
-    public class NotFoundException : Exception
+    public class NotFoundException : ApplicationExceptionBase
     {
-        public string Code { get; }
-
         public NotFoundException(string message)
-            : base(message)
+            : base(message, ErrorCode.NotFound)
         {
         }
 
         public NotFoundException(string message, string code)
-            : base(message)
+            : base(message, code)
         {
-            Code = code;
         }
     }
 }

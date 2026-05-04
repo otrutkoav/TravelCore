@@ -94,7 +94,74 @@ namespace TourCore.Api.Legacy
                         // By default, this will be controller name but you can use the "GroupActionsBy" option to
                         // override with any value.
                         //
-                        //c.GroupActionsBy(apiDesc => apiDesc.HttpMethod.ToString());
+                        c.GroupActionsBy(apiDesc =>
+                        {
+                            var controller = apiDesc.ActionDescriptor.ControllerDescriptor.ControllerName;
+
+                            switch (controller)
+                            {
+                                // Geography
+                                case "Countries":
+                                    return "01. Geography / Countries";
+                                case "Cities":
+                                    return "01. Geography / Cities";
+                                case "Regions":
+                                    return "01. Geography / Regions";
+                                case "Resorts":
+                                    return "01. Geography / Resorts";
+
+                                // Aviation
+                                case "AirClasses":
+                                    return "02. Aviation / Air Classes";
+                                case "Aircrafts":
+                                    return "02. Aviation / Aircrafts";
+                                case "Airlines":
+                                    return "02. Aviation / Airlines";
+                                case "Airports":
+                                    return "02. Aviation / Airports";
+                                case "Charters":
+                                    return "02. Aviation / Charters";
+                                case "CharterSeasons":
+                                    return "02. Aviation / Charter Seasons";
+
+                                // Bus
+                                case "BusSchedules":
+                                    return "03. Bus / Schedules";
+                                case "BusTransferPoints":
+                                    return "03. Bus / Transfer Points";
+                                case "BusTransfers":
+                                    return "03. Bus / Transfers";
+
+                                // Railway
+                                case "RailwayTransfers":
+                                    return "04. Railway / Transfers";
+
+                                // Hotels
+                                case "HotelCategories":
+                                    return "05. Hotels / Hotel Categories";
+                                case "RoomCategories":
+                                    return "05. Hotels / Room Categories";
+                                case "RoomTypes":
+                                    return "05. Hotels / Room Types";
+                                case "MealTypes":
+                                    return "05. Hotels / Meal Types";
+
+                                // Finance
+                                case "Rates":
+                                    return "06. Finance / Rates";
+                                case "RealCourses":
+                                    return "06. Finance / Real Courses";
+
+                                // System
+                                case "Values":
+                                    return "99. System / Values";
+                                case "Home":
+                                    return "99. System / Home";
+
+                                default:
+                                    return controller;
+                            }
+                        });
 
                         // You can also specify a custom sort order for groups (as defined by "GroupActionsBy") to dictate
                         // the order in which operations are listed. For example, if the default grouping is in place

@@ -1,9 +1,12 @@
 ﻿#pragma warning disable 1591
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
+using TourCore.Api.Legacy.Models;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Domain.Common.Exceptions;
 
@@ -23,9 +26,9 @@ namespace TourCore.Api.Legacy.Filters
                 context.Response = CreateResponse(
                     context,
                     HttpStatusCode.BadRequest,
-                    "validation_error",
-                    "Ошибка валидации.",
-                    validationException.Errors);
+                    validationException.Code,
+                    validationException.Message,
+                    MapValidationErrors(validationException.Errors));
 
                 return;
             }
@@ -35,7 +38,7 @@ namespace TourCore.Api.Legacy.Filters
                 context.Response = CreateResponse(
                     context,
                     HttpStatusCode.NotFound,
-                    notFoundException.Code ?? "not_found",
+                    notFoundException.Code,
                     notFoundException.Message);
 
                 return;
@@ -57,7 +60,7 @@ namespace TourCore.Api.Legacy.Filters
                 context.Response = CreateResponse(
                     context,
                     HttpStatusCode.BadRequest,
-                    "domain_error",
+                    ErrorCode.DomainError,
                     exception.Message);
 
                 return;
@@ -66,8 +69,8 @@ namespace TourCore.Api.Legacy.Filters
             context.Response = CreateResponse(
                 context,
                 HttpStatusCode.InternalServerError,
-                "internal_error",
-                "Внутренняя ошибка сервера.");
+                ErrorCode.InternalError,
+                ErrorMessages.InternalError);
         }
 
         private static HttpResponseMessage CreateResponse(
@@ -85,6 +88,22 @@ namespace TourCore.Api.Legacy.Filters
             };
 
             return context.Request.CreateResponse(statusCode, error);
+        }
+
+        private static object MapValidationErrors(IReadOnlyDictionary<string, string[]> errors)
+        {
+            if (errors == null)
+                return null;
+
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value
+                    .Select(code => new ValidationErrorItem
+                    {
+                        Code = code,
+                        Message = ValidationErrorMessageResolver.Resolve(code)
+                    })
+                    .ToArray());
         }
     }
 

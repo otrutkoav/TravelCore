@@ -1,15 +1,17 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Contracts.Bus.BusTransfers;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Bus;
+using TourCore.Application.Abstractions.Persistence.Geography;
+using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Bus.BusTransfers.Commands;
 using TourCore.Application.Bus.BusTransfers.Mappings;
 using TourCore.Application.Bus.BusTransfers.Validators;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Contracts.Bus.BusTransfers;
 
 namespace TourCore.Application.Bus.BusTransfers.Handlers
 {
@@ -44,29 +46,39 @@ namespace TourCore.Application.Bus.BusTransfers.Handlers
 
             var entity = await _busTransferRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Bus transfer was not found.");
+                throw new NotFoundException(ErrorMessages.BusTransferNotFound, ErrorCode.BusTransferNotFound);
 
             var countryFrom = await _countryRepository.GetByIdAsync(command.CountryFromId, cancellationToken);
             if (countryFrom == null)
-                throw new NotFoundException("Departure country was not found.");
+                throw new NotFoundException(ErrorMessages.DepartureCountryNotFound, ErrorCode.DepartureCountryNotFound);
 
             var cityFrom = await _cityRepository.GetByIdAsync(command.CityFromId, cancellationToken);
             if (cityFrom == null)
-                throw new NotFoundException("Departure city was not found.");
+                throw new NotFoundException(ErrorMessages.DepartureCityNotFound, ErrorCode.DepartureCityNotFound);
 
             var countryTo = await _countryRepository.GetByIdAsync(command.CountryToId, cancellationToken);
             if (countryTo == null)
-                throw new NotFoundException("Arrival country was not found.");
+                throw new NotFoundException(ErrorMessages.ArrivalCountryNotFound, ErrorCode.ArrivalCountryNotFound);
 
             var cityTo = await _cityRepository.GetByIdAsync(command.CityToId, cancellationToken);
             if (cityTo == null)
-                throw new NotFoundException("Arrival city was not found.");
+                throw new NotFoundException(ErrorMessages.ArrivalCityNotFound, ErrorCode.ArrivalCityNotFound);
 
             if (cityFrom.CountryId != command.CountryFromId)
-                throw new ValidationException(new[] { "Departure city must belong to the selected departure country." });
+            {
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "CityFromId", new[] { ErrorCode.DepartureCityCountryMismatch } }
+                });
+            }
 
             if (cityTo.CountryId != command.CountryToId)
-                throw new ValidationException(new[] { "Arrival city must belong to the selected arrival country." });
+            {
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "CityToId", new[] { ErrorCode.ArrivalCityCountryMismatch } }
+                });
+            }
 
             entity.Update(
                 command.Name,

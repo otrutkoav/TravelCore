@@ -2,14 +2,15 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Contracts.Avia.CharterSeasons;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Domain.Common.ValueObjects;
 using TourCore.Application.Abstractions.Persistence.Avia;
+using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Avia.CharterSeasons.Commands;
 using TourCore.Application.Avia.CharterSeasons.Mappings;
 using TourCore.Application.Avia.CharterSeasons.Validators;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Contracts.Avia.CharterSeasons;
+using TourCore.Domain.Common.ValueObjects;
 
 namespace TourCore.Application.Avia.CharterSeasons.Handlers
 {
@@ -41,11 +42,11 @@ namespace TourCore.Application.Avia.CharterSeasons.Handlers
 
             var entity = await _charterSeasonRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Charter season was not found.");
+                throw new NotFoundException(ErrorMessages.CharterSeasonNotFound, ErrorCode.CharterSeasonNotFound);
 
             var charter = await _charterRepository.GetByIdAsync(command.CharterId, cancellationToken);
             if (charter == null)
-                throw new NotFoundException("Charter was not found.");
+                throw new NotFoundException(ErrorMessages.CharterNotFound, ErrorCode.CharterNotFound);
 
             entity.Update(
                 command.CharterId,

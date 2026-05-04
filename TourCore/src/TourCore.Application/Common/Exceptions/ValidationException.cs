@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Common.Exceptions
 {
-    public class ValidationException : Exception
+    public class ValidationException : ApplicationExceptionBase
     {
         public IReadOnlyDictionary<string, string[]> Errors { get; }
 
         public ValidationException(string message)
-            : base(message)
+            : base(ErrorMessages.ValidationError, ErrorCode.ValidationError)
         {
             Errors = new Dictionary<string, string[]>
             {
@@ -18,7 +18,7 @@ namespace TourCore.Application.Common.Exceptions
         }
 
         public ValidationException(IEnumerable<string> errors)
-            : base("Validation failed.")
+            : base(ErrorMessages.ValidationError, ErrorCode.ValidationError)
         {
             Errors = new Dictionary<string, string[]>
             {
@@ -27,7 +27,7 @@ namespace TourCore.Application.Common.Exceptions
         }
 
         public ValidationException(IReadOnlyDictionary<string, string[]> errors)
-            : base("Validation failed.")
+            : base(ErrorMessages.ValidationError, ErrorCode.ValidationError)
         {
             Errors = errors ?? new Dictionary<string, string[]>();
         }

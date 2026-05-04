@@ -1,16 +1,18 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Railway.RailwayTransfers;
-using TourCore.Domain.Railway.Entities;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Railway;
+using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Railway.RailwayTransfers.Commands;
 using TourCore.Application.Railway.RailwayTransfers.Mappings;
 using TourCore.Application.Railway.RailwayTransfers.Validators;
+using TourCore.Contracts.Railway.RailwayTransfers;
+using TourCore.Domain.Railway.Entities;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Railway.RailwayTransfers.Handlers
 {
@@ -44,22 +46,28 @@ namespace TourCore.Application.Railway.RailwayTransfers.Handlers
             _validator.ValidateAndThrow(command);
 
             var countryFrom = await _countryRepository.GetByIdAsync(command.CountryFromId, cancellationToken)
-                ?? throw new NotFoundException("Departure country not found.");
+                ?? throw new NotFoundException(ErrorMessages.DepartureCountryNotFound, ErrorCode.DepartureCountryNotFound);
 
             var cityFrom = await _cityRepository.GetByIdAsync(command.CityFromId, cancellationToken)
-                ?? throw new NotFoundException("Departure city not found.");
+                ?? throw new NotFoundException(ErrorMessages.DepartureCityNotFound, ErrorCode.DepartureCityNotFound);
 
             var countryTo = await _countryRepository.GetByIdAsync(command.CountryToId, cancellationToken)
-                ?? throw new NotFoundException("Arrival country not found.");
+                ?? throw new NotFoundException(ErrorMessages.ArrivalCountryNotFound, ErrorCode.ArrivalCountryNotFound);
 
             var cityTo = await _cityRepository.GetByIdAsync(command.CityToId, cancellationToken)
-                ?? throw new NotFoundException("Arrival city not found.");
+                ?? throw new NotFoundException(ErrorMessages.ArrivalCityNotFound, ErrorCode.ArrivalCityNotFound);
 
             if (cityFrom.CountryId != command.CountryFromId)
-                throw new ValidationException(new[] { "CityFrom must belong to CountryFrom." });
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "CityFromId", new[] { ErrorCode.DepartureCityCountryMismatch } }
+                });
 
             if (cityTo.CountryId != command.CountryToId)
-                throw new ValidationException(new[] { "CityTo must belong to CountryTo." });
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "CityToId", new[] { ErrorCode.ArrivalCityCountryMismatch } }
+                });
 
             var entity = new RailwayTransfer(
                 command.Name,

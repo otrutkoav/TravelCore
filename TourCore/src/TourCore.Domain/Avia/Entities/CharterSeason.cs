@@ -16,7 +16,13 @@ namespace TourCore.Domain.Avia.Entities
         public DateTime? DateFrom { get; protected set; }
         public DateTime? DateTo { get; protected set; }
 
-        public DaysOfWeek DaysOfWeek { get; protected set; }
+        public string DaysOfWeekValue { get; protected set; }
+
+        public DaysOfWeek DaysOfWeek
+        {
+            get { return DaysOfWeek.FromLegacy(DaysOfWeekValue); }
+            protected set { DaysOfWeekValue = value == null ? null : value.ToLegacy(); }
+        }
 
         public DateTime? TimeFrom { get; protected set; }
         public DateTime? TimeTo { get; protected set; }

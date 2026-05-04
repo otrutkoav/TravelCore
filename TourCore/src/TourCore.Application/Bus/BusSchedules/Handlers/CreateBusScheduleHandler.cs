@@ -42,7 +42,7 @@ namespace TourCore.Application.Bus.BusSchedules.Handlers
 
             var busTransfer = await _busTransferRepository.GetByIdAsync(command.BusTransferId, cancellationToken);
             if (busTransfer == null)
-                throw new NotFoundException("Bus transfer was not found.");
+                throw new NotFoundException(ErrorMessages.BusTransferNotFound, ErrorCode.BusTransferNotFound);
 
             var entity = new BusSchedule(
                 command.BusTransferId,

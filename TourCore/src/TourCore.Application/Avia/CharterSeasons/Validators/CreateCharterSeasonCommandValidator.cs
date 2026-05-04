@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TourCore.Application.Avia.CharterSeasons.Commands;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 
 namespace TourCore.Application.Avia.CharterSeasons.Validators
@@ -9,34 +11,72 @@ namespace TourCore.Application.Avia.CharterSeasons.Validators
         public void ValidateAndThrow(CreateCharterSeasonCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateCharterSeasonCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateCharterSeasonCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
-            if (command.CharterId <= 0)
-                errors.Add("CharterId must be greater than 0.");
+            ValidateCommon(
+                command.CharterId,
+                command.DateFrom,
+                command.DateTo,
+                command.Remark,
+                errors);
 
-            if (command.DateFrom.HasValue &&
-                command.DateTo.HasValue &&
-                command.DateFrom.Value.Date > command.DateTo.Value.Date)
+            return ToResult(errors);
+        }
+
+        internal static void ValidateCommon(
+            int charterId,
+            System.DateTime? dateFrom,
+            System.DateTime? dateTo,
+            string remark,
+            IDictionary<string, List<string>> errors)
+        {
+            if (charterId <= 0)
+                AddError(errors, "CharterId", ErrorCode.GreaterThanZero);
+
+            if (dateFrom.HasValue &&
+                dateTo.HasValue &&
+                dateFrom.Value.Date > dateTo.Value.Date)
             {
-                errors.Add("DateFrom cannot be greater than DateTo.");
+                AddError(errors, "DateFrom", ErrorCode.DateRangeInvalid);
             }
 
-            if (!string.IsNullOrWhiteSpace(command.Remark) && command.Remark.Trim().Length > 20)
-                errors.Add("Remark must be 20 characters or less.");
+            if (!string.IsNullOrWhiteSpace(remark) &&
+                remark.Trim().Length > 20)
+            {
+                AddError(errors, "Remark", ErrorCode.MaxLength);
+            }
+        }
 
-            return errors;
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

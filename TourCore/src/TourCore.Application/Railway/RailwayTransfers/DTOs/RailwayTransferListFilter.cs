@@ -2,6 +2,8 @@
 {
     public class RailwayTransferListFilter
     {
+        public string Search { get; set; }
+
         public int? CountryFromId { get; set; }
         public int? CityFromId { get; set; }
 

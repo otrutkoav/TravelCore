@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TourCore.Application.Avia.Charters.Commands;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 
 namespace TourCore.Application.Avia.Charters.Validators
@@ -9,60 +11,125 @@ namespace TourCore.Application.Avia.Charters.Validators
         public void ValidateAndThrow(CreateCharterCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateCharterCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateCharterCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
-            if (command.DepartureCityId <= 0)
-                errors.Add("DepartureCityId must be greater than 0.");
+            ValidateCommon(
+                command.DepartureCityId,
+                command.ArrivalCityId,
+                command.DepartureAirportCode,
+                command.ArrivalAirportCode,
+                command.FlightNumber,
+                command.AirlineCode,
+                command.AircraftCode,
+                command.AirClassCode,
+                command.StopsCount,
+                command.TimeChangesCode,
+                errors);
 
-            if (command.ArrivalCityId <= 0)
-                errors.Add("ArrivalCityId must be greater than 0.");
+            return ToResult(errors);
+        }
 
-            if (command.DepartureCityId > 0 &&
-                command.ArrivalCityId > 0 &&
-                command.DepartureCityId == command.ArrivalCityId)
+        internal static void ValidateCommon(
+            int departureCityId,
+            int arrivalCityId,
+            string departureAirportCode,
+            string arrivalAirportCode,
+            string flightNumber,
+            string airlineCode,
+            string aircraftCode,
+            string airClassCode,
+            short? stopsCount,
+            string timeChangesCode,
+            IDictionary<string, List<string>> errors)
+        {
+            if (departureCityId <= 0)
+                AddError(errors, "DepartureCityId", ErrorCode.GreaterThanZero);
+
+            if (arrivalCityId <= 0)
+                AddError(errors, "ArrivalCityId", ErrorCode.GreaterThanZero);
+
+            if (departureCityId > 0 &&
+                arrivalCityId > 0 &&
+                departureCityId == arrivalCityId)
             {
-                errors.Add("DepartureCityId and ArrivalCityId must be different.");
+                AddError(errors, "ArrivalCityId", ErrorCode.SameCities);
             }
 
-            if (!string.IsNullOrWhiteSpace(command.DepartureAirportCode) && command.DepartureAirportCode.Trim().Length > 4)
-                errors.Add("DepartureAirportCode must be 4 characters or less.");
+            if (!string.IsNullOrWhiteSpace(departureAirportCode) &&
+                departureAirportCode.Trim().Length > 4)
+            {
+                AddError(errors, "DepartureAirportCode", ErrorCode.MaxLength);
+            }
 
-            if (!string.IsNullOrWhiteSpace(command.ArrivalAirportCode) && command.ArrivalAirportCode.Trim().Length > 4)
-                errors.Add("ArrivalAirportCode must be 4 characters or less.");
+            if (!string.IsNullOrWhiteSpace(arrivalAirportCode) &&
+                arrivalAirportCode.Trim().Length > 4)
+            {
+                AddError(errors, "ArrivalAirportCode", ErrorCode.MaxLength);
+            }
 
-            if (string.IsNullOrWhiteSpace(command.FlightNumber))
-                errors.Add("FlightNumber is required.");
-            else if (command.FlightNumber.Trim().Length > 4)
-                errors.Add("FlightNumber must be 4 characters or less.");
+            if (string.IsNullOrWhiteSpace(flightNumber))
+                AddError(errors, "FlightNumber", ErrorCode.Required);
+            else if (flightNumber.Trim().Length > 4)
+                AddError(errors, "FlightNumber", ErrorCode.MaxLength);
 
-            if (!string.IsNullOrWhiteSpace(command.AirlineCode) && command.AirlineCode.Trim().Length > 3)
-                errors.Add("AirlineCode must be 3 characters or less.");
+            if (!string.IsNullOrWhiteSpace(airlineCode) &&
+                airlineCode.Trim().Length > 3)
+            {
+                AddError(errors, "AirlineCode", ErrorCode.MaxLength);
+            }
 
-            if (!string.IsNullOrWhiteSpace(command.AircraftCode) && command.AircraftCode.Trim().Length > 3)
-                errors.Add("AircraftCode must be 3 characters or less.");
+            if (!string.IsNullOrWhiteSpace(aircraftCode) &&
+                aircraftCode.Trim().Length > 3)
+            {
+                AddError(errors, "AircraftCode", ErrorCode.MaxLength);
+            }
 
-            if (!string.IsNullOrWhiteSpace(command.AirClassCode) && command.AirClassCode.Trim().Length > 10)
-                errors.Add("AirClassCode must be 10 characters or less.");
+            if (!string.IsNullOrWhiteSpace(airClassCode) &&
+                airClassCode.Trim().Length > 10)
+            {
+                AddError(errors, "AirClassCode", ErrorCode.MaxLength);
+            }
 
-            if (command.StopsCount.HasValue && command.StopsCount.Value < 0)
-                errors.Add("StopsCount cannot be negative.");
+            if (stopsCount.HasValue && stopsCount.Value < 0)
+                AddError(errors, "StopsCount", ErrorCode.Negative);
 
-            if (!string.IsNullOrWhiteSpace(command.TimeChangesCode) && command.TimeChangesCode.Trim().Length > 1)
-                errors.Add("TimeChangesCode must be 1 character or less.");
+            if (!string.IsNullOrWhiteSpace(timeChangesCode) &&
+                timeChangesCode.Trim().Length > 1)
+            {
+                AddError(errors, "TimeChangesCode", ErrorCode.MaxLength);
+            }
+        }
 
-            return errors;
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

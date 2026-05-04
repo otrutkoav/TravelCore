@@ -22,7 +22,7 @@ namespace TourCore.Application.Bus.BusSchedules.Handlers
         {
             var entity = await _busScheduleRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Bus schedule was not found.");
+                throw new NotFoundException(ErrorMessages.BusScheduleNotFound, ErrorCode.BusScheduleNotFound);
 
             return entity.ToDto();
         }

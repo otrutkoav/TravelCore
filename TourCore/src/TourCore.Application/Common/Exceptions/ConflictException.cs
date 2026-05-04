@@ -1,9 +1,11 @@
-﻿namespace TourCore.Application.Common.Exceptions
+﻿using TourCore.Application.Common.Errors;
+
+namespace TourCore.Application.Common.Exceptions
 {
     public class ConflictException : ApplicationExceptionBase
     {
         public ConflictException(string message)
-            : base(message, "conflict")
+            : base(message, ErrorCode.Conflict)
         {
         }
 

@@ -41,11 +41,11 @@ namespace TourCore.Application.Bus.BusSchedules.Handlers
 
             var entity = await _busScheduleRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Bus schedule was not found.");
+                throw new NotFoundException(ErrorMessages.BusScheduleNotFound, ErrorCode.BusScheduleNotFound);
 
             var busTransfer = await _busTransferRepository.GetByIdAsync(command.BusTransferId, cancellationToken);
             if (busTransfer == null)
-                throw new NotFoundException("Bus transfer was not found.");
+                throw new NotFoundException(ErrorMessages.BusTransferNotFound, ErrorCode.BusTransferNotFound);
 
             entity.Update(
                 command.BusTransferId,

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TourCore.Application.Avia.CharterSeasons.Commands;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 
 namespace TourCore.Application.Avia.CharterSeasons.Validators
@@ -9,28 +11,51 @@ namespace TourCore.Application.Avia.CharterSeasons.Validators
         public void ValidateAndThrow(UpdateCharterSeasonCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateCharterSeasonCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateCharterSeasonCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
-            var createValidator = new CreateCharterSeasonCommandValidator();
-            foreach (var error in createValidator.Validate(command))
-                errors.Add(error);
+            CreateCharterSeasonCommandValidator.ValidateCommon(
+                command.CharterId,
+                command.DateFrom,
+                command.DateTo,
+                command.Remark,
+                errors);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

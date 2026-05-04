@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Contracts.Avia.CharterSeasons;
-using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Avia.CharterSeasons.Mappings;
 using TourCore.Application.Avia.CharterSeasons.Queries;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Contracts.Avia.CharterSeasons;
 
 namespace TourCore.Application.Avia.CharterSeasons.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Avia.CharterSeasons.Handlers
         {
             var entity = await _charterSeasonRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Charter season was not found.");
+                throw new NotFoundException(ErrorMessages.CharterNotFound, ErrorCode.CharterNotFound);
 
             return entity.ToDto();
         }

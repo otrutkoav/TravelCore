@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TourCore.Application.Bus.BusSchedules.Commands;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 
 namespace TourCore.Application.Bus.BusSchedules.Validators
@@ -9,37 +11,57 @@ namespace TourCore.Application.Bus.BusSchedules.Validators
         public void ValidateAndThrow(UpdateBusScheduleCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateBusScheduleCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateBusScheduleCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
             if (command.BusTransferId <= 0)
-                errors.Add("BusTransferId must be greater than 0.");
+                AddError(errors, "BusTransferId", ErrorCode.GreaterThanZero);
 
             if (command.DateFrom.HasValue &&
                 command.DateTo.HasValue &&
                 command.DateFrom.Value.Date > command.DateTo.Value.Date)
             {
-                errors.Add("DateFrom cannot be greater than DateTo.");
+                AddError(errors, "DateFrom", ErrorCode.DateRangeInvalid);
             }
 
             if (command.DaysOnRoad.HasValue && command.DaysOnRoad.Value < 0)
-                errors.Add("DaysOnRoad cannot be negative.");
+                AddError(errors, "DaysOnRoad", ErrorCode.Negative);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

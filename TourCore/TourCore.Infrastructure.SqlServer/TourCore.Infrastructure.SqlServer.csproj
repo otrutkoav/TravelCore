@@ -102,6 +102,11 @@
     <Compile Include="Configurations\Avia\AircraftConfiguration.cs" />
     <Compile Include="Configurations\Avia\AirlineConfiguration.cs" />
     <Compile Include="Configurations\Avia\AirportConfiguration.cs" />
+    <Compile Include="Configurations\Avia\CharterConfiguration.cs" />
+    <Compile Include="Configurations\Avia\CharterSeasonConfiguration.cs" />
+    <Compile Include="Configurations\Bus\BusScheduleConfiguration.cs" />
+    <Compile Include="Configurations\Bus\BusTransferConfiguration.cs" />
+    <Compile Include="Configurations\Bus\BusTransferPointConfiguration.cs" />
     <Compile Include="Configurations\Finance\RateConfiguration.cs" />
     <Compile Include="Configurations\Finance\RealCourseConfiguration.cs" />
     <Compile Include="Configurations\Geography\CityConfiguration.cs" />
@@ -112,6 +117,7 @@
     <Compile Include="Configurations\Geography\ResortConfiguration.cs" />
     <Compile Include="Configurations\Hotels\RoomCategoryConfiguration.cs" />
     <Compile Include="Configurations\Hotels\RoomTypeConfiguration.cs" />
+    <Compile Include="Configurations\Railway\RailwayTransferConfiguration.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.designer.cs">
       <DependentUpon>202604251137439_InitialCreate.cs</DependentUpon>
@@ -168,11 +174,40 @@
     <Compile Include="Migrations\202605021558321_AddAirports.designer.cs">
       <DependentUpon>202605021558321_AddAirports.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605040739275_AddCharters.cs" />
+    <Compile Include="Migrations\202605040739275_AddCharters.Designer.cs">
+      <DependentUpon>202605040739275_AddCharters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605040927440_AddCharterSeasons.cs" />
+    <Compile Include="Migrations\202605040927440_AddCharterSeasons.Designer.cs">
+      <DependentUpon>202605040927440_AddCharterSeasons.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605041201011_AddBusTransfers.cs" />
+    <Compile Include="Migrations\202605041201011_AddBusTransfers.Designer.cs">
+      <DependentUpon>202605041201011_AddBusTransfers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605041219327_AddBusTransferPoints.cs" />
+    <Compile Include="Migrations\202605041219327_AddBusTransferPoints.Designer.cs">
+      <DependentUpon>202605041219327_AddBusTransferPoints.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605041241059_AddBusSchedules.cs" />
+    <Compile Include="Migrations\202605041241059_AddBusSchedules.Designer.cs">
+      <DependentUpon>202605041241059_AddBusSchedules.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605041318593_AddRailwayTransfers.cs" />
+    <Compile Include="Migrations\202605041318593_AddRailwayTransfers.Designer.cs">
+      <DependentUpon>202605041318593_AddRailwayTransfers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Persistence\Repositories\Avia\AirClassRepository.cs" />
     <Compile Include="Persistence\Repositories\Avia\AircraftRepository.cs" />
     <Compile Include="Persistence\Repositories\Avia\AirlineRepository.cs" />
     <Compile Include="Persistence\Repositories\Avia\AirportRepository.cs" />
+    <Compile Include="Persistence\Repositories\Avia\CharterRepository.cs" />
+    <Compile Include="Persistence\Repositories\Avia\CharterSeasonRepository.cs" />
+    <Compile Include="Persistence\Repositories\Bus\BusScheduleRepository.cs" />
+    <Compile Include="Persistence\Repositories\Bus\BusTransferPointRepository.cs" />
+    <Compile Include="Persistence\Repositories\Bus\BusTransferRepository.cs" />
     <Compile Include="Persistence\Repositories\Finance\RateRepository.cs" />
     <Compile Include="Persistence\Repositories\Finance\RealCourseRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\CityRepository.cs" />
@@ -183,6 +218,7 @@
     <Compile Include="Persistence\Repositories\Geography\ResortRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomCategoryRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomTypeRepository.cs" />
+    <Compile Include="Persistence\Repositories\Railway\RailwayTransferRepository.cs" />
     <Compile Include="Persistence\TourCoreDbContext.cs" />
     <Compile Include="Persistence\UnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -247,6 +283,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605021558321_AddAirports.resx">
       <DependentUpon>202605021558321_AddAirports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605040739275_AddCharters.resx">
+      <DependentUpon>202605040739275_AddCharters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605040927440_AddCharterSeasons.resx">
+      <DependentUpon>202605040927440_AddCharterSeasons.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605041201011_AddBusTransfers.resx">
+      <DependentUpon>202605041201011_AddBusTransfers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605041219327_AddBusTransferPoints.resx">
+      <DependentUpon>202605041219327_AddBusTransferPoints.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605041241059_AddBusSchedules.resx">
+      <DependentUpon>202605041241059_AddBusSchedules.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605041318593_AddRailwayTransfers.resx">
+      <DependentUpon>202605041318593_AddRailwayTransfers.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

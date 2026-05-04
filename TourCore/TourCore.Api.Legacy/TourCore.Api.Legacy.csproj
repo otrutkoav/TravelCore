@@ -159,11 +159,17 @@
     <Compile Include="Controllers\AircraftsController.cs" />
     <Compile Include="Controllers\AirlinesController.cs" />
     <Compile Include="Controllers\AirportsController.cs" />
+    <Compile Include="Controllers\BusSchedulesController.cs" />
+    <Compile Include="Controllers\BusTransferPointsController.cs" />
+    <Compile Include="Controllers\BusTransfersController.cs" />
+    <Compile Include="Controllers\ChartersController.cs" />
+    <Compile Include="Controllers\CharterSeasonsController.cs" />
     <Compile Include="Controllers\CitiesController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HotelCategoriesController.cs" />
     <Compile Include="Controllers\MealTypesController.cs" />
+    <Compile Include="Controllers\RailwayTransfersController.cs" />
     <Compile Include="Controllers\RatesController.cs" />
     <Compile Include="Controllers\RealCoursesController.cs" />
     <Compile Include="Controllers\RegionsController.cs" />
@@ -176,6 +182,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ApiErrorResponse.cs" />
+    <Compile Include="Models\ValidationErrorItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -194,10 +201,16 @@
     <Folder Include="Views\Aircrafts\" />
     <Folder Include="Views\Airlines\" />
     <Folder Include="Views\Airports\" />
+    <Folder Include="Views\BusSchedules\" />
+    <Folder Include="Views\BusTransferPoints\" />
+    <Folder Include="Views\BusTransfers\" />
+    <Folder Include="Views\CharterSeasons\" />
+    <Folder Include="Views\Charters\" />
     <Folder Include="Views\Cities\" />
     <Folder Include="Views\Countries\" />
     <Folder Include="Views\HotelCategories\" />
     <Folder Include="Views\MealTypes\" />
+    <Folder Include="Views\RailwayTransfers\" />
     <Folder Include="Views\Rates\" />
     <Folder Include="Views\RealCourses\" />
     <Folder Include="Views\Regions\" />

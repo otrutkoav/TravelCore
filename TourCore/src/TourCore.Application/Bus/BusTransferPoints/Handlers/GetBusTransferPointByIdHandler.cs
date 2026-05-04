@@ -22,7 +22,7 @@ namespace TourCore.Application.Bus.BusTransferPoints.Handlers
         {
             var entity = await _busTransferPointRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Bus transfer point was not found.");
+                throw new NotFoundException(ErrorMessages.BusTransferNotFound, ErrorCode.BusTransferNotFound);
 
             return entity.ToDto();
         }

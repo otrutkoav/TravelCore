@@ -22,7 +22,7 @@ namespace TourCore.Application.Railway.RailwayTransfers.Handlers
         {
             var entity = await _railwayTransferRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Railway transfer was not found.");
+                throw new NotFoundException(ErrorMessages.RailwayTransferNotFound, ErrorCode.RailwayTransferNotFound);
 
             return entity.ToDto();
         }
