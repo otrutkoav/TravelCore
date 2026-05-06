@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Finance.RealCourses.Commands;
 using TourCore.Application.Finance.RealCourses.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Finance.RealCourses;
 
 namespace TourCore.Api.Legacy.Controllers.Finance
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Finance
     {
         private readonly ICommandHandler<CreateRealCourseCommand, RealCourseDto> _createHandler;
         private readonly ICommandHandler<UpdateRealCourseCommand, RealCourseDto> _updateHandler;
-        private readonly IQueryHandler<GetRealCoursesQuery, ListResult<RealCourseListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetRealCoursesQuery, PagedResponseDto<RealCourseListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetRealCourseByIdQuery, RealCourseDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Finance
         public RealCoursesController(
             ICommandHandler<CreateRealCourseCommand, RealCourseDto> createHandler,
             ICommandHandler<UpdateRealCourseCommand, RealCourseDto> updateHandler,
-            IQueryHandler<GetRealCoursesQuery, ListResult<RealCourseListItemDto>> getListHandler,
+            IQueryHandler<GetRealCoursesQuery, PagedResponseDto<RealCourseListItemDto>> getListHandler,
             IQueryHandler<GetRealCourseByIdQuery, RealCourseDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,39 @@ namespace TourCore.Api.Legacy.Controllers.Finance
         /// Получить список курсов валют.
         /// </summary>
         /// <remarks>
-        /// Возвращает список курсов валют между расчетными единицами.
-        /// Используется в финансовом блоке, расчетах цен, пересчете валют и отображении стоимости.
+        /// Возвращает список курсов валют с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.fromRateCode — фильтр по коду исходной валюты.
+        /// - query.filter.toRateCode — фильтр по коду целевой валюты.
+        /// - query.filter.dateFrom — фильтр по началу периода действия курса.
+        /// - query.filter.dateTo — фильтр по концу периода действия курса.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - fromRateCode
+        /// - toRateCode
+        /// - course
+        /// - centralBankCourse
+        /// - dateBeg
+        /// - dateEnd
         /// </remarks>
-        /// <returns>Список курсов валют.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка курсов валют.</param>
+        /// <returns>Страница списка курсов валют.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetRealCoursesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetRealCoursesQuery(),
+                query ?? new GetRealCoursesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

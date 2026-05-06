@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Finance.Rates.Commands;
 using TourCore.Application.Finance.Rates.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Finance.Rates;
 
 namespace TourCore.Api.Legacy.Controllers.Finance
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Finance
     {
         private readonly ICommandHandler<CreateRateCommand, RateDto> _createHandler;
         private readonly ICommandHandler<UpdateRateCommand, RateDto> _updateHandler;
-        private readonly IQueryHandler<GetRatesQuery, ListResult<RateListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetRatesQuery, PagedResponseDto<RateListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetRateByIdQuery, RateDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Finance
         public RatesController(
             ICommandHandler<CreateRateCommand, RateDto> createHandler,
             ICommandHandler<UpdateRateCommand, RateDto> updateHandler,
-            IQueryHandler<GetRatesQuery, ListResult<RateListItemDto>> getListHandler,
+            IQueryHandler<GetRatesQuery, PagedResponseDto<RateListItemDto>> getListHandler,
             IQueryHandler<GetRateByIdQuery, RateDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,39 @@ namespace TourCore.Api.Legacy.Controllers.Finance
         /// Получить список валют.
         /// </summary>
         /// <remarks>
-        /// Возвращает список валют и расчетных единиц.
-        /// Используется в ценах, оплатах, курсах валют, фильтрах поиска и настройках финансового блока.
+        /// Возвращает список валют и расчетных единиц с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и ISO-коду валюты.
+        /// - query.filter.isMain — фильтр по признаку основной валюты.
+        /// - query.filter.isNational — фильтр по признаку национальной валюты.
+        /// - query.filter.showInSearch — фильтр по признаку отображения валюты в поиске.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - isoCode
+        /// - isMain
+        /// - isNational
+        /// - showInSearch
         /// </remarks>
-        /// <returns>Список валют.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка валют.</param>
+        /// <returns>Страница списка валют.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetRatesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetRatesQuery(),
+                query ?? new GetRatesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

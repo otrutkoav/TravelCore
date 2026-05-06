@@ -6,6 +6,7 @@ using TourCore.Contracts.Railway.TrainSchedules;
 using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Railway.TrainSchedules.Mapping;
 using TourCore.Application.Railway.TrainSchedules.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Railway.TrainSchedules.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Railway.TrainSchedules.Handlers
         {
             var entity = await _trainScheduleRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Train schedule was not found.");
+                throw new NotFoundException(ErrorMessages.TrainScheduleNotFound, ErrorCode.TrainScheduleNotFound);
 
             return entity.ToDto();
         }

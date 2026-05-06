@@ -1,0 +1,29 @@
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace TourCore.Application.Common.Queries
+{
+    public static class QueryableFilterExtensions
+    {
+        public static IQueryable<T> WhereIf<T>(
+            this IQueryable<T> query,
+            bool condition,
+            Expression<Func<T, bool>> predicate)
+        {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            return condition
+                ? query.Where(predicate)
+                : query;
+        }
+    }
+}

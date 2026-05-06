@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Data;
 using TourCore.Domain.Geography.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Geography
 {
-    public interface ICityRepository
+    public interface ICityRepository : IQueryableRepository<City>
     {
         Task<City> GetByIdAsync(int id, CancellationToken cancellationToken);
 

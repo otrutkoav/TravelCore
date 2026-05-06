@@ -11,6 +11,7 @@ using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Railway.TrainSchedules.Commands;
 using TourCore.Application.Railway.TrainSchedules.Mapping;
 using TourCore.Application.Railway.TrainSchedules.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Railway.TrainSchedules.Handlers
 {
@@ -42,7 +43,7 @@ namespace TourCore.Application.Railway.TrainSchedules.Handlers
 
             var railwayTransfer = await _railwayTransferRepository.GetByIdAsync(command.RailwayTransferId, cancellationToken);
             if (railwayTransfer == null)
-                throw new NotFoundException("Railway transfer was not found.");
+                throw new NotFoundException(ErrorMessages.RailwayTransferNotFound, ErrorCode.RailwayTransferNotFound);
 
             var entity = new TrainSchedule(
                 command.RailwayTransferId,

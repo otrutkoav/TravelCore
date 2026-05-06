@@ -1,71 +1,40 @@
 ﻿using System;
 using TourCore.Shared.Primitives;
 using TourCore.Domain.Common.Exceptions;
-using TourCore.Domain.Hotels.ValueObjects;
 
 namespace TourCore.Domain.Hotels.Entities
 {
     /// <summary>
     /// Тип размещения.
     /// Например: SGL, DBL, TRPL, EXB и т.п.
-    /// Содержит базовые данные и правила размещения на основных/дополнительных местах.
     /// </summary>
     public class AccommodationType : AuditableEntity
     {
-        /// <summary>
-        /// Код типа размещения.
-        /// </summary>
         public string Code { get; protected set; }
 
-        /// <summary>
-        /// Основное название типа размещения.
-        /// </summary>
         public string Name { get; protected set; }
 
-        /// <summary>
-        /// Альтернативное / латинское название типа размещения.
-        /// </summary>
         public string NameEn { get; protected set; }
 
-        /// <summary>
-        /// Признак, что это основной тип размещения.
-        /// </summary>
         public bool IsMain { get; protected set; }
 
-        /// <summary>
-        /// Общий возраст "от", если для типа размещения задано ограничение.
-        /// </summary>
         public short? AgeFrom { get; protected set; }
 
-        /// <summary>
-        /// Общий возраст "до", если для типа размещения задано ограничение.
-        /// </summary>
         public short? AgeTo { get; protected set; }
 
-        /// <summary>
-        /// Количество человек на номер / размещение.
-        /// </summary>
         public short? PerRoom { get; protected set; }
 
-        /// <summary>
-        /// Порядок сортировки.
-        /// </summary>
         public int SortOrder { get; protected set; }
 
-        /// <summary>
-        /// Описание типа размещения.
-        /// </summary>
         public string Description { get; protected set; }
 
-        /// <summary>
-        /// Правило для основных мест.
-        /// </summary>
-        public AccommodationPlacementRule MainPlacementRule { get; protected set; }
+        public int? MainPlacementRuleId { get; protected set; }
 
-        /// <summary>
-        /// Правило для дополнительных мест.
-        /// </summary>
-        public AccommodationPlacementRule ExtraPlacementRule { get; protected set; }
+        public virtual AccommodationPlacementRule MainPlacementRule { get; protected set; }
+
+        public int? ExtraPlacementRuleId { get; protected set; }
+
+        public virtual AccommodationPlacementRule ExtraPlacementRule { get; protected set; }
 
         protected AccommodationType()
         {
@@ -82,8 +51,8 @@ namespace TourCore.Domain.Hotels.Entities
             short? perRoom = null,
             int sortOrder = 0,
             string description = null,
-            AccommodationPlacementRule mainPlacementRule = null,
-            AccommodationPlacementRule extraPlacementRule = null)
+            int? mainPlacementRuleId = null,
+            int? extraPlacementRuleId = null)
         {
             SetName(name);
             SetCode(code);
@@ -93,8 +62,8 @@ namespace TourCore.Domain.Hotels.Entities
             SetPerRoom(perRoom);
             SetSortOrder(sortOrder);
             SetDescription(description);
-            SetMainPlacementRule(mainPlacementRule);
-            SetExtraPlacementRule(extraPlacementRule);
+            SetMainPlacementRuleId(mainPlacementRuleId);
+            SetExtraPlacementRuleId(extraPlacementRuleId);
 
             SetCreated(createdAt);
         }
@@ -110,8 +79,8 @@ namespace TourCore.Domain.Hotels.Entities
             short? perRoom = null,
             int sortOrder = 0,
             string description = null,
-            AccommodationPlacementRule mainPlacementRule = null,
-            AccommodationPlacementRule extraPlacementRule = null)
+            int? mainPlacementRuleId = null,
+            int? extraPlacementRuleId = null)
         {
             SetName(name);
             SetCode(code);
@@ -121,8 +90,8 @@ namespace TourCore.Domain.Hotels.Entities
             SetPerRoom(perRoom);
             SetSortOrder(sortOrder);
             SetDescription(description);
-            SetMainPlacementRule(mainPlacementRule);
-            SetExtraPlacementRule(extraPlacementRule);
+            SetMainPlacementRuleId(mainPlacementRuleId);
+            SetExtraPlacementRuleId(extraPlacementRuleId);
 
             SetUpdated(updatedAt);
         }
@@ -216,14 +185,20 @@ namespace TourCore.Domain.Hotels.Entities
             Description = description.Trim();
         }
 
-        private void SetMainPlacementRule(AccommodationPlacementRule mainPlacementRule)
+        private void SetMainPlacementRuleId(int? value)
         {
-            MainPlacementRule = mainPlacementRule;
+            if (value.HasValue && value.Value <= 0)
+                throw new DomainException("Accommodation type main placement rule id must be greater than zero.");
+
+            MainPlacementRuleId = value;
         }
 
-        private void SetExtraPlacementRule(AccommodationPlacementRule extraPlacementRule)
+        private void SetExtraPlacementRuleId(int? value)
         {
-            ExtraPlacementRule = extraPlacementRule;
+            if (value.HasValue && value.Value <= 0)
+                throw new DomainException("Accommodation type extra placement rule id must be greater than zero.");
+
+            ExtraPlacementRuleId = value;
         }
     }
 }

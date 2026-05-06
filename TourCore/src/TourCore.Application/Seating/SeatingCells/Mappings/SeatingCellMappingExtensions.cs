@@ -1,4 +1,5 @@
-﻿using TourCore.Application.Seating.SeatingCells.DTOs;
+﻿using TourCore.Contracts.Seating.Enum;
+using TourCore.Contracts.Seating.SeatingCells;
 using TourCore.Domain.Seating.Entities;
 
 namespace TourCore.Application.Seating.SeatingCells.Mappings
@@ -12,7 +13,9 @@ namespace TourCore.Application.Seating.SeatingCells.Mappings
                 Id = entity.Id,
                 VehiclePlanId = entity.VehiclePlanId,
                 Number = entity.Number,
-                Type = entity.Type,
+                Type = entity.Type.HasValue
+                    ? (TourCore.Contracts.Seating.Enum.SeatType?)entity.Type.Value
+                    : null,
                 SeatsCount = entity.SeatsCount,
                 Index = entity.Index,
                 Border = entity.Border,
@@ -28,8 +31,12 @@ namespace TourCore.Application.Seating.SeatingCells.Mappings
                 Id = entity.Id,
                 VehiclePlanId = entity.VehiclePlanId,
                 Number = entity.Number,
-                Type = entity.Type,
-                Index = entity.Index
+                Type = entity.Type.HasValue
+                    ? (TourCore.Contracts.Seating.Enum.SeatType?)entity.Type.Value
+                    : null,
+                SeatsCount = entity.SeatsCount,
+                Index = entity.Index,
+                Border = entity.Border
             };
         }
     }

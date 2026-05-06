@@ -1,9 +1,11 @@
 #pragma warning disable 1591
 
-using System.Web.Http;
-using WebActivatorEx;
-using TourCore.Api.Legacy;
 using Swashbuckle.Application;
+using System.Web.Http;
+using TourCore.Api.Legacy;
+using TourCore.Api.Legacy.Controllers;
+using WebActivatorEx;
+using System.IO;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -37,10 +39,25 @@ namespace TourCore.Api.Legacy
                         c.SingleApiVersion("v1", "TourCore.Api.Legacy");
 
                         var baseDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
-                        var commentsFileName = "TourCore.Api.Legacy.xml";
-                        var commentsFile = System.IO.Path.Combine(baseDirectory, "bin", commentsFileName);
+                        var binDirectory = Path.Combine(baseDirectory, "bin");
 
-                        c.IncludeXmlComments(commentsFile);
+                        var xmlComments = new[]
+                        {
+                            "TourCore.Api.Legacy.xml",
+                            "TourCore.Application.xml",
+                            "TourCore.Contracts.xml"
+                        };
+
+                        foreach (var xmlComment in xmlComments)
+                        {
+                            var xmlPath = Path.Combine(binDirectory, xmlComment);
+
+                            if (File.Exists(xmlPath))
+                            {
+                                c.IncludeXmlComments(xmlPath);
+                            }
+                        }
+
 
                         // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                         //
@@ -135,10 +152,18 @@ namespace TourCore.Api.Legacy
                                 // Railway
                                 case "RailwayTransfers":
                                     return "04. Railway / Transfers";
+                                case "TrainSchedules":
+                                    return "04. Railway / Schedules";
 
                                 // Hotels
+                                case "Hotels":
+                                    return "05. Hotels / Hotels";
                                 case "HotelCategories":
                                     return "05. Hotels / Hotel Categories";
+                                case "AccommodationPlacementRules":
+                                    return "05. Hotels / Accommodation Placement Rules";
+                                case "AccommodationTypes":
+                                    return "05. Hotels / Accommodation Types";
                                 case "RoomCategories":
                                     return "05. Hotels / Room Categories";
                                 case "RoomTypes":
@@ -146,11 +171,27 @@ namespace TourCore.Api.Legacy
                                 case "MealTypes":
                                     return "05. Hotels / Meal Types";
 
+                                // Transfers
+                                case "Transfers":
+                                    return "06. Transfers / Transfers";
+                                case "TransferDirections":
+                                    return "06. Transfers / Transfer Directions";
+
+                                // Transportation
+                                case "Transports":
+                                    return "07. Transportation / Transports";
+
+                                // SeatingCells and VehiclePlans
+                                case "SeatingCells":
+                                    return "08. Seatings / SeatingCells";
+                                case "VehiclePlans":
+                                    return "08. Seatings / VehiclePlans";
+
                                 // Finance
                                 case "Rates":
-                                    return "06. Finance / Rates";
+                                    return "09. Finance / Rates";
                                 case "RealCourses":
-                                    return "06. Finance / Real Courses";
+                                    return "09. Finance / Real Courses";
 
                                 // System
                                 case "Values":

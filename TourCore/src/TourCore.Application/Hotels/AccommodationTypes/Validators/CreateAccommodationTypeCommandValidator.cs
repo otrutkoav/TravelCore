@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Hotels.AccommodationTypes.Commands;
 
@@ -9,49 +11,79 @@ namespace TourCore.Application.Hotels.AccommodationTypes.Validators
         public void ValidateAndThrow(CreateAccommodationTypeCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateAccommodationTypeCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateAccommodationTypeCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (string.IsNullOrWhiteSpace(command.Code))
-                errors.Add("Code is required.");
+                AddError(errors, "Code", ErrorCode.Required);
             else if (command.Code.Trim().Length > 50)
-                errors.Add("Code must be 50 characters or less.");
+                AddError(errors, "Code", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 100)
-                errors.Add("Name must be 100 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 100)
-                errors.Add("NameEn must be 100 characters or less.");
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
 
             if (command.AgeFrom.HasValue && command.AgeFrom.Value < 0)
-                errors.Add("AgeFrom cannot be negative.");
+                AddError(errors, "AgeFrom", ErrorCode.Negative);
 
             if (command.AgeTo.HasValue && command.AgeTo.Value < 0)
-                errors.Add("AgeTo cannot be negative.");
+                AddError(errors, "AgeTo", ErrorCode.Negative);
 
-            if (command.AgeFrom.HasValue && command.AgeTo.HasValue && command.AgeFrom.Value > command.AgeTo.Value)
-                errors.Add("AgeFrom cannot be greater than AgeTo.");
+            if (command.AgeFrom.HasValue &&
+                command.AgeTo.HasValue &&
+                command.AgeFrom.Value > command.AgeTo.Value)
+            {
+                AddError(errors, "AgeFrom", ErrorCode.AgeRangeInvalid);
+            }
 
             if (command.PerRoom.HasValue && command.PerRoom.Value < 0)
-                errors.Add("PerRoom cannot be negative.");
+                AddError(errors, "PerRoom", ErrorCode.Negative);
 
             if (command.SortOrder < 0)
-                errors.Add("SortOrder cannot be negative.");
+                AddError(errors, "SortOrder", ErrorCode.Negative);
 
-            return errors;
+            if (command.MainPlacementRuleId.HasValue && command.MainPlacementRuleId.Value <= 0)
+                AddError(errors, "MainPlacementRuleId", ErrorCode.GreaterThanZero);
+
+            if (command.ExtraPlacementRuleId.HasValue && command.ExtraPlacementRuleId.Value <= 0)
+                AddError(errors, "ExtraPlacementRuleId", ErrorCode.GreaterThanZero);
+
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

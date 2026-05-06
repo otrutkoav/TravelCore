@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Bus;
 using TourCore.Domain.Bus.Entities;
+using System.Linq;
 
 namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Bus
 {
@@ -15,7 +16,10 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Bus
         {
             _context = context;
         }
-
+        public IQueryable<BusSchedule> Query()
+        {
+            return _context.BusSchedules;
+        }
         public async Task<BusSchedule> GetByIdAsync(int id, CancellationToken ct)
         {
             return await _context.BusSchedules.FirstOrDefaultAsync(x => x.Id == id, ct);

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Data;
 using TourCore.Domain.Geography.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Geography
 {
-    public interface ICountryRepository
+    public interface ICountryRepository : IQueryableRepository<Country>
     {
         Task<Country> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<Country>> ListAsync(CancellationToken cancellationToken);

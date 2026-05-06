@@ -1,6 +1,4 @@
-﻿using TourCore.Domain.Hotels.ValueObjects;
-
-namespace TourCore.Application.Hotels.AccommodationTypes.Commands
+﻿namespace TourCore.Application.Hotels.AccommodationTypes.Commands
 {
     public class CreateAccommodationTypeCommand
     {
@@ -14,11 +12,12 @@ namespace TourCore.Application.Hotels.AccommodationTypes.Commands
         public short? AgeTo { get; set; }
 
         public short? PerRoom { get; set; }
+
         public int SortOrder { get; set; }
 
         public string Description { get; set; }
 
-        public AccommodationPlacementRule MainPlacementRule { get; set; }
-        public AccommodationPlacementRule ExtraPlacementRule { get; set; }
+        public int? MainPlacementRuleId { get; set; }
+        public int? ExtraPlacementRuleId { get; set; }
     }
 }

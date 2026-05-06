@@ -10,6 +10,9 @@ using TourCore.Application.Abstractions.Persistence.Finance;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Abstractions.Persistence.Railway;
+using TourCore.Application.Abstractions.Persistence.Seating;
+using TourCore.Application.Abstractions.Persistence.Transfers;
+using TourCore.Application.Abstractions.Persistence.Transportation;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Avia.AirClasses.Commands;
 using TourCore.Application.Avia.AirClasses.Handlers;
@@ -72,10 +75,22 @@ using TourCore.Application.Geography.Resorts.Commands;
 using TourCore.Application.Geography.Resorts.Handlers;
 using TourCore.Application.Geography.Resorts.Queries;
 using TourCore.Application.Geography.Resorts.Validators;
+using TourCore.Application.Hotels.AccommodationPlacementRules.Commands;
+using TourCore.Application.Hotels.AccommodationPlacementRules.Handlers;
+using TourCore.Application.Hotels.AccommodationPlacementRules.Queries;
+using TourCore.Application.Hotels.AccommodationPlacementRules.Validators;
+using TourCore.Application.Hotels.AccommodationTypes.Commands;
+using TourCore.Application.Hotels.AccommodationTypes.Handlers;
+using TourCore.Application.Hotels.AccommodationTypes.Queries;
+using TourCore.Application.Hotels.AccommodationTypes.Validators;
 using TourCore.Application.Hotels.HotelCategories.Commands;
 using TourCore.Application.Hotels.HotelCategories.Handlers;
 using TourCore.Application.Hotels.HotelCategories.Queries;
 using TourCore.Application.Hotels.HotelCategories.Validators;
+using TourCore.Application.Hotels.Hotels.Commands;
+using TourCore.Application.Hotels.Hotels.Handlers;
+using TourCore.Application.Hotels.Hotels.Queries;
+using TourCore.Application.Hotels.Hotels.Validators;
 using TourCore.Application.Hotels.MealTypes.Commands;
 using TourCore.Application.Hotels.MealTypes.Handlers;
 using TourCore.Application.Hotels.MealTypes.Queries;
@@ -92,6 +107,30 @@ using TourCore.Application.Railway.RailwayTransfers.Commands;
 using TourCore.Application.Railway.RailwayTransfers.Handlers;
 using TourCore.Application.Railway.RailwayTransfers.Queries;
 using TourCore.Application.Railway.RailwayTransfers.Validators;
+using TourCore.Application.Railway.TrainSchedules.Commands;
+using TourCore.Application.Railway.TrainSchedules.Handlers;
+using TourCore.Application.Railway.TrainSchedules.Queries;
+using TourCore.Application.Railway.TrainSchedules.Validators;
+using TourCore.Application.Seating.SeatingCells.Commands;
+using TourCore.Application.Seating.SeatingCells.Handlers;
+using TourCore.Application.Seating.SeatingCells.Queries;
+using TourCore.Application.Seating.SeatingCells.Validators;
+using TourCore.Application.Seating.VehiclePlans.Commands;
+using TourCore.Application.Seating.VehiclePlans.Handlers;
+using TourCore.Application.Seating.VehiclePlans.Queries;
+using TourCore.Application.Seating.VehiclePlans.Validators;
+using TourCore.Application.Transfers.TransferDirections.Commands;
+using TourCore.Application.Transfers.TransferDirections.Handlers;
+using TourCore.Application.Transfers.TransferDirections.Queries;
+using TourCore.Application.Transfers.TransferDirections.Validators;
+using TourCore.Application.Transfers.Transfers.Commands;
+using TourCore.Application.Transfers.Transfers.Handlers;
+using TourCore.Application.Transfers.Transfers.Queries;
+using TourCore.Application.Transfers.Transfers.Validators;
+using TourCore.Application.Transportation.Transports.Commands;
+using TourCore.Application.Transportation.Transports.Handlers;
+using TourCore.Application.Transportation.Transports.Queries;
+using TourCore.Application.Transportation.Transports.Validators;
 using TourCore.Contracts.Avia.AirClasses;
 using TourCore.Contracts.Avia.Aircrafts;
 using TourCore.Contracts.Avia.Airlines;
@@ -101,17 +140,27 @@ using TourCore.Contracts.Avia.CharterSeasons;
 using TourCore.Contracts.Bus.BusSchedules;
 using TourCore.Contracts.Bus.BusTransferPoints;
 using TourCore.Contracts.Bus.BusTransfers;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Finance.Rates;
 using TourCore.Contracts.Finance.RealCourses;
 using TourCore.Contracts.Geography.Cities;
 using TourCore.Contracts.Geography.Countries;
 using TourCore.Contracts.Geography.Regions;
 using TourCore.Contracts.Geography.Resorts;
+using TourCore.Contracts.Hotels.AccommodationPlacementRules;
+using TourCore.Contracts.Hotels.AccommodationTypes;
 using TourCore.Contracts.Hotels.HotelCategories;
+using TourCore.Contracts.Hotels.Hotels;
 using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Contracts.Hotels.RoomTypes;
 using TourCore.Contracts.Railway.RailwayTransfers;
+using TourCore.Contracts.Railway.TrainSchedules;
+using TourCore.Contracts.Seating.SeatingCells;
+using TourCore.Contracts.Seating.VehiclePlans;
+using TourCore.Contracts.Transfers.TransferDirections;
+using TourCore.Contracts.Transfers.Transfers;
+using TourCore.Contracts.Transportation.Transports;
 using TourCore.Infrastructure.Services;
 using TourCore.Infrastructure.SqlServer.Persistence;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories;
@@ -120,9 +169,15 @@ using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Bus;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Finance;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Hotels;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Railway;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Seating;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transfers;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transportation;
 using Unity;
 using Unity.Lifetime;
 using Unity.WebApi;
+using TourCore.Application.Common.Data;
+using TourCore.Application.Common.Queries;
+using TourCore.Infrastructure.SqlServer.Common;
 
 namespace TourCore.Api.Legacy
 {
@@ -142,6 +197,10 @@ namespace TourCore.Api.Legacy
         {
             // Services
             container.RegisterType<IDateTimeProvider, DateTimeProvider>();
+
+            container.RegisterType<IAsyncQueryExecutor, Ef6AsyncQueryExecutor>();
+
+            container.RegisterType<PagedQueryExecutor>();
 
             #region  Validators
 
@@ -225,6 +284,42 @@ namespace TourCore.Api.Legacy
             container.RegisterType<CreateRailwayTransferCommandValidator>();
             container.RegisterType<UpdateRailwayTransferCommandValidator>();
 
+            // TrainSchedule validators
+            container.RegisterType<CreateTrainScheduleCommandValidator>();
+            container.RegisterType<UpdateTrainScheduleCommandValidator>();
+
+            // Transport validators
+            container.RegisterType<CreateTransportCommandValidator>();
+            container.RegisterType<UpdateTransportCommandValidator>();
+
+            // Transfer validators
+            container.RegisterType<CreateTransferCommandValidator>();
+            container.RegisterType<UpdateTransferCommandValidator>();
+
+            // TransferDirection validators
+            container.RegisterType<CreateTransferDirectionCommandValidator>();
+            container.RegisterType<UpdateTransferDirectionCommandValidator>();
+
+            // SeatingCell validators
+            container.RegisterType<CreateSeatingCellCommandValidator>();
+            container.RegisterType<UpdateSeatingCellCommandValidator>();
+
+            // VehiclePlan validators
+            container.RegisterType<CreateVehiclePlanCommandValidator>();
+            container.RegisterType<UpdateVehiclePlanCommandValidator>();
+
+            // AccommodationPlacementRule validators
+            container.RegisterType<CreateAccommodationPlacementRuleCommandValidator>();
+            container.RegisterType<UpdateAccommodationPlacementRuleCommandValidator>();
+
+            // AccommodationType validators
+            container.RegisterType<CreateAccommodationTypeCommandValidator>();
+            container.RegisterType<UpdateAccommodationTypeCommandValidator>();
+
+            // Hotel validators
+            container.RegisterType<CreateHotelCommandValidator>();
+            container.RegisterType<UpdateHotelCommandValidator>();
+
             #endregion
 
             #region Commands
@@ -264,6 +359,15 @@ namespace TourCore.Api.Legacy
             container.RegisterType<
                 ICommandHandler<UpdateResortCommand, ResortDto>,
                 UpdateResortHandler>();
+
+            // Hotel commands
+            container.RegisterType<
+                ICommandHandler<CreateHotelCommand, HotelDto>,
+                CreateHotelHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateHotelCommand, HotelDto>,
+                UpdateHotelHandler>();
 
             // MealType commands
             container.RegisterType<
@@ -409,13 +513,85 @@ namespace TourCore.Api.Legacy
                 ICommandHandler<UpdateRailwayTransferCommand, RailwayTransferDto>,
                 UpdateRailwayTransferHandler>();
 
+            // TrainSchedule commands
+            container.RegisterType<
+                ICommandHandler<CreateTrainScheduleCommand, TrainScheduleDto>,
+                CreateTrainScheduleHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateTrainScheduleCommand, TrainScheduleDto>,
+                UpdateTrainScheduleHandler>();
+
+            // Transport commands
+            container.RegisterType<
+                ICommandHandler<CreateTransportCommand, TransportDto>,
+                CreateTransportHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateTransportCommand, TransportDto>,
+                UpdateTransportHandler>();
+
+            // Transfer commands
+            container.RegisterType<
+                ICommandHandler<CreateTransferCommand, TransferDto>,
+                CreateTransferHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateTransferCommand, TransferDto>,
+                UpdateTransferHandler>();
+
+            // TransferDirection commands
+            container.RegisterType<
+                ICommandHandler<CreateTransferDirectionCommand, TransferDirectionDto>,
+                CreateTransferDirectionHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateTransferDirectionCommand, TransferDirectionDto>,
+                UpdateTransferDirectionHandler>();
+
+            // SeatingCell commands
+            container.RegisterType<
+                ICommandHandler<CreateSeatingCellCommand, SeatingCellDto>,
+                CreateSeatingCellHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateSeatingCellCommand, SeatingCellDto>,
+                UpdateSeatingCellHandler>();
+
+            // VehiclePlan commands
+            container.RegisterType<
+                ICommandHandler<CreateVehiclePlanCommand, VehiclePlanDto>,
+                CreateVehiclePlanHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateVehiclePlanCommand, VehiclePlanDto>,
+                UpdateVehiclePlanHandler>();
+
+            // AccommodationPlacementRule commands
+            container.RegisterType<
+                ICommandHandler<CreateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto>,
+                CreateAccommodationPlacementRuleHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto>,
+                UpdateAccommodationPlacementRuleHandler>();
+
+            // AccommodationType commands
+            container.RegisterType<
+                ICommandHandler<CreateAccommodationTypeCommand, AccommodationTypeDto>,
+                CreateAccommodationTypeHandler>();
+
+            container.RegisterType<
+                ICommandHandler<UpdateAccommodationTypeCommand, AccommodationTypeDto>,
+                UpdateAccommodationTypeHandler>();
+
             #endregion
 
             #region Queries
 
             // Country queries
             container.RegisterType<
-                IQueryHandler<GetCountriesQuery, ListResult<CountryListItemDto>>,
+                IQueryHandler<GetCountriesQuery, PagedResponseDto<CountryListItemDto>>,
                 GetCountriesHandler>();
 
             container.RegisterType<
@@ -424,7 +600,7 @@ namespace TourCore.Api.Legacy
 
             // Region queries
             container.RegisterType<
-                IQueryHandler<GetRegionsQuery, ListResult<RegionListItemDto>>,
+                IQueryHandler<GetRegionsQuery, PagedResponseDto<RegionListItemDto>>,
                 GetRegionsHandler>();
 
             container.RegisterType<
@@ -433,7 +609,7 @@ namespace TourCore.Api.Legacy
 
             // City queries
             container.RegisterType<
-                IQueryHandler<GetCitiesQuery, ListResult<CityListItemDto>>,
+                IQueryHandler<GetCitiesQuery, PagedResponseDto<CityListItemDto>>,
                 GetCitiesHandler>();
 
             container.RegisterType<
@@ -442,7 +618,7 @@ namespace TourCore.Api.Legacy
 
             // Resort queries
             container.RegisterType<
-                IQueryHandler<GetResortsQuery, ListResult<ResortListItemDto>>,
+                IQueryHandler<GetResortsQuery, PagedResponseDto<ResortListItemDto>>,
                 GetResortsHandler>();
 
             container.RegisterType<
@@ -487,7 +663,7 @@ namespace TourCore.Api.Legacy
 
             // Rate queries
             container.RegisterType<
-                IQueryHandler<GetRatesQuery, ListResult<RateListItemDto>>,
+                IQueryHandler<GetRatesQuery, PagedResponseDto<RateListItemDto>>,
                 GetRatesHandler>();
 
             container.RegisterType<
@@ -496,7 +672,7 @@ namespace TourCore.Api.Legacy
 
             // RealCourse queries
             container.RegisterType<
-                IQueryHandler<GetRealCoursesQuery, ListResult<RealCourseListItemDto>>,
+                IQueryHandler<GetRealCoursesQuery, PagedResponseDto<RealCourseListItemDto>>,
                 GetRealCoursesHandler>();
 
             container.RegisterType<
@@ -559,7 +735,7 @@ namespace TourCore.Api.Legacy
 
             // BusTransfer queries
             container.RegisterType<
-                IQueryHandler<GetBusTransfersQuery, ListResult<BusTransferListItemDto>>,
+                IQueryHandler<GetBusTransfersQuery, PagedResponseDto<BusTransferListItemDto>>,
                 GetBusTransfersHandler>();
 
             container.RegisterType<
@@ -568,7 +744,7 @@ namespace TourCore.Api.Legacy
 
             // BusTransferPoint queries
             container.RegisterType<
-                IQueryHandler<GetBusTransferPointsQuery, ListResult<BusTransferPointListItemDto>>,
+                IQueryHandler<GetBusTransferPointsQuery, PagedResponseDto<BusTransferPointListItemDto>>,
                 GetBusTransferPointsHandler>();
 
             container.RegisterType<
@@ -577,7 +753,7 @@ namespace TourCore.Api.Legacy
 
             // BusSchedule queries
             container.RegisterType<
-                IQueryHandler<GetBusSchedulesQuery, ListResult<BusScheduleListItemDto>>,
+                IQueryHandler<GetBusSchedulesQuery, PagedResponseDto<BusScheduleListItemDto>>,
                 GetBusSchedulesHandler>();
 
             container.RegisterType<
@@ -586,12 +762,93 @@ namespace TourCore.Api.Legacy
 
             // RailwayTransfer queries
             container.RegisterType<
-                IQueryHandler<GetRailwayTransfersQuery, ListResult<RailwayTransferListItemDto>>,
+                IQueryHandler<GetRailwayTransfersQuery, PagedResponseDto<RailwayTransferListItemDto>>,
                 GetRailwayTransfersHandler>();
 
             container.RegisterType<
                 IQueryHandler<GetRailwayTransferByIdQuery, RailwayTransferDto>,
                 GetRailwayTransferByIdHandler>();
+
+            // TrainSchedule queries
+            container.RegisterType<
+                IQueryHandler<GetTrainSchedulesQuery, PagedResponseDto<TrainScheduleListItemDto>>,
+                GetTrainSchedulesHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetTrainScheduleByIdQuery, TrainScheduleDto>,
+                GetTrainScheduleByIdHandler>();
+
+            // Transport queries
+            container.RegisterType<
+                IQueryHandler<GetTransportsQuery, PagedResponseDto<TransportListItemDto>>,
+                GetTransportsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetTransportByIdQuery, TransportDto>,
+                GetTransportByIdHandler>();
+
+            // Transfer queries
+            container.RegisterType<
+                IQueryHandler<GetTransfersQuery, PagedResponseDto<TransferListItemDto>>,
+                GetTransfersHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetTransferByIdQuery, TransferDto>,
+                GetTransferByIdHandler>();
+
+            // TransferDirection queries
+            container.RegisterType<
+                IQueryHandler<GetTransferDirectionsQuery, PagedResponseDto<TransferDirectionListItemDto>>,
+                GetTransferDirectionsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetTransferDirectionByIdQuery, TransferDirectionDto>,
+                GetTransferDirectionByIdHandler>();
+
+            // SeatingCell queries
+            container.RegisterType<
+                IQueryHandler<GetSeatingCellsQuery, ListResult<SeatingCellListItemDto>>,
+                GetSeatingCellsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetSeatingCellByIdQuery, SeatingCellDto>,
+                GetSeatingCellByIdHandler>();
+
+            // VehiclePlan queries
+            container.RegisterType<
+                IQueryHandler<GetVehiclePlansQuery, ListResult<VehiclePlanListItemDto>>,
+                GetVehiclePlansHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetVehiclePlanByIdQuery, VehiclePlanDto>,
+                GetVehiclePlanByIdHandler>();
+
+            // AccommodationPlacementRule queries
+            container.RegisterType<
+                IQueryHandler<GetAccommodationPlacementRulesQuery, ListResult<AccommodationPlacementRuleListItemDto>>,
+                GetAccommodationPlacementRulesHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetAccommodationPlacementRuleByIdQuery, AccommodationPlacementRuleDto>,
+                GetAccommodationPlacementRuleByIdHandler>();
+
+            // AccommodationType queries
+            container.RegisterType<
+                IQueryHandler<GetAccommodationTypesQuery, ListResult<AccommodationTypeListItemDto>>,
+                GetAccommodationTypesHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetAccommodationTypeByIdQuery, AccommodationTypeDto>,
+                GetAccommodationTypeByIdHandler>();
+
+            // Hotel queries
+            container.RegisterType<
+                IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>>,
+                GetHotelsHandler>();
+
+            container.RegisterType<
+                IQueryHandler<GetHotelByIdQuery, HotelDto>,
+                GetHotelByIdHandler>();
 
             #endregion
 
@@ -662,6 +919,33 @@ namespace TourCore.Api.Legacy
                 new HierarchicalLifetimeManager());
 
             container.RegisterType<IRailwayTransferRepository, RailwayTransferRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<ITrainScheduleRepository, TrainScheduleRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<ITransportRepository, TransportRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<ITransferRepository, TransferRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<ITransferDirectionRepository, TransferDirectionRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<ISeatingCellRepository, SeatingCellRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IVehiclePlanRepository, VehiclePlanRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IAccommodationPlacementRuleRepository, AccommodationPlacementRuleRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IAccommodationTypeRepository, AccommodationTypeRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IHotelRepository, HotelRepository>(
                 new HierarchicalLifetimeManager());
 
             #endregion

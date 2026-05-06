@@ -5,11 +5,12 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Seating;
 using TourCore.Application.Abstractions.Persistence.Transportation;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Seating.VehiclePlans.Commands;
-using TourCore.Application.Seating.VehiclePlans.DTOs;
 using TourCore.Application.Seating.VehiclePlans.Mappings;
 using TourCore.Application.Seating.VehiclePlans.Validators;
+using TourCore.Contracts.Seating.VehiclePlans;
 using TourCore.Domain.Seating.Entities;
 
 namespace TourCore.Application.Seating.VehiclePlans.Handlers
@@ -42,7 +43,7 @@ namespace TourCore.Application.Seating.VehiclePlans.Handlers
 
             var transport = await _transportRepository.GetByIdAsync(command.TransportId, cancellationToken);
             if (transport == null)
-                throw new NotFoundException("Transport was not found.");
+                throw new NotFoundException(ErrorMessages.TransportNotFound, ErrorCode.TransportNotFound);
 
             var entity = new VehiclePlan(
                 command.TransportId,

@@ -1,0 +1,132 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http;
+using TourCore.Application.Abstractions;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Application.Common.Models;
+using TourCore.Application.Hotels.Hotels.Commands;
+using TourCore.Application.Hotels.Hotels.Queries;
+using TourCore.Contracts.Hotels.Hotels;
+
+namespace TourCore.Api.Legacy.Controllers.Hotels
+{
+    /// <summary>
+    /// Контроллер для работы с отелями.
+    /// </summary>
+    [RoutePrefix("api/hotels")]
+    public class HotelsController : ApiController
+    {
+        private readonly ICommandHandler<CreateHotelCommand, HotelDto> _createHandler;
+        private readonly ICommandHandler<UpdateHotelCommand, HotelDto> _updateHandler;
+        private readonly IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetHotelByIdQuery, HotelDto> _getByIdHandler;
+
+        /// <summary>
+        /// Создает экземпляр контроллера отелей.
+        /// </summary>
+        /// <param name="createHandler">Обработчик создания отеля.</param>
+        /// <param name="updateHandler">Обработчик обновления отеля.</param>
+        /// <param name="getListHandler">Обработчик получения списка отелей.</param>
+        /// <param name="getByIdHandler">Обработчик получения отеля по идентификатору.</param>
+        public HotelsController(
+            ICommandHandler<CreateHotelCommand, HotelDto> createHandler,
+            ICommandHandler<UpdateHotelCommand, HotelDto> updateHandler,
+            IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>> getListHandler,
+            IQueryHandler<GetHotelByIdQuery, HotelDto> getByIdHandler)
+        {
+            _createHandler = createHandler;
+            _updateHandler = updateHandler;
+            _getListHandler = getListHandler;
+            _getByIdHandler = getByIdHandler;
+        }
+
+        /// <summary>
+        /// Получить список отелей.
+        /// </summary>
+        /// <remarks>
+        /// Возвращает список отелей.
+        /// Отель привязан к стране и городу, может быть связан с курортом
+        /// и категорией отеля.
+        /// </remarks>
+        /// <returns>Список отелей.</returns>
+        [HttpGet]
+        [Route("")]
+        public async Task<IHttpActionResult> Get()
+        {
+            var result = await _getListHandler.Handle(
+                new GetHotelsQuery(),
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить отель по идентификатору.
+        /// </summary>
+        /// <remarks>
+        /// Возвращает данные одного отеля по указанному идентификатору.
+        /// Используется для просмотра или открытия формы редактирования отеля.
+        /// </remarks>
+        /// <param name="id">Идентификатор отеля.</param>
+        /// <returns>Данные отеля.</returns>
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<IHttpActionResult> GetById(int id)
+        {
+            var result = await _getByIdHandler.Handle(
+                new GetHotelByIdQuery(id),
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Создать отель.
+        /// </summary>
+        /// <remarks>
+        /// Создает новый отель.
+        /// Можно указать страну, город, курорт, категорию,
+        /// название, код, контакты, координаты и параметры сортировки.
+        /// </remarks>
+        /// <param name="command">Данные нового отеля.</param>
+        /// <returns>Созданный отель.</returns>
+        [HttpPost]
+        [Route("")]
+        public async Task<IHttpActionResult> Create([FromBody] CreateHotelCommand command)
+        {
+            if (command == null)
+                throw new ValidationException(new[] { "Тело запроса не передано." });
+
+            var result = await _createHandler.Handle(
+                command,
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Обновить отель.
+        /// </summary>
+        /// <remarks>
+        /// Обновляет параметры существующего отеля.
+        /// </remarks>
+        /// <param name="id">Идентификатор отеля.</param>
+        /// <param name="command">Новые данные отеля.</param>
+        /// <returns>Обновленный отель.</returns>
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IHttpActionResult> Update(int id, [FromBody] UpdateHotelCommand command)
+        {
+            if (command == null)
+                throw new ValidationException(new[] { "Тело запроса не передано." });
+
+            command.Id = id;
+
+            var result = await _updateHandler.Handle(
+                command,
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+    }
+}

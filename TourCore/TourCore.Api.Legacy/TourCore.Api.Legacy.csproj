@@ -155,6 +155,8 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccommodationPlacementRulesController.cs" />
+    <Compile Include="Controllers\AccommodationTypesController.cs" />
     <Compile Include="Controllers\AirClassesController.cs" />
     <Compile Include="Controllers\AircraftsController.cs" />
     <Compile Include="Controllers\AirlinesController.cs" />
@@ -168,6 +170,7 @@
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HotelCategoriesController.cs" />
+    <Compile Include="Controllers\HotelsController.cs" />
     <Compile Include="Controllers\MealTypesController.cs" />
     <Compile Include="Controllers\RailwayTransfersController.cs" />
     <Compile Include="Controllers\RatesController.cs" />
@@ -176,7 +179,13 @@
     <Compile Include="Controllers\ResortsController.cs" />
     <Compile Include="Controllers\RoomCategoriesController.cs" />
     <Compile Include="Controllers\RoomTypesController.cs" />
+    <Compile Include="Controllers\SeatingCellsController.cs" />
+    <Compile Include="Controllers\TrainSchedulesController.cs" />
+    <Compile Include="Controllers\TransferDirectionsController.cs" />
+    <Compile Include="Controllers\TransfersController.cs" />
+    <Compile Include="Controllers\TransportsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\VehiclePlansController.cs" />
     <Compile Include="Filters\ApiExceptionFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -197,6 +206,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AccommodationPlacementRules\" />
+    <Folder Include="Views\AccommodationTypes\" />
     <Folder Include="Views\AirClasses\" />
     <Folder Include="Views\Aircrafts\" />
     <Folder Include="Views\Airlines\" />
@@ -209,6 +220,7 @@
     <Folder Include="Views\Cities\" />
     <Folder Include="Views\Countries\" />
     <Folder Include="Views\HotelCategories\" />
+    <Folder Include="Views\Hotels\" />
     <Folder Include="Views\MealTypes\" />
     <Folder Include="Views\RailwayTransfers\" />
     <Folder Include="Views\Rates\" />
@@ -217,6 +229,12 @@
     <Folder Include="Views\Resorts\" />
     <Folder Include="Views\RoomCategories\" />
     <Folder Include="Views\RoomTypes\" />
+    <Folder Include="Views\SeatingCells\" />
+    <Folder Include="Views\TrainSchedules\" />
+    <Folder Include="Views\TransferDirections\" />
+    <Folder Include="Views\Transfers\" />
+    <Folder Include="Views\Transports\" />
+    <Folder Include="Views\VehiclePlans\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

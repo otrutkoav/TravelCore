@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transportation.Transports.Commands;
 
@@ -9,38 +11,56 @@ namespace TourCore.Application.Transportation.Transports.Validators
         public void ValidateAndThrow(UpdateTransportCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateTransportCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateTransportCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 100)
-                errors.Add("Name must be 100 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 100)
-                errors.Add("NameEn must be 100 characters or less.");
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
 
             if (command.SeatsCount.HasValue && command.SeatsCount.Value < 0)
-                errors.Add("SeatsCount cannot be negative.");
+                AddError(errors, "SeatsCount", ErrorCode.Negative);
 
             if (command.ShowOrder < 0)
-                errors.Add("ShowOrder cannot be negative.");
+                AddError(errors, "ShowOrder", ErrorCode.Negative);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(x => x.Key, x => x.Value.ToArray());
         }
     }
 }

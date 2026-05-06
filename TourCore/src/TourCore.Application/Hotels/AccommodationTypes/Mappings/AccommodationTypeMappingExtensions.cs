@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using TourCore.Application.Hotels.AccommodationPlacementRules.Mappings;
 using TourCore.Contracts.Hotels.AccommodationTypes;
 using TourCore.Domain.Hotels.Entities;
 
@@ -20,8 +20,12 @@ namespace TourCore.Application.Hotels.AccommodationTypes.Mappings
                 PerRoom = entity.PerRoom,
                 SortOrder = entity.SortOrder,
                 Description = entity.Description,
-                MainPlacementRule = MapRule(entity.MainPlacementRule),
-                ExtraPlacementRule = MapRule(entity.ExtraPlacementRule)
+
+                MainPlacementRuleId = entity.MainPlacementRuleId,
+                MainPlacementRule = entity.MainPlacementRule?.ToDto(),
+
+                ExtraPlacementRuleId = entity.ExtraPlacementRuleId,
+                ExtraPlacementRule = entity.ExtraPlacementRule?.ToDto()
             };
         }
 
@@ -32,36 +36,11 @@ namespace TourCore.Application.Hotels.AccommodationTypes.Mappings
                 Id = entity.Id,
                 Code = entity.Code,
                 Name = entity.Name,
-                NameEn = entity.NameEn,
                 IsMain = entity.IsMain,
-                AgeFrom = entity.AgeFrom,
-                AgeTo = entity.AgeTo,
                 PerRoom = entity.PerRoom,
                 SortOrder = entity.SortOrder,
-                Description = entity.Description,
-                MainPlacementRule = MapRule(entity.MainPlacementRule),
-                ExtraPlacementRule = MapRule(entity.ExtraPlacementRule)
-            };
-        }
-
-        private static AccommodationPlacementRuleDto MapRule(
-            Domain.Hotels.ValueObjects.AccommodationPlacementRule rule)
-        {
-            if (rule == null)
-                return null;
-
-            return new AccommodationPlacementRuleDto
-            {
-                AdultsCount = rule.AdultsCount,
-                ChildrenCount = rule.ChildrenCount,
-                ChildrenAreInfants = rule.ChildrenAreInfants,
-                ChildAgeRanges = rule.ChildAgeRanges?
-                    .Select(x => new AgeRangeDto
-                    {
-                        AgeFrom = x.AgeFrom,
-                        AgeTo = x.AgeTo
-                    })
-                    .ToList()
+                MainPlacementRuleId = entity.MainPlacementRuleId,
+                ExtraPlacementRuleId = entity.ExtraPlacementRuleId
             };
         }
     }

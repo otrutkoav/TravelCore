@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Transfers;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.Transfers.Mappings;
 using TourCore.Application.Transfers.Transfers.Queries;
@@ -22,7 +23,7 @@ namespace TourCore.Application.Transfers.Transfers.Handlers
         {
             var entity = await _transferRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Transfer was not found.");
+                throw new NotFoundException(ErrorMessages.TransferNotFound, ErrorCode.TransferNotFound);
 
             return entity.ToDto();
         }

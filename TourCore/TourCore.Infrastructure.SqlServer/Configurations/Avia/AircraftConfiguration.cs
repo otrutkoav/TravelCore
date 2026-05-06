@@ -13,7 +13,7 @@ namespace TourCore.Infrastructure.Persistence.Configurations.Avia
 
             Property(x => x.Code)
                 .IsRequired()
-                .HasMaxLength(3);
+                .HasMaxLength(10);
 
             Property(x => x.Name)
                 .IsRequired()

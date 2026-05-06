@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Data;
 using TourCore.Domain.Finance.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Finance
 {
-    public interface IRealCourseRepository
+    public interface IRealCourseRepository : IQueryableRepository<RealCourse>
     {
         Task<RealCourse> GetByIdAsync(int id, CancellationToken cancellationToken);
+
         Task<IReadOnlyCollection<RealCourse>> ListAsync(CancellationToken cancellationToken);
 
         Task<bool> ExistsAsync(

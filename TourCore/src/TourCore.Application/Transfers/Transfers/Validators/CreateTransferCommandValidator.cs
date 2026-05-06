@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.Transfers.Commands;
 
@@ -9,50 +11,70 @@ namespace TourCore.Application.Transfers.Transfers.Validators
         public void ValidateAndThrow(CreateTransferCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateTransferCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateTransferCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 100)
-                errors.Add("Name must be 100 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 100)
-                errors.Add("NameEn must be 100 characters or less.");
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.DurationText) && command.DurationText.Trim().Length > 5)
-                errors.Add("DurationText must be 5 characters or less.");
+                AddError(errors, "DurationText", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.PlaceFrom) && command.PlaceFrom.Trim().Length > 300)
-                errors.Add("PlaceFrom must be 300 characters or less.");
+                AddError(errors, "PlaceFrom", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.PlaceTo) && command.PlaceTo.Trim().Length > 300)
-                errors.Add("PlaceTo must be 300 characters or less.");
+                AddError(errors, "PlaceTo", ErrorCode.MaxLength);
 
             if (command.CityId.HasValue && command.CityId.Value <= 0)
-                errors.Add("CityId must be greater than 0.");
+                AddError(errors, "CityId", ErrorCode.GreaterThanZero);
 
             if (command.DirectionId.HasValue && command.DirectionId.Value <= 0)
-                errors.Add("DirectionId must be greater than 0.");
+                AddError(errors, "DirectionId", ErrorCode.GreaterThanZero);
 
             if (!string.IsNullOrWhiteSpace(command.Url) && command.Url.Trim().Length > 192)
-                errors.Add("Url must be 192 characters or less.");
+                AddError(errors, "Url", ErrorCode.MaxLength);
 
             if (command.ShowOrder < 0)
-                errors.Add("ShowOrder cannot be negative.");
+                AddError(errors, "ShowOrder", ErrorCode.Negative);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

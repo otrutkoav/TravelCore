@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Transportation.Transports;
 using TourCore.Application.Abstractions.Persistence.Transportation;
+using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transportation.Transports.Commands;
 using TourCore.Application.Transportation.Transports.Mappings;
 using TourCore.Application.Transportation.Transports.Validators;
+using TourCore.Contracts.Transportation.Transports;
 
 namespace TourCore.Application.Transportation.Transports.Handlers
 {
@@ -37,7 +38,7 @@ namespace TourCore.Application.Transportation.Transports.Handlers
 
             var entity = await _transportRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Transport was not found.");
+                throw new NotFoundException(ErrorMessages.TransportNotFound, ErrorCode.TransportNotFound);
 
             entity.Update(
                 command.Name,

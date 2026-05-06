@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Seating.VehiclePlans.Commands;
 
@@ -9,39 +11,57 @@ namespace TourCore.Application.Seating.VehiclePlans.Validators
         public void ValidateAndThrow(CreateVehiclePlanCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateVehiclePlanCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateVehiclePlanCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.TransportId <= 0)
-                errors.Add("TransportId must be greater than 0.");
+                AddError(errors, "TransportId", ErrorCode.GreaterThanZero);
 
             if (command.RowsCount <= 0)
-                errors.Add("RowsCount must be greater than 0.");
+                AddError(errors, "RowsCount", ErrorCode.GreaterThanZero);
 
             if (command.ColumnsCount <= 0)
-                errors.Add("ColumnsCount must be greater than 0.");
+                AddError(errors, "ColumnsCount", ErrorCode.GreaterThanZero);
 
             if (command.AreaNumber <= 0)
-                errors.Add("AreaNumber must be greater than 0.");
+                AddError(errors, "AreaNumber", ErrorCode.GreaterThanZero);
 
             if (!string.IsNullOrWhiteSpace(command.Name) && command.Name.Trim().Length > 20)
-                errors.Add("Name must be 20 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Comment) && command.Comment.Trim().Length > 250)
-                errors.Add("Comment must be 250 characters or less.");
+                AddError(errors, "Comment", ErrorCode.MaxLength);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(x => x.Key, x => x.Value.ToArray());
         }
     }
 }

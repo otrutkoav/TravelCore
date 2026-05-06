@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>bin\TourCore.Application.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

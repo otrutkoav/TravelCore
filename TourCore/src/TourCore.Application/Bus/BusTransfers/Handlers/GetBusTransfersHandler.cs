@@ -1,64 +1,98 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Contracts.Bus.BusTransfers;
-using TourCore.Application.Common.Models;
 using TourCore.Application.Abstractions.Persistence.Bus;
-using TourCore.Application.Bus.BusTransfers.Mappings;
 using TourCore.Application.Bus.BusTransfers.Queries;
+using TourCore.Application.Common.Queries;
+using TourCore.Contracts.Bus.BusTransfers;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Application.Bus.BusTransfers.Handlers
 {
-    public class GetBusTransfersHandler : IQueryHandler<GetBusTransfersQuery, ListResult<BusTransferListItemDto>>
+    public class GetBusTransfersHandler : IQueryHandler<GetBusTransfersQuery, PagedResponseDto<BusTransferListItemDto>>
     {
         private readonly IBusTransferRepository _busTransferRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetBusTransfersHandler(IBusTransferRepository busTransferRepository)
+        public GetBusTransfersHandler(
+            IBusTransferRepository busTransferRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _busTransferRepository = busTransferRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<BusTransferListItemDto>> Handle(GetBusTransfersQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<BusTransferListItemDto>> Handle(
+            GetBusTransfersQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _busTransferRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetBusTransfersQuery();
 
-            if (query != null && query.Filter != null)
+            var busTransfers = _busTransferRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Name) &&
-                        x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    busTransfers = busTransfers.Where(x => x.Name.Contains(search));
                 }
 
                 if (query.Filter.CountryFromId.HasValue)
-                    items = items.Where(x => x.CountryFromId == query.Filter.CountryFromId.Value);
+                {
+                    var countryFromId = query.Filter.CountryFromId.Value;
+                    busTransfers = busTransfers.Where(x => x.CountryFromId == countryFromId);
+                }
 
                 if (query.Filter.CityFromId.HasValue)
-                    items = items.Where(x => x.CityFromId == query.Filter.CityFromId.Value);
+                {
+                    var cityFromId = query.Filter.CityFromId.Value;
+                    busTransfers = busTransfers.Where(x => x.CityFromId == cityFromId);
+                }
 
                 if (query.Filter.CountryToId.HasValue)
-                    items = items.Where(x => x.CountryToId == query.Filter.CountryToId.Value);
+                {
+                    var countryToId = query.Filter.CountryToId.Value;
+                    busTransfers = busTransfers.Where(x => x.CountryToId == countryToId);
+                }
 
                 if (query.Filter.CityToId.HasValue)
-                    items = items.Where(x => x.CityToId == query.Filter.CityToId.Value);
+                {
+                    var cityToId = query.Filter.CityToId.Value;
+                    busTransfers = busTransfers.Where(x => x.CityToId == cityToId);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.CountryFromId)
-                .ThenBy(x => x.CityFromId)
-                .ThenBy(x => x.CountryToId)
-                .ThenBy(x => x.CityToId)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                busTransfers = busTransfers
+                    .OrderBy(x => x.CountryFromId)
+                    .ThenBy(x => x.CityFromId)
+                    .ThenBy(x => x.CountryToId)
+                    .ThenBy(x => x.CityToId)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                busTransfers = busTransfers.ApplySorting(
+                    query,
+                    BusTransferSortDefinition.Instance);
+            }
 
-            return ListResult<BusTransferListItemDto>.Create(result);
+            var dtoQuery = busTransfers.Select(BusTransferProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<BusTransferListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

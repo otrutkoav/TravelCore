@@ -6,6 +6,7 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Railway.RailwayTransfers.Commands;
 using TourCore.Application.Railway.RailwayTransfers.Mappings;

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Seating;
 using TourCore.Application.Common.Models;
-using TourCore.Application.Seating.SeatingCells.DTOs;
 using TourCore.Application.Seating.SeatingCells.Mappings;
 using TourCore.Application.Seating.SeatingCells.Queries;
+using TourCore.Contracts.Seating.SeatingCells;
 
 namespace TourCore.Application.Seating.SeatingCells.Handlers
 {
@@ -25,23 +24,8 @@ namespace TourCore.Application.Seating.SeatingCells.Handlers
             var entities = await _seatingCellRepository.ListAsync(cancellationToken);
             var items = entities.AsEnumerable();
 
-            if (query != null && query.Filter != null)
-            {
-                if (query.Filter.VehiclePlanId.HasValue)
-                    items = items.Where(x => x.VehiclePlanId == query.Filter.VehiclePlanId.Value);
-
-                if (query.Filter.Type.HasValue)
-                    items = items.Where(x => x.Type == query.Filter.Type.Value);
-
-                if (!string.IsNullOrWhiteSpace(query.Filter.Number))
-                {
-                    var number = query.Filter.Number.Trim();
-
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Number) &&
-                        x.Number.IndexOf(number, StringComparison.OrdinalIgnoreCase) >= 0);
-                }
-            }
+            if (query != null && query.Filter != null && query.Filter.VehiclePlanId.HasValue)
+                items = items.Where(x => x.VehiclePlanId == query.Filter.VehiclePlanId.Value);
 
             var result = items
                 .OrderBy(x => x.VehiclePlanId)

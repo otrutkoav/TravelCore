@@ -6,6 +6,7 @@ using TourCore.Contracts.Railway.RailwayTransfers;
 using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Railway.RailwayTransfers.Mappings;
 using TourCore.Application.Railway.RailwayTransfers.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Railway.RailwayTransfers.Handlers
 {

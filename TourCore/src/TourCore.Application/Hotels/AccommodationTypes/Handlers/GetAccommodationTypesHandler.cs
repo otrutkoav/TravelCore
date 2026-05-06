@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Contracts.Hotels.AccommodationTypes;
-using TourCore.Application.Common.Models;
 using TourCore.Application.Abstractions.Persistence.Hotels;
+using TourCore.Application.Common.Models;
 using TourCore.Application.Hotels.AccommodationTypes.Mappings;
 using TourCore.Application.Hotels.AccommodationTypes.Queries;
+using TourCore.Contracts.Hotels.AccommodationTypes;
 
 namespace TourCore.Application.Hotels.AccommodationTypes.Handlers
 {

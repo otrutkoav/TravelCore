@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Data;
 using TourCore.Domain.Geography.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Geography
 {
-    public interface IResortRepository
+    public interface IResortRepository : IQueryableRepository<Resort>
     {
         Task<Resort> GetByIdAsync(int id, CancellationToken cancellationToken);
+
         Task<IReadOnlyCollection<Resort>> ListAsync(CancellationToken cancellationToken);
 
         Task<bool> ExistsByNameAsync(
@@ -22,5 +24,7 @@ namespace TourCore.Application.Abstractions.Persistence.Geography
             CancellationToken cancellationToken);
 
         Task AddAsync(Resort resort, CancellationToken cancellationToken);
+
+        Task UpdateAsync(Resort resort, CancellationToken cancellationToken);
     }
 }

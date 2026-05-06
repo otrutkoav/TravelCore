@@ -2,15 +2,16 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Domain.Transfers.Entities;
-using TourCore.Contracts.Transfers.Transfers;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Transfers;
+using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Application.Transfers.Transfers.Commands;
 using TourCore.Application.Transfers.Transfers.Mappings;
 using TourCore.Application.Transfers.Transfers.Validators;
-using TourCore.Application.Transfers.Transfers.Commands;
+using TourCore.Contracts.Transfers.Transfers;
+using TourCore.Domain.Transfers.Entities;
 
 namespace TourCore.Application.Transfers.Transfers.Handlers
 {
@@ -47,14 +48,14 @@ namespace TourCore.Application.Transfers.Transfers.Handlers
             {
                 var city = await _cityRepository.GetByIdAsync(command.CityId.Value, cancellationToken);
                 if (city == null)
-                    throw new NotFoundException("City was not found.");
+                    throw new NotFoundException(ErrorMessages.CityNotFound, ErrorCode.CityNotFound);
             }
 
             if (command.DirectionId.HasValue)
             {
                 var direction = await _transferDirectionRepository.GetByIdAsync(command.DirectionId.Value, cancellationToken);
                 if (direction == null)
-                    throw new NotFoundException("Transfer direction was not found.");
+                    throw new NotFoundException(ErrorMessages.TransferDirectionNotFound, ErrorCode.TransferDirectionNotFound);
             }
 
             var entity = new Transfer(

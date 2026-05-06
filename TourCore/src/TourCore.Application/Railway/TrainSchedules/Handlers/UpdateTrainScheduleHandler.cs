@@ -10,6 +10,7 @@ using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Railway.TrainSchedules.Commands;
 using TourCore.Application.Railway.TrainSchedules.Mapping;
 using TourCore.Application.Railway.TrainSchedules.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Railway.TrainSchedules.Handlers
 {
@@ -41,11 +42,11 @@ namespace TourCore.Application.Railway.TrainSchedules.Handlers
 
             var entity = await _trainScheduleRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Train schedule was not found.");
+                throw new NotFoundException(ErrorMessages.TrainScheduleNotFound, ErrorCode.TrainScheduleNotFound);
 
             var railwayTransfer = await _railwayTransferRepository.GetByIdAsync(command.RailwayTransferId, cancellationToken);
             if (railwayTransfer == null)
-                throw new NotFoundException("Railway transfer was not found.");
+                throw new NotFoundException(ErrorMessages.RailwayTransferNotFound, ErrorCode.RailwayTransferNotFound);
 
             entity.Update(
                 command.RailwayTransferId,

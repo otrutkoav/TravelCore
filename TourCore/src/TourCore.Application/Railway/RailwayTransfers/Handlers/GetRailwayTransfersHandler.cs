@@ -1,55 +1,99 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Railway.RailwayTransfers;
 using TourCore.Application.Abstractions.Persistence.Railway;
-using TourCore.Application.Railway.RailwayTransfers.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Railway.RailwayTransfers.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Railway.RailwayTransfers;
 
 namespace TourCore.Application.Railway.RailwayTransfers.Handlers
 {
-    public class GetRailwayTransfersHandler : IQueryHandler<GetRailwayTransfersQuery, ListResult<RailwayTransferListItemDto>>
+    public class GetRailwayTransfersHandler
+        : IQueryHandler<GetRailwayTransfersQuery, PagedResponseDto<RailwayTransferListItemDto>>
     {
         private readonly IRailwayTransferRepository _railwayTransferRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetRailwayTransfersHandler(IRailwayTransferRepository railwayTransferRepository)
+        public GetRailwayTransfersHandler(
+            IRailwayTransferRepository railwayTransferRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _railwayTransferRepository = railwayTransferRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<RailwayTransferListItemDto>> Handle(GetRailwayTransfersQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<RailwayTransferListItemDto>> Handle(
+            GetRailwayTransfersQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _railwayTransferRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetRailwayTransfersQuery();
 
-            if (query != null && query.Filter != null)
+            var railwayTransfers = _railwayTransferRepository.Query();
+
+            if (query.Filter != null)
             {
+                if (!string.IsNullOrWhiteSpace(query.Filter.Search))
+                {
+                    var search = query.Filter.Search.Trim();
+
+                    railwayTransfers = railwayTransfers.Where(x => x.Name.Contains(search));
+                }
+
                 if (query.Filter.CountryFromId.HasValue)
-                    items = items.Where(x => x.CountryFromId == query.Filter.CountryFromId.Value);
+                {
+                    var countryFromId = query.Filter.CountryFromId.Value;
+                    railwayTransfers = railwayTransfers.Where(x => x.CountryFromId == countryFromId);
+                }
 
                 if (query.Filter.CityFromId.HasValue)
-                    items = items.Where(x => x.CityFromId == query.Filter.CityFromId.Value);
+                {
+                    var cityFromId = query.Filter.CityFromId.Value;
+                    railwayTransfers = railwayTransfers.Where(x => x.CityFromId == cityFromId);
+                }
 
                 if (query.Filter.CountryToId.HasValue)
-                    items = items.Where(x => x.CountryToId == query.Filter.CountryToId.Value);
+                {
+                    var countryToId = query.Filter.CountryToId.Value;
+                    railwayTransfers = railwayTransfers.Where(x => x.CountryToId == countryToId);
+                }
 
                 if (query.Filter.CityToId.HasValue)
-                    items = items.Where(x => x.CityToId == query.Filter.CityToId.Value);
+                {
+                    var cityToId = query.Filter.CityToId.Value;
+                    railwayTransfers = railwayTransfers.Where(x => x.CityToId == cityToId);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.CountryFromId)
-                .ThenBy(x => x.CityFromId)
-                .ThenBy(x => x.CountryToId)
-                .ThenBy(x => x.CityToId)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                railwayTransfers = railwayTransfers
+                    .OrderBy(x => x.CountryFromId)
+                    .ThenBy(x => x.CityFromId)
+                    .ThenBy(x => x.CountryToId)
+                    .ThenBy(x => x.CityToId)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                railwayTransfers = railwayTransfers.ApplySorting(
+                    query,
+                    RailwayTransferSortDefinition.Instance);
+            }
 
-            return ListResult<RailwayTransferListItemDto>.Create(result);
+            var dtoQuery = railwayTransfers.Select(RailwayTransferProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<RailwayTransferListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

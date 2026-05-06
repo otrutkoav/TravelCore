@@ -16,7 +16,5 @@ namespace TourCore.Application.Abstractions.Persistence.Hotels
         Task<bool> ExistsByCodeAsync(string code, int excludeId, CancellationToken cancellationToken);
 
         Task AddAsync(Hotel hotel, CancellationToken cancellationToken);
-
-        void Update(Hotel hotel);
     }
 }

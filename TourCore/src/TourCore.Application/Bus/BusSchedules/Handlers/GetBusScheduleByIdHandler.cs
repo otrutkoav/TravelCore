@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Abstractions.Persistence.Bus;
 using TourCore.Application.Bus.BusSchedules.Mappings;
 using TourCore.Application.Bus.BusSchedules.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Bus.BusSchedules.Handlers
 {

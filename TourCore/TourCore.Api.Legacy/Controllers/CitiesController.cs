@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Geography.Cities.Commands;
 using TourCore.Application.Geography.Cities.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Geography.Cities;
 
 namespace TourCore.Api.Legacy.Controllers
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers
     {
         private readonly ICommandHandler<CreateCityCommand, CityDto> _createHandler;
         private readonly ICommandHandler<UpdateCityCommand, CityDto> _updateHandler;
-        private readonly IQueryHandler<GetCitiesQuery, ListResult<CityListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetCitiesQuery, PagedResponseDto<CityListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetCityByIdQuery, CityDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers
         public CitiesController(
             ICommandHandler<CreateCityCommand, CityDto> createHandler,
             ICommandHandler<UpdateCityCommand, CityDto> updateHandler,
-            IQueryHandler<GetCitiesQuery, ListResult<CityListItemDto>> getListHandler,
+            IQueryHandler<GetCitiesQuery, PagedResponseDto<CityListItemDto>> getListHandler,
             IQueryHandler<GetCityByIdQuery, CityDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,43 @@ namespace TourCore.Api.Legacy.Controllers
         /// Получить список городов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список городов из справочника.
-        /// Используется в формах, фильтрах поиска, настройках направлений и выборе городов вылета.
+        /// Возвращает список городов с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по названию, английскому названию, коду города и IATA-коду.
+        /// - query.filter.countryId — фильтр по идентификатору страны.
+        /// - query.filter.regionId — фильтр по идентификатору региона.
+        /// - query.filter.isDeparturePoint — фильтр по признаку города вылета.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - countryId
+        /// - regionId
+        /// - name
+        /// - nameEn
+        /// - code
+        /// - sortOrder
+        /// - isDeparturePoint
+        /// - timeZone
+        /// - iataCode
+        /// - coordinates
         /// </remarks>
-        /// <returns>Список городов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка городов.</param>
+        /// <returns>Страница списка городов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetCitiesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetCitiesQuery(),
+                query ?? new GetCitiesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

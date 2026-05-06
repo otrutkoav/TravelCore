@@ -98,6 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Ef6AsyncQueryExecutor.cs" />
     <Compile Include="Configurations\Avia\AirClassConfiguration.cs" />
     <Compile Include="Configurations\Avia\AircraftConfiguration.cs" />
     <Compile Include="Configurations\Avia\AirlineConfiguration.cs" />
@@ -111,13 +112,23 @@
     <Compile Include="Configurations\Finance\RealCourseConfiguration.cs" />
     <Compile Include="Configurations\Geography\CityConfiguration.cs" />
     <Compile Include="Configurations\Geography\CountryConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\AccommodationPlacementRuleAgeRangeConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\AccommodationPlacementRuleConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\AccommodationTypeConfiguration.cs" />
     <Compile Include="Configurations\Hotels\HotelCategoryConfiguration.cs" />
+    <Compile Include="Configurations\Hotels\HotelConfiguration.cs" />
     <Compile Include="Configurations\Hotels\MealTypeConfiguration.cs" />
     <Compile Include="Configurations\Geography\RegionConfiguration.cs" />
     <Compile Include="Configurations\Geography\ResortConfiguration.cs" />
     <Compile Include="Configurations\Hotels\RoomCategoryConfiguration.cs" />
     <Compile Include="Configurations\Hotels\RoomTypeConfiguration.cs" />
     <Compile Include="Configurations\Railway\RailwayTransferConfiguration.cs" />
+    <Compile Include="Configurations\Railway\TrainScheduleConfiguration.cs" />
+    <Compile Include="Configurations\Seating\SeatingCellConfiguration.cs" />
+    <Compile Include="Configurations\Seating\VehiclePlanConfiguration.cs" />
+    <Compile Include="Configurations\Transfers\TransferConfiguration.cs" />
+    <Compile Include="Configurations\Transfers\TransferDirectionConfiguration.cs" />
+    <Compile Include="Configurations\Transportation\TransportConfiguration.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.cs" />
     <Compile Include="Migrations\202604251137439_InitialCreate.designer.cs">
       <DependentUpon>202604251137439_InitialCreate.cs</DependentUpon>
@@ -198,6 +209,42 @@
     <Compile Include="Migrations\202605041318593_AddRailwayTransfers.Designer.cs">
       <DependentUpon>202605041318593_AddRailwayTransfers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605051328025_AddTrainSchedules.cs" />
+    <Compile Include="Migrations\202605051328025_AddTrainSchedules.Designer.cs">
+      <DependentUpon>202605051328025_AddTrainSchedules.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605051345536_AddTransports.cs" />
+    <Compile Include="Migrations\202605051345536_AddTransports.Designer.cs">
+      <DependentUpon>202605051345536_AddTransports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605051425422_AddTransfers.cs" />
+    <Compile Include="Migrations\202605051425422_AddTransfers.Designer.cs">
+      <DependentUpon>202605051425422_AddTransfers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605051441360_AddTransferDirections.cs" />
+    <Compile Include="Migrations\202605051441360_AddTransferDirections.Designer.cs">
+      <DependentUpon>202605051441360_AddTransferDirections.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605051524528_AddSeatingCells.cs" />
+    <Compile Include="Migrations\202605051524528_AddSeatingCells.Designer.cs">
+      <DependentUpon>202605051524528_AddSeatingCells.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605051722377_AddVehiclePlans.cs" />
+    <Compile Include="Migrations\202605051722377_AddVehiclePlans.Designer.cs">
+      <DependentUpon>202605051722377_AddVehiclePlans.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605051951004_AddAccommodationTypes.cs" />
+    <Compile Include="Migrations\202605051951004_AddAccommodationTypes.Designer.cs">
+      <DependentUpon>202605051951004_AddAccommodationTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605060549156_AddHotels.cs" />
+    <Compile Include="Migrations\202605060549156_AddHotels.Designer.cs">
+      <DependentUpon>202605060549156_AddHotels.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605061056486_IncreaseAircraftCodeLength.cs" />
+    <Compile Include="Migrations\202605061056486_IncreaseAircraftCodeLength.Designer.cs">
+      <DependentUpon>202605061056486_IncreaseAircraftCodeLength.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Persistence\Repositories\Avia\AirClassRepository.cs" />
     <Compile Include="Persistence\Repositories\Avia\AircraftRepository.cs" />
@@ -212,13 +259,22 @@
     <Compile Include="Persistence\Repositories\Finance\RealCourseRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\CityRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\CountryRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\AccommodationPlacementRuleRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\AccommodationTypeRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\HotelCategoryRepository.cs" />
+    <Compile Include="Persistence\Repositories\Hotels\HotelRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\MealTypeRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\RegionRepository.cs" />
     <Compile Include="Persistence\Repositories\Geography\ResortRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomCategoryRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomTypeRepository.cs" />
     <Compile Include="Persistence\Repositories\Railway\RailwayTransferRepository.cs" />
+    <Compile Include="Persistence\Repositories\Railway\TrainScheduleRepository.cs" />
+    <Compile Include="Persistence\Repositories\Seating\SeatingCellRepository.cs" />
+    <Compile Include="Persistence\Repositories\Seating\VehiclePlanRepository.cs" />
+    <Compile Include="Persistence\Repositories\Transfers\TransferDirectionRepository.cs" />
+    <Compile Include="Persistence\Repositories\Transfers\TransferRepository.cs" />
+    <Compile Include="Persistence\Repositories\Transportation\TransportRepository.cs" />
     <Compile Include="Persistence\TourCoreDbContext.cs" />
     <Compile Include="Persistence\UnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -302,11 +358,39 @@
     <EmbeddedResource Include="Migrations\202605041318593_AddRailwayTransfers.resx">
       <DependentUpon>202605041318593_AddRailwayTransfers.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051328025_AddTrainSchedules.resx">
+      <DependentUpon>202605051328025_AddTrainSchedules.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051345536_AddTransports.resx">
+      <DependentUpon>202605051345536_AddTransports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051425422_AddTransfers.resx">
+      <DependentUpon>202605051425422_AddTransfers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051441360_AddTransferDirections.resx">
+      <DependentUpon>202605051441360_AddTransferDirections.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051524528_AddSeatingCells.resx">
+      <DependentUpon>202605051524528_AddSeatingCells.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051722377_AddVehiclePlans.resx">
+      <DependentUpon>202605051722377_AddVehiclePlans.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605051951004_AddAccommodationTypes.resx">
+      <DependentUpon>202605051951004_AddAccommodationTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605060549156_AddHotels.resx">
+      <DependentUpon>202605060549156_AddHotels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605061056486_IncreaseAircraftCodeLength.resx">
+      <DependentUpon>202605061056486_IncreaseAircraftCodeLength.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.1.18.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
     <Analyzer Include="..\packages\xunit.analyzers.1.18.0\analyzers\dotnet\cs\xunit.analyzers.fixes.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

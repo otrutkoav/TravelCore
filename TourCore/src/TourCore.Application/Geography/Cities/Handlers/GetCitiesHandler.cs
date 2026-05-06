@@ -1,60 +1,96 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Contracts.Geography.Cities;
-using TourCore.Application.Common.Models;
 using TourCore.Application.Abstractions.Persistence.Geography;
-using TourCore.Application.Geography.Cities.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Geography.Cities.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Geography.Cities;
 
 namespace TourCore.Application.Geography.Cities.Handlers
 {
-    public class GetCitiesHandler : IQueryHandler<GetCitiesQuery, ListResult<CityListItemDto>>
+    public class GetCitiesHandler : IQueryHandler<GetCitiesQuery, PagedResponseDto<CityListItemDto>>
     {
         private readonly ICityRepository _cityRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetCitiesHandler(ICityRepository cityRepository)
+        public GetCitiesHandler(
+            ICityRepository cityRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _cityRepository = cityRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<CityListItemDto>> Handle(GetCitiesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<CityListItemDto>> Handle(
+            GetCitiesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _cityRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetCitiesQuery();
 
-            if (query != null && query.Filter != null)
+            var cities = _cityRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.IataCode) && x.IataCode.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    cities = cities.Where(x =>
+                        x.Name.Contains(search) ||
+                        x.NameEn.Contains(search) ||
+                        x.Code.Contains(search) ||
+                        x.IataCode.Contains(search));
                 }
 
                 if (query.Filter.CountryId.HasValue)
-                    items = items.Where(x => x.CountryId == query.Filter.CountryId.Value);
+                {
+                    var countryId = query.Filter.CountryId.Value;
+
+                    cities = cities.Where(x => x.CountryId == countryId);
+                }
 
                 if (query.Filter.RegionId.HasValue)
-                    items = items.Where(x => x.RegionId == query.Filter.RegionId.Value);
+                {
+                    var regionId = query.Filter.RegionId.Value;
+
+                    cities = cities.Where(x => x.RegionId == regionId);
+                }
 
                 if (query.Filter.IsDeparturePoint.HasValue)
-                    items = items.Where(x => x.IsDeparturePoint == query.Filter.IsDeparturePoint.Value);
+                {
+                    var isDeparturePoint = query.Filter.IsDeparturePoint.Value;
+
+                    cities = cities.Where(x => x.IsDeparturePoint == isDeparturePoint);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.SortOrder)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                cities = cities
+                    .OrderBy(x => x.SortOrder)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                cities = cities.ApplySorting(
+                    query,
+                    CitySortDefinition.Instance);
+            }
 
-            return ListResult<CityListItemDto>.Create(result);
+            var dtoQuery = cities.Select(CityProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<CityListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

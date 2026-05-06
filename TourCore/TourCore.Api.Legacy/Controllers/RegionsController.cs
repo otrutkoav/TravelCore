@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Geography.Regions.Commands;
 using TourCore.Application.Geography.Regions.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Geography.Regions;
 
 namespace TourCore.Api.Legacy.Controllers
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers
     {
         private readonly ICommandHandler<CreateRegionCommand, RegionDto> _createHandler;
         private readonly ICommandHandler<UpdateRegionCommand, RegionDto> _updateHandler;
-        private readonly IQueryHandler<GetRegionsQuery, ListResult<RegionListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetRegionsQuery, PagedResponseDto<RegionListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetRegionByIdQuery, RegionDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers
         public RegionsController(
             ICommandHandler<CreateRegionCommand, RegionDto> createHandler,
             ICommandHandler<UpdateRegionCommand, RegionDto> updateHandler,
-            IQueryHandler<GetRegionsQuery, ListResult<RegionListItemDto>> getListHandler,
+            IQueryHandler<GetRegionsQuery, PagedResponseDto<RegionListItemDto>> getListHandler,
             IQueryHandler<GetRegionByIdQuery, RegionDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,36 @@ namespace TourCore.Api.Legacy.Controllers
         /// Получить список регионов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список регионов из справочника.
-        /// Используется для группировки городов внутри страны, фильтрации направлений и настройки географии.
+        /// Возвращает список регионов с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по названию, английскому названию и коду региона.
+        /// - query.filter.countryId — фильтр по идентификатору страны.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - countryId
+        /// - name
+        /// - nameEn
+        /// - code
+        /// - sortOrder
         /// </remarks>
-        /// <returns>Список регионов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка регионов.</param>
+        /// <returns>Страница списка регионов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetRegionsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetRegionsQuery(),
+                query ?? new GetRegionsQuery(),
                 CancellationToken.None);
 
             return Ok(result);

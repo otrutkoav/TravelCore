@@ -1,51 +1,78 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Geography.Resorts;
 using TourCore.Application.Abstractions.Persistence.Geography;
-using TourCore.Application.Geography.Resorts.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Geography.Resorts.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Geography.Resorts;
 
 namespace TourCore.Application.Geography.Resorts.Handlers
 {
-    public class GetResortsHandler : IQueryHandler<GetResortsQuery, ListResult<ResortListItemDto>>
+    public class GetResortsHandler : IQueryHandler<GetResortsQuery, PagedResponseDto<ResortListItemDto>>
     {
         private readonly IResortRepository _resortRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetResortsHandler(IResortRepository resortRepository)
+        public GetResortsHandler(
+            IResortRepository resortRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _resortRepository = resortRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<ResortListItemDto>> Handle(GetResortsQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<ResortListItemDto>> Handle(
+            GetResortsQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _resortRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetResortsQuery();
 
-            if (query != null && query.Filter != null)
+            var resorts = _resortRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    resorts = resorts.Where(x =>
+                        x.Name.Contains(search) ||
+                        x.NameEn.Contains(search));
                 }
 
                 if (query.Filter.CountryId.HasValue)
-                    items = items.Where(x => x.CountryId == query.Filter.CountryId.Value);
+                {
+                    var countryId = query.Filter.CountryId.Value;
+
+                    resorts = resorts.Where(x => x.CountryId == countryId);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                resorts = resorts.OrderBy(x => x.Name);
+            }
+            else
+            {
+                resorts = resorts.ApplySorting(
+                    query,
+                    ResortSortDefinition.Instance);
+            }
 
-            return ListResult<ResortListItemDto>.Create(result);
+            var dtoQuery = resorts.Select(ResortProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<ResortListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

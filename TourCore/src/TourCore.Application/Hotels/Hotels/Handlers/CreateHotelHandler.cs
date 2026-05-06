@@ -5,6 +5,7 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Hotels.Hotels.Commands;
 using TourCore.Application.Hotels.Hotels.Mappings;
@@ -20,7 +21,7 @@ namespace TourCore.Application.Hotels.Hotels.Handlers
         private readonly ICountryRepository _countryRepository;
         private readonly ICityRepository _cityRepository;
         private readonly IResortRepository _resortRepository;
-        private readonly IHotelCategoryRepository _categoryRepository;
+        private readonly IHotelCategoryRepository _hotelCategoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly CreateHotelCommandValidator _validator;
@@ -30,7 +31,7 @@ namespace TourCore.Application.Hotels.Hotels.Handlers
             ICountryRepository countryRepository,
             ICityRepository cityRepository,
             IResortRepository resortRepository,
-            IHotelCategoryRepository categoryRepository,
+            IHotelCategoryRepository hotelCategoryRepository,
             IUnitOfWork unitOfWork,
             IDateTimeProvider dateTimeProvider,
             CreateHotelCommandValidator validator)
@@ -39,7 +40,7 @@ namespace TourCore.Application.Hotels.Hotels.Handlers
             _countryRepository = countryRepository;
             _cityRepository = cityRepository;
             _resortRepository = resortRepository;
-            _categoryRepository = categoryRepository;
+            _hotelCategoryRepository = hotelCategoryRepository;
             _unitOfWork = unitOfWork;
             _dateTimeProvider = dateTimeProvider;
             _validator = validator;
@@ -49,20 +50,38 @@ namespace TourCore.Application.Hotels.Hotels.Handlers
         {
             _validator.ValidateAndThrow(command);
 
-            if (await _countryRepository.GetByIdAsync(command.CountryId, cancellationToken) == null)
-                throw new NotFoundException("Country was not found.");
+            var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
-            if (await _cityRepository.GetByIdAsync(command.CityId, cancellationToken) == null)
-                throw new NotFoundException("City was not found.");
+            if (await _hotelRepository.ExistsByCodeAsync(normalizedCode, cancellationToken))
+                throw new ConflictException(ErrorMessages.HotelCodeExists, ErrorCode.HotelCodeExists);
 
-            if (await _hotelRepository.ExistsByCodeAsync(command.Code, cancellationToken))
-                throw new ValidationException("Hotel with the same code already exists.");
+            var country = await _countryRepository.GetByIdAsync(command.CountryId, cancellationToken);
+            if (country == null)
+                throw new NotFoundException(ErrorMessages.CountryNotFound, ErrorCode.CountryNotFound);
 
-            if (command.ResortId.HasValue && await _resortRepository.GetByIdAsync(command.ResortId.Value, cancellationToken) == null)
-                throw new NotFoundException("Resort was not found.");
+            var city = await _cityRepository.GetByIdAsync(command.CityId, cancellationToken);
+            if (city == null)
+                throw new NotFoundException(ErrorMessages.CityNotFound, ErrorCode.CityNotFound);
 
-            if (command.CategoryId.HasValue && await _categoryRepository.GetByIdAsync(command.CategoryId.Value, cancellationToken) == null)
-                throw new NotFoundException("Hotel category was not found.");
+            if (city.CountryId != command.CountryId)
+                throw new ValidationException(new System.Collections.Generic.Dictionary<string, string[]>
+                {
+                    { "CityId", new[] { ErrorCode.RegionCountryMismatch } }
+                });
+
+            if (command.ResortId.HasValue)
+            {
+                var resort = await _resortRepository.GetByIdAsync(command.ResortId.Value, cancellationToken);
+                if (resort == null)
+                    throw new NotFoundException(ErrorMessages.ResortNotFound, ErrorCode.ResortNotFound);
+            }
+
+            if (command.CategoryId.HasValue)
+            {
+                var category = await _hotelCategoryRepository.GetByIdAsync(command.CategoryId.Value, cancellationToken);
+                if (category == null)
+                    throw new NotFoundException(ErrorMessages.HotelCategoryNotFound, ErrorCode.HotelCategoryNotFound);
+            }
 
             var entity = new Hotel(
                 command.CountryId,

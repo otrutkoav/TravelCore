@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.TransferDirections.Commands;
 
@@ -9,26 +11,44 @@ namespace TourCore.Application.Transfers.TransferDirections.Validators
         public void ValidateAndThrow(CreateTransferDirectionCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateTransferDirectionCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateTransferDirectionCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 128)
-                errors.Add("Name must be 128 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(x => x.Key, x => x.Value.ToArray());
         }
     }
 }

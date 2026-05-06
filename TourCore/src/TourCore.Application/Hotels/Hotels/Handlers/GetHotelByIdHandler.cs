@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Hotels;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Application.Hotels.Hotels.Queries;
 using TourCore.Application.Hotels.Hotels.Mappings;
+using TourCore.Application.Hotels.Hotels.Queries;
 using TourCore.Contracts.Hotels.Hotels;
 
 namespace TourCore.Application.Hotels.Hotels.Handlers
@@ -23,7 +24,7 @@ namespace TourCore.Application.Hotels.Hotels.Handlers
             var entity = await _hotelRepository.GetByIdAsync(query.Id, cancellationToken);
 
             if (entity == null)
-                throw new NotFoundException("Hotel was not found.");
+                throw new NotFoundException(ErrorMessages.HotelNotFound, ErrorCode.HotelNotFound);
 
             return entity.ToDto();
         }

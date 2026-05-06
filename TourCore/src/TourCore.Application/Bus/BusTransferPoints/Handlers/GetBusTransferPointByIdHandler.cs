@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Abstractions.Persistence.Bus;
 using TourCore.Application.Bus.BusTransferPoints.Mappings;
 using TourCore.Application.Bus.BusTransferPoints.Queries;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Bus.BusTransferPoints.Handlers
 {

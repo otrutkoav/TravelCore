@@ -10,6 +10,7 @@ using TourCore.Application.Abstractions.Persistence.Bus;
 using TourCore.Application.Bus.BusSchedules.Commands;
 using TourCore.Application.Bus.BusSchedules.Mappings;
 using TourCore.Application.Bus.BusSchedules.Validators;
+using TourCore.Application.Common.Errors;
 
 namespace TourCore.Application.Bus.BusSchedules.Handlers
 {

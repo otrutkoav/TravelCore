@@ -1,4 +1,6 @@
-﻿namespace TourCore.Contracts.Hotels.AccommodationTypes
+﻿using TourCore.Contracts.Hotels.AccommodationPlacementRules;
+
+namespace TourCore.Contracts.Hotels.AccommodationTypes
 {
     public class AccommodationTypeDto
     {
@@ -19,8 +21,10 @@
 
         public string Description { get; set; }
 
+        public int? MainPlacementRuleId { get; set; }
         public AccommodationPlacementRuleDto MainPlacementRule { get; set; }
 
+        public int? ExtraPlacementRuleId { get; set; }
         public AccommodationPlacementRuleDto ExtraPlacementRule { get; set; }
     }
 }

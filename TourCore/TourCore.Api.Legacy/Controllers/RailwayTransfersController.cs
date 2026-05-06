@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Railway.RailwayTransfers.Commands;
 using TourCore.Application.Railway.RailwayTransfers.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Railway.RailwayTransfers;
 
 namespace TourCore.Api.Legacy.Controllers.Railway
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Railway
     {
         private readonly ICommandHandler<CreateRailwayTransferCommand, RailwayTransferDto> _createHandler;
         private readonly ICommandHandler<UpdateRailwayTransferCommand, RailwayTransferDto> _updateHandler;
-        private readonly IQueryHandler<GetRailwayTransfersQuery, ListResult<RailwayTransferListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetRailwayTransfersQuery, PagedResponseDto<RailwayTransferListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetRailwayTransferByIdQuery, RailwayTransferDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Railway
         public RailwayTransfersController(
             ICommandHandler<CreateRailwayTransferCommand, RailwayTransferDto> createHandler,
             ICommandHandler<UpdateRailwayTransferCommand, RailwayTransferDto> updateHandler,
-            IQueryHandler<GetRailwayTransfersQuery, ListResult<RailwayTransferListItemDto>> getListHandler,
+            IQueryHandler<GetRailwayTransfersQuery, PagedResponseDto<RailwayTransferListItemDto>> getListHandler,
             IQueryHandler<GetRailwayTransferByIdQuery, RailwayTransferDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,20 +45,49 @@ namespace TourCore.Api.Legacy.Controllers.Railway
         /// Получить список ЖД-переездов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список базовых направлений железнодорожных переездов.
+        /// Возвращает список базовых направлений железнодорожных переездов
+        /// с поддержкой фильтрации, пагинации и сортировки.
         ///
         /// ЖД-переезд определяет маршрут между городами:
         /// страну и город отправления, страну и город прибытия.
         ///
         /// Не содержит расписания, поездов и конкретных дат отправления.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по названию ЖД-переезда.
+        /// - query.filter.countryFromId — фильтр по идентификатору страны отправления.
+        /// - query.filter.cityFromId — фильтр по идентификатору города отправления.
+        /// - query.filter.countryToId — фильтр по идентификатору страны прибытия.
+        /// - query.filter.cityToId — фильтр по идентификатору города прибытия.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки:
+        ///   0 — по возрастанию,
+        ///   1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - name
+        /// - countryFromId
+        /// - cityFromId
+        /// - countryToId
+        /// - cityToId
         /// </remarks>
-        /// <returns>Список ЖД-переездов.</returns>
+        /// <param name="query">
+        /// Параметры фильтрации, пагинации и сортировки ЖД-переездов.
+        /// </param>
+        /// <returns>Страница списка ЖД-переездов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetRailwayTransfersQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetRailwayTransfersQuery(),
+                query ?? new GetRailwayTransfersQuery(),
                 CancellationToken.None);
 
             return Ok(result);

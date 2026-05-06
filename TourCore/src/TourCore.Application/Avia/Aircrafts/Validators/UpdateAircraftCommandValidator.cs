@@ -31,7 +31,7 @@ namespace TourCore.Application.Avia.Aircrafts.Validators
 
             if (string.IsNullOrWhiteSpace(command.Code))
                 AddError(errors, "Code", ErrorCode.Required);
-            else if (command.Code.Trim().Length > 3)
+            else if (command.Code.Trim().Length > 10)
                 AddError(errors, "Code", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Name))

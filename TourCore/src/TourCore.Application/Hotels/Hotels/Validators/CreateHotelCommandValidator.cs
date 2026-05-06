@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Hotels.Hotels.Commands;
 
@@ -9,78 +11,96 @@ namespace TourCore.Application.Hotels.Hotels.Validators
         public void ValidateAndThrow(CreateHotelCommand command)
         {
             var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(CreateHotelCommand command)
+        public IReadOnlyDictionary<string, string[]> Validate(CreateHotelCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
             if (command == null)
             {
-                errors.Add("Command is required.");
-                return errors;
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
             }
 
             if (command.CountryId <= 0)
-                errors.Add("CountryId is required.");
+                AddError(errors, "CountryId", ErrorCode.GreaterThanZero);
 
             if (command.CityId <= 0)
-                errors.Add("CityId is required.");
+                AddError(errors, "CityId", ErrorCode.GreaterThanZero);
 
             if (command.ResortId.HasValue && command.ResortId.Value <= 0)
-                errors.Add("ResortId must be greater than zero.");
+                AddError(errors, "ResortId", ErrorCode.GreaterThanZero);
 
             if (command.CategoryId.HasValue && command.CategoryId.Value <= 0)
-                errors.Add("CategoryId must be greater than zero.");
+                AddError(errors, "CategoryId", ErrorCode.GreaterThanZero);
 
             if (string.IsNullOrWhiteSpace(command.Name))
-                errors.Add("Name is required.");
+                AddError(errors, "Name", ErrorCode.Required);
             else if (command.Name.Trim().Length > 200)
-                errors.Add("Name must be 200 characters or less.");
+                AddError(errors, "Name", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 200)
-                errors.Add("NameEn must be 200 characters or less.");
+                AddError(errors, "NameEn", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Stars))
-                errors.Add("Stars is required.");
+                AddError(errors, "Stars", ErrorCode.Required);
             else if (command.Stars.Trim().Length > 20)
-                errors.Add("Stars must be 20 characters or less.");
+                AddError(errors, "Stars", ErrorCode.MaxLength);
 
             if (string.IsNullOrWhiteSpace(command.Code))
-                errors.Add("Code is required.");
+                AddError(errors, "Code", ErrorCode.Required);
             else if (command.Code.Trim().Length > 10)
-                errors.Add("Code must be 10 characters or less.");
+                AddError(errors, "Code", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Address) && command.Address.Trim().Length > 254)
-                errors.Add("Address must be 254 characters or less.");
+                AddError(errors, "Address", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Phone) && command.Phone.Trim().Length > 50)
-                errors.Add("Phone must be 50 characters or less.");
+                AddError(errors, "Phone", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Fax) && command.Fax.Trim().Length > 20)
-                errors.Add("Fax must be 20 characters or less.");
+                AddError(errors, "Fax", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Email) && command.Email.Trim().Length > 50)
-                errors.Add("Email must be 50 characters or less.");
+                AddError(errors, "Email", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Website) && command.Website.Trim().Length > 254)
-                errors.Add("Website must be 254 characters or less.");
+                AddError(errors, "Website", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Latitude) && command.Latitude.Trim().Length > 30)
-                errors.Add("Latitude must be 30 characters or less.");
+                AddError(errors, "Latitude", ErrorCode.MaxLength);
 
             if (!string.IsNullOrWhiteSpace(command.Longitude) && command.Longitude.Trim().Length > 30)
-                errors.Add("Longitude must be 30 characters or less.");
+                AddError(errors, "Longitude", ErrorCode.MaxLength);
 
             if (command.SortOrder < 0)
-                errors.Add("SortOrder cannot be negative.");
+                AddError(errors, "SortOrder", ErrorCode.Negative);
 
             if (command.Rank.HasValue && command.Rank.Value < 0)
-                errors.Add("Rank cannot be negative.");
+                AddError(errors, "Rank", ErrorCode.Negative);
 
-            return errors;
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(x => x.Key, x => x.Value.ToArray());
         }
     }
 }

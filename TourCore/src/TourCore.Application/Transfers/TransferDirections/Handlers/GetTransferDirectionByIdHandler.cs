@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Application.Abstractions.Persistence.Transfers;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.TransferDirections.Mappings;
 using TourCore.Application.Transfers.TransferDirections.Queries;
+using TourCore.Contracts.Transfers.TransferDirections;
 
 namespace TourCore.Application.Transfers.TransferDirections.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Transfers.TransferDirections.Handlers
         {
             var entity = await _transferDirectionRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Transfer direction was not found.");
+                throw new NotFoundException(ErrorMessages.TransferDirectionNotFound, ErrorCode.TransferDirectionNotFound);
 
             return entity.ToDto();
         }

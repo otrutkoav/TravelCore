@@ -1,45 +1,67 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Application.Abstractions.Persistence.Transfers;
-using TourCore.Application.Transfers.TransferDirections.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Transfers.TransferDirections.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Transfers.TransferDirections;
 
 namespace TourCore.Application.Transfers.TransferDirections.Handlers
 {
-    public class GetTransferDirectionsHandler : IQueryHandler<GetTransferDirectionsQuery, ListResult<TransferDirectionListItemDto>>
+    public class GetTransferDirectionsHandler
+        : IQueryHandler<GetTransferDirectionsQuery, PagedResponseDto<TransferDirectionListItemDto>>
     {
         private readonly ITransferDirectionRepository _transferDirectionRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetTransferDirectionsHandler(ITransferDirectionRepository transferDirectionRepository)
+        public GetTransferDirectionsHandler(
+            ITransferDirectionRepository transferDirectionRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _transferDirectionRepository = transferDirectionRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<TransferDirectionListItemDto>> Handle(GetTransferDirectionsQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<TransferDirectionListItemDto>> Handle(
+            GetTransferDirectionsQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _transferDirectionRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetTransferDirectionsQuery();
 
-            if (query != null && query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
+            var directions = _transferDirectionRepository.Query();
+
+            if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {
                 var search = query.Filter.Search.Trim();
 
-                items = items.Where(x =>
-                    !string.IsNullOrWhiteSpace(x.Name) &&
-                    x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                directions = directions.Where(x => x.Name.Contains(search));
             }
 
-            var result = items
-                .OrderBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                directions = directions.OrderBy(x => x.Name);
+            }
+            else
+            {
+                directions = directions.ApplySorting(
+                    query,
+                    TransferDirectionSortDefinition.Instance);
+            }
 
-            return ListResult<TransferDirectionListItemDto>.Create(result);
+            var dtoQuery = directions.Select(TransferDirectionProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<TransferDirectionListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

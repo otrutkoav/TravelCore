@@ -27,6 +27,12 @@ namespace TourCore.Application.Railway.TrainSchedules.Mapping
             {
                 Id = entity.Id,
                 RailwayTransferId = entity.RailwayTransferId,
+                DateFrom = entity.DateFrom,
+                DateTo = entity.DateTo,
+                TimeFrom = entity.TimeFrom,
+                TimeTo = entity.TimeTo,
+                DaysOfWeek = entity.DaysOfWeek == null ? null : entity.DaysOfWeek.ToLegacy(),
+                DaysOnRoad = entity.DaysOnRoad,
                 Remark = entity.Remark
             };
         }

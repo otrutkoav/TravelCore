@@ -2,6 +2,11 @@
 {
     public class GetHotelByIdQuery
     {
-        public int Id { get; set; }
+        public GetHotelByIdQuery(int id)
+        {
+            Id = id;
+        }
+
+        public int Id { get; private set; }
     }
 }

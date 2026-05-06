@@ -7,6 +7,7 @@ using TourCore.Application.Common.Models;
 using TourCore.Application.Geography.Countries.Commands;
 using TourCore.Application.Geography.Countries.Queries;
 using TourCore.Contracts.Geography.Countries;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers
     {
         private readonly ICommandHandler<CreateCountryCommand, CountryDto> _createHandler;
         private readonly ICommandHandler<UpdateCountryCommand, CountryDto> _updateHandler;
-        private readonly IQueryHandler<GetCountriesQuery, ListResult<CountryListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetCountriesQuery, PagedResponseDto<CountryListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetCountryByIdQuery, CountryDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers
         public CountriesController(
             ICommandHandler<CreateCountryCommand, CountryDto> createHandler,
             ICommandHandler<UpdateCountryCommand, CountryDto> updateHandler,
-            IQueryHandler<GetCountriesQuery, ListResult<CountryListItemDto>> getListHandler,
+            IQueryHandler<GetCountriesQuery, PagedResponseDto<CountryListItemDto>> getListHandler,
             IQueryHandler<GetCountryByIdQuery, CountryDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,39 @@ namespace TourCore.Api.Legacy.Controllers
         /// Получить список стран.
         /// </summary>
         /// <remarks>
-        /// Возвращает список стран из справочника.
-        /// Можно использовать для выбора страны в формах, фильтрах и настройках.
+        /// Возвращает список стран с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по названию, английскому названию, коду страны, ISO2, ISO3, цифровому коду и названию гражданства.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - name
+        /// - nameEn
+        /// - code
+        /// - isoCode2
+        /// - isoCode3
+        /// - digitalCode
+        /// - citizenshipName
+        /// - citizenshipNameEn
+        /// - sortOrder
         /// </remarks>
-        /// <returns>Список стран.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка стран.</param>
+        /// <returns>Страница списка стран.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetCountriesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetCountriesQuery(),
+                query ?? new GetCountriesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

@@ -1,59 +1,92 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Finance.Rates;
 using TourCore.Application.Abstractions.Persistence.Finance;
-using TourCore.Application.Finance.Rates.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Finance.Rates.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Finance.Rates;
 
 namespace TourCore.Application.Finance.Rates.Handlers
 {
-    public class GetRatesHandler : IQueryHandler<GetRatesQuery, ListResult<RateListItemDto>>
+    public class GetRatesHandler : IQueryHandler<GetRatesQuery, PagedResponseDto<RateListItemDto>>
     {
         private readonly IRateRepository _rateRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetRatesHandler(IRateRepository rateRepository)
+        public GetRatesHandler(
+            IRateRepository rateRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _rateRepository = rateRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<RateListItemDto>> Handle(GetRatesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<RateListItemDto>> Handle(
+            GetRatesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _rateRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetRatesQuery();
 
-            if (query != null && query.Filter != null)
+            var rates = _rateRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.IsoCode) && x.IsoCode.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    rates = rates.Where(x =>
+                        x.Code.Contains(search) ||
+                        x.Name.Contains(search) ||
+                        x.IsoCode.Contains(search));
                 }
 
                 if (query.Filter.IsMain.HasValue)
-                    items = items.Where(x => x.IsMain == query.Filter.IsMain.Value);
+                {
+                    var isMain = query.Filter.IsMain.Value;
+                    rates = rates.Where(x => x.IsMain == isMain);
+                }
 
                 if (query.Filter.IsNational.HasValue)
-                    items = items.Where(x => x.IsNational == query.Filter.IsNational.Value);
+                {
+                    var isNational = query.Filter.IsNational.Value;
+                    rates = rates.Where(x => x.IsNational == isNational);
+                }
 
                 if (query.Filter.ShowInSearch.HasValue)
-                    items = items.Where(x => x.ShowInSearch == query.Filter.ShowInSearch.Value);
+                {
+                    var showInSearch = query.Filter.ShowInSearch.Value;
+                    rates = rates.Where(x => x.ShowInSearch == showInSearch);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.Name)
-                .ThenBy(x => x.Code)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                rates = rates
+                    .OrderBy(x => x.Name)
+                    .ThenBy(x => x.Code);
+            }
+            else
+            {
+                rates = rates.ApplySorting(
+                    query,
+                    RateSortDefinition.Instance);
+            }
 
-            return ListResult<RateListItemDto>.Create(result);
+            var dtoQuery = rates.Select(RateProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<RateListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

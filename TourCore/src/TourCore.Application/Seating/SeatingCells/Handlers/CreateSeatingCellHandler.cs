@@ -4,11 +4,12 @@ using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Seating;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Seating.SeatingCells.Commands;
-using TourCore.Application.Seating.SeatingCells.DTOs;
 using TourCore.Application.Seating.SeatingCells.Mappings;
 using TourCore.Application.Seating.SeatingCells.Validators;
+using TourCore.Contracts.Seating.SeatingCells;
 using TourCore.Domain.Seating.Entities;
 
 namespace TourCore.Application.Seating.SeatingCells.Handlers
@@ -41,14 +42,16 @@ namespace TourCore.Application.Seating.SeatingCells.Handlers
 
             var vehiclePlan = await _vehiclePlanRepository.GetByIdAsync(command.VehiclePlanId, cancellationToken);
             if (vehiclePlan == null)
-                throw new NotFoundException("Vehicle plan was not found.");
+                throw new NotFoundException(ErrorMessages.VehiclePlanNotFound, ErrorCode.VehiclePlanNotFound);
 
             var entity = new SeatingCell(
                 command.VehiclePlanId,
                 command.Index,
                 _dateTimeProvider.UtcNow,
                 command.Number,
-                command.Type,
+                command.Type.HasValue
+                    ? (SeatType?)command.Type.Value
+                    : null,
                 command.SeatsCount,
                 command.Border);
 

@@ -1,59 +1,93 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Finance.RealCourses;
 using TourCore.Application.Abstractions.Persistence.Finance;
-using TourCore.Application.Finance.RealCourses.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Finance.RealCourses.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Finance.RealCourses;
 
 namespace TourCore.Application.Finance.RealCourses.Handlers
 {
-    public class GetRealCoursesHandler : IQueryHandler<GetRealCoursesQuery, ListResult<RealCourseListItemDto>>
+    public class GetRealCoursesHandler : IQueryHandler<GetRealCoursesQuery, PagedResponseDto<RealCourseListItemDto>>
     {
         private readonly IRealCourseRepository _realCourseRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetRealCoursesHandler(IRealCourseRepository realCourseRepository)
+        public GetRealCoursesHandler(
+            IRealCourseRepository realCourseRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _realCourseRepository = realCourseRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<RealCourseListItemDto>> Handle(GetRealCoursesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<RealCourseListItemDto>> Handle(
+            GetRealCoursesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _realCourseRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetRealCoursesQuery();
 
-            if (query != null && query.Filter != null)
+            var courses = _realCourseRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.FromRateCode))
                 {
                     var fromRateCode = query.Filter.FromRateCode.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.FromRateCode) &&
-                        x.FromRateCode.IndexOf(fromRateCode, StringComparison.OrdinalIgnoreCase) >= 0);
+                    courses = courses.Where(x => x.FromRateCode.Contains(fromRateCode));
                 }
 
                 if (!string.IsNullOrWhiteSpace(query.Filter.ToRateCode))
                 {
                     var toRateCode = query.Filter.ToRateCode.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.ToRateCode) &&
-                        x.ToRateCode.IndexOf(toRateCode, StringComparison.OrdinalIgnoreCase) >= 0);
+                    courses = courses.Where(x => x.ToRateCode.Contains(toRateCode));
+                }
+
+                if (query.Filter.DateFrom.HasValue)
+                {
+                    var dateFrom = query.Filter.DateFrom.Value;
+
+                    courses = courses.Where(x => x.DateBeg >= dateFrom);
+                }
+
+                if (query.Filter.DateTo.HasValue)
+                {
+                    var dateTo = query.Filter.DateTo.Value;
+
+                    courses = courses.Where(x => x.DateBeg <= dateTo);
                 }
             }
 
-            var result = items
-                .OrderBy(x => x.FromRateCode)
-                .ThenBy(x => x.ToRateCode)
-                .ThenBy(x => x.DateBeg)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                courses = courses
+                    .OrderBy(x => x.FromRateCode)
+                    .ThenBy(x => x.ToRateCode)
+                    .ThenBy(x => x.DateBeg);
+            }
+            else
+            {
+                courses = courses.ApplySorting(
+                    query,
+                    RealCourseSortDefinition.Instance);
+            }
 
-            return ListResult<RealCourseListItemDto>.Create(result);
+            var dtoQuery = courses.Select(RealCourseProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<RealCourseListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

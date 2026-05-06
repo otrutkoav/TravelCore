@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Railway.TrainSchedules.Commands;
 
@@ -6,24 +8,63 @@ namespace TourCore.Application.Railway.TrainSchedules.Validators
 {
     public class UpdateTrainScheduleCommandValidator
     {
-        public void ValidateAndThrow(UpdateTrainScheduleCommand cmd)
+        public void ValidateAndThrow(UpdateTrainScheduleCommand command)
         {
-            var errors = Validate(cmd);
+            var errors = Validate(command);
+
             if (errors.Count > 0)
                 throw new ValidationException(errors);
         }
 
-        public IReadOnlyCollection<string> Validate(UpdateTrainScheduleCommand cmd)
+        public IReadOnlyDictionary<string, string[]> Validate(UpdateTrainScheduleCommand command)
         {
-            var errors = new List<string>();
+            var errors = new Dictionary<string, List<string>>();
 
-            if (cmd.Id <= 0)
-                errors.Add("Id must be greater than 0.");
+            if (command == null)
+            {
+                AddError(errors, "General", ErrorCode.Required);
+                return ToResult(errors);
+            }
 
-            if (cmd.RailwayTransferId <= 0)
-                errors.Add("RailwayTransferId must be greater than 0.");
+            if (command.Id <= 0)
+                AddError(errors, "Id", ErrorCode.GreaterThanZero);
 
-            return errors;
+            if (command.RailwayTransferId <= 0)
+                AddError(errors, "RailwayTransferId", ErrorCode.GreaterThanZero);
+
+            if (command.DateFrom.HasValue &&
+                command.DateTo.HasValue &&
+                command.DateFrom.Value.Date > command.DateTo.Value.Date)
+            {
+                AddError(errors, "DateFrom", ErrorCode.DateRangeInvalid);
+            }
+
+            if (command.DaysOnRoad.HasValue && command.DaysOnRoad.Value < 0)
+                AddError(errors, "DaysOnRoad", ErrorCode.Negative);
+
+            if (!string.IsNullOrWhiteSpace(command.Remark) && command.Remark.Trim().Length > 100)
+                AddError(errors, "Remark", ErrorCode.MaxLength);
+
+            return ToResult(errors);
+        }
+
+        private static void AddError(
+            IDictionary<string, List<string>> errors,
+            string field,
+            string code)
+        {
+            if (!errors.ContainsKey(field))
+                errors[field] = new List<string>();
+
+            errors[field].Add(code);
+        }
+
+        private static IReadOnlyDictionary<string, string[]> ToResult(
+            IDictionary<string, List<string>> errors)
+        {
+            return errors.ToDictionary(
+                x => x.Key,
+                x => x.Value.ToArray());
         }
     }
 }

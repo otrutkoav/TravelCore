@@ -16,6 +16,10 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories
         {
             _context = context;
         }
+        public IQueryable<Country> Query()
+        {
+            return _context.Countries;
+        }
 
         public async Task<Country> GetByIdAsync(int id, CancellationToken ct)
         {

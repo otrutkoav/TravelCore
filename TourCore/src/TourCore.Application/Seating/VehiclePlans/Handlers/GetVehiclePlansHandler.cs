@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Seating;
 using TourCore.Application.Common.Models;
-using TourCore.Application.Seating.VehiclePlans.DTOs;
 using TourCore.Application.Seating.VehiclePlans.Mappings;
 using TourCore.Application.Seating.VehiclePlans.Queries;
+using TourCore.Contracts.Seating.VehiclePlans;
 
 namespace TourCore.Application.Seating.VehiclePlans.Handlers
 {

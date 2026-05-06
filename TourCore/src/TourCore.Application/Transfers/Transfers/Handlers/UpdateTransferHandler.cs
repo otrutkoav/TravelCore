@@ -5,6 +5,7 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Transfers;
 using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.Transfers.Commands;
 using TourCore.Application.Transfers.Transfers.Mappings;
@@ -44,20 +45,20 @@ namespace TourCore.Application.Transfers.Transfers.Handlers
 
             var entity = await _transferRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Transfer was not found.");
+                throw new NotFoundException(ErrorMessages.TransferNotFound, ErrorCode.TransferNotFound);
 
             if (command.CityId.HasValue)
             {
                 var city = await _cityRepository.GetByIdAsync(command.CityId.Value, cancellationToken);
                 if (city == null)
-                    throw new NotFoundException("City was not found.");
+                    throw new NotFoundException(ErrorMessages.CityNotFound, ErrorCode.CityNotFound);
             }
 
             if (command.DirectionId.HasValue)
             {
                 var direction = await _transferDirectionRepository.GetByIdAsync(command.DirectionId.Value, cancellationToken);
                 if (direction == null)
-                    throw new NotFoundException("Transfer direction was not found.");
+                    throw new NotFoundException(ErrorMessages.TransferDirectionNotFound, ErrorCode.TransferDirectionNotFound);
             }
 
             entity.Update(

@@ -17,6 +17,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories
             _context = context;
         }
 
+        public IQueryable<Resort> Query()
+        {
+            return _context.Resorts;
+        }
+
         public async Task<Resort> GetByIdAsync(int id, CancellationToken ct)
         {
             return await _context.Resorts.FirstOrDefaultAsync(x => x.Id == id, ct);

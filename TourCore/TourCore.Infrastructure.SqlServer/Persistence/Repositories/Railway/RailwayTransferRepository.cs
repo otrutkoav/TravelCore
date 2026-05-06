@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Domain.Railway.Entities;
+using System.Linq;
 
 namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Railway
 {
@@ -15,7 +16,10 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Railway
         {
             _context = context;
         }
-
+        public IQueryable<RailwayTransfer> Query()
+        {
+            return _context.RailwayTransfers;
+        }
         public async Task<RailwayTransfer> GetByIdAsync(int id, CancellationToken ct)
         {
             return await _context.RailwayTransfers.FirstOrDefaultAsync(x => x.Id == id, ct);

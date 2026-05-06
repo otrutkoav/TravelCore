@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Domain.Geography.Entities;
+using System.Linq;
 
 namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories
 {
@@ -14,6 +15,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories
         public CityRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<City> Query()
+        {
+            return _context.Cities;
         }
 
         public async Task<City> GetByIdAsync(int id, CancellationToken cancellationToken)

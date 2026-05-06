@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Finance;
 using TourCore.Domain.Finance.Entities;
+using System.Linq;
 
 namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Finance
 {
@@ -14,6 +15,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Finance
         public RateRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<Rate> Query()
+        {
+            return _context.Rates;
         }
 
         public async Task<Rate> GetByIdAsync(int id, CancellationToken ct)

@@ -20,7 +20,21 @@ namespace TourCore.Domain.Railway.Entities
         public DateTime? TimeFrom { get; protected set; }
         public DateTime? TimeTo { get; protected set; }
 
-        public DaysOfWeek DaysOfWeek { get; protected set; }
+        /// <summary>
+        /// Legacy-значение дней недели: строка "1234567".
+        /// </summary>
+        public string DaysOfWeekValue { get; protected set; }
+
+        /// <summary>
+        /// Дни недели в виде value object.
+        /// </summary>
+        public DaysOfWeek DaysOfWeek
+        {
+            get
+            {
+                return DaysOfWeek.FromLegacy(DaysOfWeekValue);
+            }
+        }
 
         public short? DaysOnRoad { get; protected set; }
 
@@ -103,7 +117,9 @@ namespace TourCore.Domain.Railway.Entities
 
         private void SetDaysOfWeek(DaysOfWeek value)
         {
-            DaysOfWeek = value;
+            DaysOfWeekValue = value == null
+                ? null
+                : value.ToLegacy();
         }
 
         private void SetDaysOnRoad(short? value)

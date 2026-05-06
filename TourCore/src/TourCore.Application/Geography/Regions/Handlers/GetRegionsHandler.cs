@@ -1,53 +1,81 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Geography.Regions;
 using TourCore.Application.Abstractions.Persistence.Geography;
-using TourCore.Application.Geography.Regions.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Geography.Regions.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Geography.Regions;
 
 namespace TourCore.Application.Geography.Regions.Handlers
 {
-    public class GetRegionsHandler : IQueryHandler<GetRegionsQuery, ListResult<RegionListItemDto>>
+    public class GetRegionsHandler : IQueryHandler<GetRegionsQuery, PagedResponseDto<RegionListItemDto>>
     {
         private readonly IRegionRepository _regionRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetRegionsHandler(IRegionRepository regionRepository)
+        public GetRegionsHandler(
+            IRegionRepository regionRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _regionRepository = regionRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<RegionListItemDto>> Handle(GetRegionsQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<RegionListItemDto>> Handle(
+            GetRegionsQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _regionRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetRegionsQuery();
 
-            if (query != null && query.Filter != null)
+            var regions = _regionRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    regions = regions.Where(x =>
+                        x.Name.Contains(search) ||
+                        x.NameEn.Contains(search) ||
+                        x.Code.Contains(search));
                 }
 
                 if (query.Filter.CountryId.HasValue)
-                    items = items.Where(x => x.CountryId == query.Filter.CountryId.Value);
+                {
+                    var countryId = query.Filter.CountryId.Value;
+
+                    regions = regions.Where(x => x.CountryId == countryId);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.SortOrder)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                regions = regions
+                    .OrderBy(x => x.SortOrder)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                regions = regions.ApplySorting(
+                    query,
+                    RegionSortDefinition.Instance);
+            }
 
-            return ListResult<RegionListItemDto>.Create(result);
+            var dtoQuery = regions.Select(RegionProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<RegionListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

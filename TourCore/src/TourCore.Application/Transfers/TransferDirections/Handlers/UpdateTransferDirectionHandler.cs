@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
-using TourCore.Application.Abstractions.Services;
-using TourCore.Application.Common.Exceptions;
-using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Application.Abstractions.Persistence.Transfers;
+using TourCore.Application.Abstractions.Services;
+using TourCore.Application.Common.Errors;
+using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Transfers.TransferDirections.Commands;
 using TourCore.Application.Transfers.TransferDirections.Mappings;
 using TourCore.Application.Transfers.TransferDirections.Validators;
+using TourCore.Contracts.Transfers.TransferDirections;
 
 namespace TourCore.Application.Transfers.TransferDirections.Handlers
 {
@@ -37,7 +38,7 @@ namespace TourCore.Application.Transfers.TransferDirections.Handlers
 
             var entity = await _transferDirectionRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Transfer direction was not found.");
+                throw new NotFoundException(ErrorMessages.TransferDirectionNotFound, ErrorCode.TransferDirectionNotFound);
 
             entity.Update(
                 command.Name,

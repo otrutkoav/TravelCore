@@ -2,42 +2,82 @@
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Railway.TrainSchedules;
 using TourCore.Application.Abstractions.Persistence.Railway;
-using TourCore.Application.Railway.TrainSchedules.Mapping;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Railway.TrainSchedules.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Railway.TrainSchedules;
 
 namespace TourCore.Application.Railway.TrainSchedules.Handlers
 {
-    public class GetTrainSchedulesHandler : IQueryHandler<GetTrainSchedulesQuery, ListResult<TrainScheduleListItemDto>>
+    public class GetTrainSchedulesHandler
+        : IQueryHandler<GetTrainSchedulesQuery, PagedResponseDto<TrainScheduleListItemDto>>
     {
         private readonly ITrainScheduleRepository _trainScheduleRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetTrainSchedulesHandler(ITrainScheduleRepository trainScheduleRepository)
+        public GetTrainSchedulesHandler(
+            ITrainScheduleRepository trainScheduleRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _trainScheduleRepository = trainScheduleRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<TrainScheduleListItemDto>> Handle(GetTrainSchedulesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<TrainScheduleListItemDto>> Handle(
+            GetTrainSchedulesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _trainScheduleRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetTrainSchedulesQuery();
 
-            if (query != null && query.Filter != null)
+            var schedules = _trainScheduleRepository.Query();
+
+            if (query.Filter != null && query.Filter.RailwayTransferId.HasValue)
             {
-                if (query.Filter.RailwayTransferId.HasValue)
-                    items = items.Where(x => x.RailwayTransferId == query.Filter.RailwayTransferId.Value);
+                var railwayTransferId = query.Filter.RailwayTransferId.Value;
+
+                schedules = schedules.Where(x => x.RailwayTransferId == railwayTransferId);
             }
 
-            var result = items
-                .OrderBy(x => x.RailwayTransferId)
-                .ThenBy(x => x.DateFrom)
-                .ThenBy(x => x.DateTo)
-                .Select(x => x.ToListItemDto())
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                schedules = schedules
+                    .OrderBy(x => x.RailwayTransferId)
+                    .ThenBy(x => x.DateFrom)
+                    .ThenBy(x => x.DateTo);
+            }
+            else
+            {
+                schedules = schedules.ApplySorting(
+                    query,
+                    TrainScheduleSortDefinition.Instance);
+            }
+
+            var pagedEntities = await _pagedQueryExecutor.ExecuteAsync(
+                schedules,
+                query,
+                cancellationToken);
+
+            var items = pagedEntities.Items
+                .Select(x => new TrainScheduleListItemDto
+                {
+                    Id = x.Id,
+                    RailwayTransferId = x.RailwayTransferId,
+                    DateFrom = x.DateFrom,
+                    DateTo = x.DateTo,
+                    TimeFrom = x.TimeFrom,
+                    TimeTo = x.TimeTo,
+                    DaysOfWeek = x.DaysOfWeek == null ? null : x.DaysOfWeek.ToLegacy(),
+                    DaysOnRoad = x.DaysOnRoad,
+                    Remark = x.Remark
+                })
                 .ToArray();
 
-            return ListResult<TrainScheduleListItemDto>.Create(result);
+            return new PagedResponseDto<TrainScheduleListItemDto>(
+                items,
+                pagedEntities.Page,
+                pagedEntities.PageSize,
+                pagedEntities.TotalCount);
         }
     }
 }

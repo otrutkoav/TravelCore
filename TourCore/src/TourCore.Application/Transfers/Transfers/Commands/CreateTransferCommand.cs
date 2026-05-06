@@ -11,6 +11,7 @@ namespace TourCore.Application.Transfers.Transfers.Commands
         public DateTime? TimeTo { get; set; }
 
         public string DurationText { get; set; }
+
         public string PlaceFrom { get; set; }
         public string PlaceTo { get; set; }
 
@@ -20,6 +21,7 @@ namespace TourCore.Application.Transfers.Transfers.Commands
         public int? DirectionId { get; set; }
 
         public string Url { get; set; }
+
         public int ShowOrder { get; set; }
 
         public bool AutoApplyFrom { get; set; }

@@ -7,6 +7,7 @@ using TourCore.Application.Bus.BusSchedules.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Bus.BusSchedules;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Bus
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Bus
     {
         private readonly ICommandHandler<CreateBusScheduleCommand, BusScheduleDto> _createHandler;
         private readonly ICommandHandler<UpdateBusScheduleCommand, BusScheduleDto> _updateHandler;
-        private readonly IQueryHandler<GetBusSchedulesQuery, ListResult<BusScheduleListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetBusSchedulesQuery, PagedResponseDto<BusScheduleListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetBusScheduleByIdQuery, BusScheduleDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Bus
         public BusSchedulesController(
             ICommandHandler<CreateBusScheduleCommand, BusScheduleDto> createHandler,
             ICommandHandler<UpdateBusScheduleCommand, BusScheduleDto> updateHandler,
-            IQueryHandler<GetBusSchedulesQuery, ListResult<BusScheduleListItemDto>> getListHandler,
+            IQueryHandler<GetBusSchedulesQuery, PagedResponseDto<BusScheduleListItemDto>> getListHandler,
             IQueryHandler<GetBusScheduleByIdQuery, BusScheduleDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,7 +45,8 @@ namespace TourCore.Api.Legacy.Controllers.Bus
         /// Получить список расписаний автобусных переездов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список расписаний автобусных маршрутов.
+        /// Возвращает список расписаний автобусных маршрутов
+        /// с поддержкой фильтрации, пагинации и сортировки.
         ///
         /// Расписание определяет:
         /// - период действия (даты)
@@ -53,14 +55,39 @@ namespace TourCore.Api.Legacy.Controllers.Bus
         /// - длительность маршрута (в днях)
         ///
         /// Используется для формирования календаря автобусных туров.
+        ///
+        /// Фильтрация:
+        /// - query.filter.busTransferId — фильтр по идентификатору автобусного переезда.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки:
+        ///   0 — по возрастанию,
+        ///   1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - busTransferId
+        /// - dateFrom
+        /// - dateTo
+        /// - timeFrom
+        /// - timeTo
+        /// - daysOnRoad
         /// </remarks>
-        /// <returns>Список расписаний автобусных переездов.</returns>
+        /// <param name="query">
+        /// Параметры фильтрации, пагинации и сортировки расписаний автобусных переездов.
+        /// </param>
+        /// <returns>Страница списка расписаний автобусных переездов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetBusSchedulesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetBusSchedulesQuery(),
+                query ?? new GetBusSchedulesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

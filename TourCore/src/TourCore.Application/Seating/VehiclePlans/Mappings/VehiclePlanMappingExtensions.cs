@@ -1,4 +1,4 @@
-﻿using TourCore.Application.Seating.VehiclePlans.DTOs;
+﻿using TourCore.Contracts.Seating.VehiclePlans;
 using TourCore.Domain.Seating.Entities;
 
 namespace TourCore.Application.Seating.VehiclePlans.Mappings
@@ -34,7 +34,10 @@ namespace TourCore.Application.Seating.VehiclePlans.Mappings
                 ColumnsCount = entity.ColumnsCount,
                 AreaNumber = entity.AreaNumber,
                 Name = entity.Name,
-                IsAircraft = entity.IsAircraft
+                PlanOrientation = entity.PlanOrientation,
+                IsAircraft = entity.IsAircraft,
+                Dates = entity.Dates,
+                Comment = entity.Comment
             };
         }
     }

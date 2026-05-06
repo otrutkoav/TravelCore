@@ -37,6 +37,8 @@ namespace TourCore.Api.Legacy.Models
 
                 case ErrorCode.ArrivalCityCountryMismatch:
                     return "Город прибытия не принадлежит выбранной стране прибытия.";
+                case ErrorCode.AgeRangeInvalid:
+                    return "Возраст от не может быть больше возраста до.";
 
                 default:
                     return $"Неизвестная ошибка валидации ({code}).";

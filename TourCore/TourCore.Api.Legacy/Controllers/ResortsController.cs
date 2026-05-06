@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Geography.Resorts.Commands;
 using TourCore.Application.Geography.Resorts.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Geography.Resorts;
 
 namespace TourCore.Api.Legacy.Controllers
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers
     {
         private readonly ICommandHandler<CreateResortCommand, ResortDto> _createHandler;
         private readonly ICommandHandler<UpdateResortCommand, ResortDto> _updateHandler;
-        private readonly IQueryHandler<GetResortsQuery, ListResult<ResortListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetResortsQuery, PagedResponseDto<ResortListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetResortByIdQuery, ResortDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers
         public ResortsController(
             ICommandHandler<CreateResortCommand, ResortDto> createHandler,
             ICommandHandler<UpdateResortCommand, ResortDto> updateHandler,
-            IQueryHandler<GetResortsQuery, ListResult<ResortListItemDto>> getListHandler,
+            IQueryHandler<GetResortsQuery, PagedResponseDto<ResortListItemDto>> getListHandler,
             IQueryHandler<GetResortByIdQuery, ResortDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,34 @@ namespace TourCore.Api.Legacy.Controllers
         /// Получить список курортов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список курортов из справочника.
-        /// Используется в формах, фильтрах поиска, настройках направлений и выборе курорта.
+        /// Возвращает список курортов с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по названию и английскому названию курорта.
+        /// - query.filter.countryId — фильтр по идентификатору страны.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - countryId
+        /// - name
+        /// - nameEn
         /// </remarks>
-        /// <returns>Список курортов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка курортов.</param>
+        /// <returns>Страница списка курортов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetResortsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetResortsQuery(),
+                query ?? new GetResortsQuery(),
                 CancellationToken.None);
 
             return Ok(result);
