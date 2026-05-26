@@ -7,6 +7,7 @@ using TourCore.Application.Avia.Airports.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Avia.Airports;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Avia
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
     {
         private readonly ICommandHandler<CreateAirportCommand, AirportDto> _createHandler;
         private readonly ICommandHandler<UpdateAirportCommand, AirportDto> _updateHandler;
-        private readonly IQueryHandler<GetAirportsQuery, ListResult<AirportListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAirportsQuery, PagedResponseDto<AirportListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetAirportByIdQuery, AirportDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         public AirportsController(
             ICommandHandler<CreateAirportCommand, AirportDto> createHandler,
             ICommandHandler<UpdateAirportCommand, AirportDto> updateHandler,
-            IQueryHandler<GetAirportsQuery, ListResult<AirportListItemDto>> getListHandler,
+            IQueryHandler<GetAirportsQuery, PagedResponseDto<AirportListItemDto>> getListHandler,
             IQueryHandler<GetAirportByIdQuery, AirportDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,38 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// Получить список аэропортов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список аэропортов.
-        /// Используется в авиаблоке, рейсах, расписании, маршрутах и настройках перелетов.
+        /// Возвращает список аэропортов с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию, английскому названию, ICAO-коду и буквенной метке аэропорта.
+        /// - query.filter.cityId — фильтр по идентификатору города.
+        /// - query.filter.icaoCode — поиск по ICAO-коду аэропорта.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - cityId
+        /// - code
+        /// - name
+        /// - nameEn
+        /// - icaoCode
+        /// - letterCode
         /// </remarks>
-        /// <returns>Список аэропортов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка аэропортов.</param>
+        /// <returns>Страница списка аэропортов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetAirportsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetAirportsQuery(),
+                query ?? new GetAirportsQuery(),
                 CancellationToken.None);
 
             return Ok(result);

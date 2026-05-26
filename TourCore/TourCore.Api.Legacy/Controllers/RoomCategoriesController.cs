@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Hotels.RoomCategories.Commands;
 using TourCore.Application.Hotels.RoomCategories.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.RoomCategories;
 
 namespace TourCore.Api.Legacy.Controllers
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers
     {
         private readonly ICommandHandler<CreateRoomCategoryCommand, RoomCategoryDto> _createHandler;
         private readonly ICommandHandler<UpdateRoomCategoryCommand, RoomCategoryDto> _updateHandler;
-        private readonly IQueryHandler<GetRoomCategoriesQuery, ListResult<RoomCategoryListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetRoomCategoriesQuery, PagedResponseDto<RoomCategoryListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetRoomCategoryByIdQuery, RoomCategoryDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers
         public RoomCategoriesController(
             ICommandHandler<CreateRoomCategoryCommand, RoomCategoryDto> createHandler,
             ICommandHandler<UpdateRoomCategoryCommand, RoomCategoryDto> updateHandler,
-            IQueryHandler<GetRoomCategoriesQuery, ListResult<RoomCategoryListItemDto>> getListHandler,
+            IQueryHandler<GetRoomCategoriesQuery, PagedResponseDto<RoomCategoryListItemDto>> getListHandler,
             IQueryHandler<GetRoomCategoryByIdQuery, RoomCategoryDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,36 @@ namespace TourCore.Api.Legacy.Controllers
         /// Получить список категорий номеров.
         /// </summary>
         /// <remarks>
-        /// Возвращает список категорий номеров из справочника.
+        /// Возвращает список категорий номеров из справочника с поддержкой фильтрации, пагинации и сортировки.
         /// Используется в карточке отеля, настройках номеров, ценах и фильтрах поиска.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и английскому названию категории номера.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - nameEn
+        /// - sortOrder
+        /// - description
         /// </remarks>
-        /// <returns>Список категорий номеров.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка категорий номеров.</param>
+        /// <returns>Страница списка категорий номеров.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetRoomCategoriesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetRoomCategoriesQuery(),
+                query ?? new GetRoomCategoriesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

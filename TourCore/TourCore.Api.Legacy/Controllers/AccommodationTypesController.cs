@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Hotels.AccommodationTypes.Commands;
 using TourCore.Application.Hotels.AccommodationTypes.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.AccommodationTypes;
 
 namespace TourCore.Api.Legacy.Controllers.Hotels
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
     {
         private readonly ICommandHandler<CreateAccommodationTypeCommand, AccommodationTypeDto> _createHandler;
         private readonly ICommandHandler<UpdateAccommodationTypeCommand, AccommodationTypeDto> _updateHandler;
-        private readonly IQueryHandler<GetAccommodationTypesQuery, ListResult<AccommodationTypeListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAccommodationTypesQuery, PagedResponseDto<AccommodationTypeListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetAccommodationTypeByIdQuery, AccommodationTypeDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
         public AccommodationTypesController(
             ICommandHandler<CreateAccommodationTypeCommand, AccommodationTypeDto> createHandler,
             ICommandHandler<UpdateAccommodationTypeCommand, AccommodationTypeDto> updateHandler,
-            IQueryHandler<GetAccommodationTypesQuery, ListResult<AccommodationTypeListItemDto>> getListHandler,
+            IQueryHandler<GetAccommodationTypesQuery, PagedResponseDto<AccommodationTypeListItemDto>> getListHandler,
             IQueryHandler<GetAccommodationTypeByIdQuery, AccommodationTypeDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,17 +45,44 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
         /// Получить список типов размещения.
         /// </summary>
         /// <remarks>
-        /// Возвращает справочник типов размещения.
+        /// Возвращает справочник типов размещения с поддержкой фильтрации, пагинации и сортировки.
         /// Тип размещения определяет код, название, возрастные ограничения,
         /// количество человек на номер и правила основных/дополнительных мест.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и английскому названию типа размещения.
+        /// - query.filter.isMain — фильтр по признаку основного размещения.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - nameEn
+        /// - isMain
+        /// - ageFrom
+        /// - ageTo
+        /// - perRoom
+        /// - sortOrder
+        /// - description
+        /// - mainPlacementRuleId
+        /// - extraPlacementRuleId
         /// </remarks>
-        /// <returns>Список типов размещения.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка типов размещения.</param>
+        /// <returns>Страница списка типов размещения.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetAccommodationTypesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetAccommodationTypesQuery(),
+                query ?? new GetAccommodationTypesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

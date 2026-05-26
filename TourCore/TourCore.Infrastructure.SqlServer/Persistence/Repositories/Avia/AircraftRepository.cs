@@ -19,6 +19,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Avia
             _context = context;
         }
 
+        public IQueryable<Aircraft> Query()
+        {
+            return _context.Aircrafts;
+        }
+
         public async Task<Aircraft> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             return await _context.Aircrafts

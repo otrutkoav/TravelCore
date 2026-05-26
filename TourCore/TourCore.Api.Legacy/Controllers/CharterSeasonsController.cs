@@ -7,6 +7,7 @@ using TourCore.Application.Avia.CharterSeasons.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Avia.CharterSeasons;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Avia
 {
@@ -18,13 +19,13 @@ namespace TourCore.Api.Legacy.Controllers.Avia
     {
         private readonly ICommandHandler<CreateCharterSeasonCommand, CharterSeasonDto> _createHandler;
         private readonly ICommandHandler<UpdateCharterSeasonCommand, CharterSeasonDto> _updateHandler;
-        private readonly IQueryHandler<GetCharterSeasonsQuery, ListResult<CharterSeasonListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetCharterSeasonsQuery, PagedResponseDto<CharterSeasonListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetCharterSeasonByIdQuery, CharterSeasonDto> _getByIdHandler;
 
         public CharterSeasonsController(
             ICommandHandler<CreateCharterSeasonCommand, CharterSeasonDto> createHandler,
             ICommandHandler<UpdateCharterSeasonCommand, CharterSeasonDto> updateHandler,
-            IQueryHandler<GetCharterSeasonsQuery, ListResult<CharterSeasonListItemDto>> getListHandler,
+            IQueryHandler<GetCharterSeasonsQuery, PagedResponseDto<CharterSeasonListItemDto>> getListHandler,
             IQueryHandler<GetCharterSeasonByIdQuery, CharterSeasonDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -37,20 +38,45 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// Получить список сезонов чартерных рейсов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список периодов действия чартерных маршрутов.
+        /// Возвращает список периодов действия чартерных маршрутов с поддержкой фильтрации, пагинации и сортировки.
         /// Сезон определяет даты действия, дни недели, время вылета,
         /// время прилета и признак прилета на следующий день.
         ///
         /// Используется для построения расписания чартерных программ,
         /// поиска доступных дат вылета и формирования пакетных туров.
+        ///
+        /// Фильтрация:
+        /// - query.filter.charterId — фильтр по идентификатору базового чартерного рейса.
+        /// - query.filter.dateFrom — фильтр по дате начала сезона.
+        /// - query.filter.dateTo — фильтр по дате окончания сезона.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - charterId
+        /// - dateFrom
+        /// - dateTo
+        /// - daysOfWeek
+        /// - timeFrom
+        /// - timeTo
+        /// - isNextDayArrival
+        /// - remark
         /// </remarks>
-        /// <returns>Список сезонов чартерных рейсов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка сезонов чартерных рейсов.</param>
+        /// <returns>Страница списка сезонов чартерных рейсов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetCharterSeasonsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetCharterSeasonsQuery(),
+                query ?? new GetCharterSeasonsQuery(),
                 CancellationToken.None);
 
             return Ok(result);

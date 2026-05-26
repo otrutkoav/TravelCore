@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Hotels.AccommodationPlacementRules.Commands;
 using TourCore.Application.Hotels.AccommodationPlacementRules.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.AccommodationPlacementRules;
 
 namespace TourCore.Api.Legacy.Controllers.Hotels
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
     {
         private readonly ICommandHandler<CreateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto> _createHandler;
         private readonly ICommandHandler<UpdateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto> _updateHandler;
-        private readonly IQueryHandler<GetAccommodationPlacementRulesQuery, ListResult<AccommodationPlacementRuleListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAccommodationPlacementRulesQuery, PagedResponseDto<AccommodationPlacementRuleListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetAccommodationPlacementRuleByIdQuery, AccommodationPlacementRuleDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
         public AccommodationPlacementRulesController(
             ICommandHandler<CreateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto> createHandler,
             ICommandHandler<UpdateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto> updateHandler,
-            IQueryHandler<GetAccommodationPlacementRulesQuery, ListResult<AccommodationPlacementRuleListItemDto>> getListHandler,
+            IQueryHandler<GetAccommodationPlacementRulesQuery, PagedResponseDto<AccommodationPlacementRuleListItemDto>> getListHandler,
             IQueryHandler<GetAccommodationPlacementRuleByIdQuery, AccommodationPlacementRuleDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,19 +45,39 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
         /// Получить список правил размещения.
         /// </summary>
         /// <remarks>
-        /// Возвращает список правил размещения.
+        /// Возвращает список правил размещения с поддержкой фильтрации, пагинации и сортировки.
         /// Правило определяет количество взрослых, количество детей
         /// и признак того, что дети считаются инфантами.
         ///
         /// Возрастные диапазоны детей являются частью правила размещения.
+        ///
+        /// Фильтрация:
+        /// - query.filter.adultsCount — фильтр по количеству взрослых.
+        /// - query.filter.childrenCount — фильтр по количеству детей.
+        /// - query.filter.childrenAreInfants — фильтр по признаку, что дети считаются инфантами.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - adultsCount
+        /// - childrenCount
+        /// - childrenAreInfants
         /// </remarks>
-        /// <returns>Список правил размещения.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка правил размещения.</param>
+        /// <returns>Страница списка правил размещения.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetAccommodationPlacementRulesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetAccommodationPlacementRulesQuery(),
+                query ?? new GetAccommodationPlacementRulesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

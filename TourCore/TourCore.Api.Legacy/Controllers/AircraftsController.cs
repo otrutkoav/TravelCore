@@ -7,6 +7,7 @@ using TourCore.Application.Avia.Aircrafts.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Avia.Aircrafts;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Avia
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
     {
         private readonly ICommandHandler<CreateAircraftCommand, AircraftDto> _createHandler;
         private readonly ICommandHandler<UpdateAircraftCommand, AircraftDto> _updateHandler;
-        private readonly IQueryHandler<GetAircraftsQuery, ListResult<AircraftListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAircraftsQuery, PagedResponseDto<AircraftListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetAircraftByIdQuery, AircraftDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         public AircraftsController(
             ICommandHandler<CreateAircraftCommand, AircraftDto> createHandler,
             ICommandHandler<UpdateAircraftCommand, AircraftDto> updateHandler,
-            IQueryHandler<GetAircraftsQuery, ListResult<AircraftListItemDto>> getListHandler,
+            IQueryHandler<GetAircraftsQuery, PagedResponseDto<AircraftListItemDto>> getListHandler,
             IQueryHandler<GetAircraftByIdQuery, AircraftDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,33 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// Получить список воздушных судов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список воздушных судов / типов самолетов.
-        /// Используется в авиаблоке, рейсах, расписании и настройках перелетов.
+        /// Возвращает список воздушных судов с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и английскому названию.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - nameEn
         /// </remarks>
-        /// <returns>Список воздушных судов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка воздушных судов.</param>
+        /// <returns>Страница списка воздушных судов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetAircraftsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetAircraftsQuery(),
+                query ?? new GetAircraftsQuery(),
                 CancellationToken.None);
 
             return Ok(result);

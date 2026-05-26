@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Seating.SeatingCells.Commands;
 using TourCore.Application.Seating.SeatingCells.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Seating.SeatingCells;
 
 namespace TourCore.Api.Legacy.Controllers.Seating
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Seating
     {
         private readonly ICommandHandler<CreateSeatingCellCommand, SeatingCellDto> _createHandler;
         private readonly ICommandHandler<UpdateSeatingCellCommand, SeatingCellDto> _updateHandler;
-        private readonly IQueryHandler<GetSeatingCellsQuery, ListResult<SeatingCellListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetSeatingCellsQuery, PagedResponseDto<SeatingCellListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetSeatingCellByIdQuery, SeatingCellDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Seating
         public SeatingCellsController(
             ICommandHandler<CreateSeatingCellCommand, SeatingCellDto> createHandler,
             ICommandHandler<UpdateSeatingCellCommand, SeatingCellDto> updateHandler,
-            IQueryHandler<GetSeatingCellsQuery, ListResult<SeatingCellListItemDto>> getListHandler,
+            IQueryHandler<GetSeatingCellsQuery, PagedResponseDto<SeatingCellListItemDto>> getListHandler,
             IQueryHandler<GetSeatingCellByIdQuery, SeatingCellDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,39 @@ namespace TourCore.Api.Legacy.Controllers.Seating
         /// Получить список ячеек схем размещения.
         /// </summary>
         /// <remarks>
-        /// Возвращает список ячеек схем размещения.
+        /// Возвращает список ячеек схем размещения с поддержкой фильтрации, пагинации и сортировки.
         /// Ячейка может описывать место, блок, проход или другой элемент схемы.
+        ///
+        /// Фильтрация:
+        /// - query.filter.vehiclePlanId — фильтр по идентификатору схемы транспорта.
+        /// - query.filter.type — фильтр по типу ячейки схемы размещения.
+        /// - query.filter.number — поиск по отображаемому номеру ячейки.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - vehiclePlanId
+        /// - number
+        /// - type
+        /// - seatsCount
+        /// - index
+        /// - border
         /// </remarks>
-        /// <returns>Список ячеек схем размещения.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка ячеек схем размещения.</param>
+        /// <returns>Страница списка ячеек схем размещения.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetSeatingCellsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetSeatingCellsQuery(),
+                query ?? new GetSeatingCellsQuery(),
                 CancellationToken.None);
 
             return Ok(result);

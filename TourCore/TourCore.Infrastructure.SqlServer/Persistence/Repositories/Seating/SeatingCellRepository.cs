@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Seating;
@@ -14,6 +15,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Seating
         public SeatingCellRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<SeatingCell> Query()
+        {
+            return _context.SeatingCells;
         }
 
         public async Task<SeatingCell> GetByIdAsync(int id, CancellationToken ct)

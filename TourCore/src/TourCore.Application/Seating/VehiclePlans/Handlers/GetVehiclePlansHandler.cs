@@ -1,56 +1,85 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Seating;
-using TourCore.Application.Common.Models;
-using TourCore.Application.Seating.VehiclePlans.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Seating.VehiclePlans.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Seating.VehiclePlans;
 
 namespace TourCore.Application.Seating.VehiclePlans.Handlers
 {
-    public class GetVehiclePlansHandler : IQueryHandler<GetVehiclePlansQuery, ListResult<VehiclePlanListItemDto>>
+    public class GetVehiclePlansHandler : IQueryHandler<GetVehiclePlansQuery, PagedResponseDto<VehiclePlanListItemDto>>
     {
         private readonly IVehiclePlanRepository _vehiclePlanRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetVehiclePlansHandler(IVehiclePlanRepository vehiclePlanRepository)
+        public GetVehiclePlansHandler(
+            IVehiclePlanRepository vehiclePlanRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _vehiclePlanRepository = vehiclePlanRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<VehiclePlanListItemDto>> Handle(GetVehiclePlansQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<VehiclePlanListItemDto>> Handle(
+            GetVehiclePlansQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _vehiclePlanRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetVehiclePlansQuery();
 
-            if (query != null && query.Filter != null)
+            var vehiclePlans = _vehiclePlanRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (query.Filter.TransportId.HasValue)
-                    items = items.Where(x => x.TransportId == query.Filter.TransportId.Value);
+                {
+                    vehiclePlans = vehiclePlans.Where(x =>
+                        x.TransportId == query.Filter.TransportId.Value);
+                }
 
                 if (query.Filter.IsAircraft.HasValue)
-                    items = items.Where(x => x.IsAircraft == query.Filter.IsAircraft.Value);
+                {
+                    vehiclePlans = vehiclePlans.Where(x =>
+                        x.IsAircraft == query.Filter.IsAircraft.Value);
+                }
 
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Name) &&
-                        x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    vehiclePlans = vehiclePlans.Where(x =>
+                        x.Name.Contains(search));
                 }
             }
 
-            var result = items
-                .OrderBy(x => x.TransportId)
-                .ThenBy(x => x.AreaNumber)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                vehiclePlans = vehiclePlans
+                    .OrderBy(x => x.TransportId)
+                    .ThenBy(x => x.AreaNumber)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                vehiclePlans = vehiclePlans.ApplySorting(
+                    query,
+                    VehiclePlanSortDefinition.Instance);
+            }
 
-            return ListResult<VehiclePlanListItemDto>.Create(result);
+            var dtoQuery = vehiclePlans.Select(VehiclePlanProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<VehiclePlanListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

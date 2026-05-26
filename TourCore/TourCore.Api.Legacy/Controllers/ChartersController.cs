@@ -7,6 +7,7 @@ using TourCore.Application.Avia.Charters.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Avia.Charters;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Avia
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
     {
         private readonly ICommandHandler<CreateCharterCommand, CharterDto> _createHandler;
         private readonly ICommandHandler<UpdateCharterCommand, CharterDto> _updateHandler;
-        private readonly IQueryHandler<GetChartersQuery, ListResult<CharterListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetChartersQuery, PagedResponseDto<CharterListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetCharterByIdQuery, CharterDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         public ChartersController(
             ICommandHandler<CreateCharterCommand, CharterDto> createHandler,
             ICommandHandler<UpdateCharterCommand, CharterDto> updateHandler,
-            IQueryHandler<GetChartersQuery, ListResult<CharterListItemDto>> getListHandler,
+            IQueryHandler<GetChartersQuery, PagedResponseDto<CharterListItemDto>> getListHandler,
             IQueryHandler<GetCharterByIdQuery, CharterDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,7 +45,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// Получить список чартерных рейсов.
         /// </summary>
         /// <remarks>
-        /// Возвращает список базовых чартерных маршрутов.
+        /// Возвращает список базовых чартерных маршрутов с поддержкой фильтрации, пагинации и сортировки.
         /// Чартер определяет направление перелета, перевозчика,
         /// номер рейса и технические параметры.
         ///
@@ -52,14 +53,44 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// пакетных предложений и расписаний чартерных программ.
         ///
         /// Не содержит дат и конкретных вылетов — только базовую связку маршрута.
+        ///
+        /// Фильтрация:
+        /// - query.filter.departureCityId — фильтр по идентификатору города вылета.
+        /// - query.filter.arrivalCityId — фильтр по идентификатору города прилета.
+        /// - query.filter.departureAirportCode — поиск по коду аэропорта вылета.
+        /// - query.filter.arrivalAirportCode — поиск по коду аэропорта прилета.
+        /// - query.filter.airlineCode — поиск по коду авиакомпании.
+        /// - query.filter.flightNumber — поиск по номеру рейса.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - departureCityId
+        /// - departureAirportCode
+        /// - arrivalCityId
+        /// - arrivalAirportCode
+        /// - airlineCode
+        /// - flightNumber
+        /// - aircraftCode
+        /// - airClassCode
+        /// - stopsCount
+        /// - timeChangesCode
         /// </remarks>
-        /// <returns>Список чартерных рейсов.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка чартерных рейсов.</param>
+        /// <returns>Страница списка чартерных рейсов.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetChartersQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetChartersQuery(),
+                query ?? new GetChartersQuery(),
                 CancellationToken.None);
 
             return Ok(result);

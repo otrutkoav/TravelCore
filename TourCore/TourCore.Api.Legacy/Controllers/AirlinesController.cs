@@ -7,6 +7,7 @@ using TourCore.Application.Avia.Airlines.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Avia.Airlines;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Avia
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
     {
         private readonly ICommandHandler<CreateAirlineCommand, AirlineDto> _createHandler;
         private readonly ICommandHandler<UpdateAirlineCommand, AirlineDto> _updateHandler;
-        private readonly IQueryHandler<GetAirlinesQuery, ListResult<AirlineListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAirlinesQuery, PagedResponseDto<AirlineListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetAirlineByIdQuery, AirlineDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         public AirlinesController(
             ICommandHandler<CreateAirlineCommand, AirlineDto> createHandler,
             ICommandHandler<UpdateAirlineCommand, AirlineDto> updateHandler,
-            IQueryHandler<GetAirlinesQuery, ListResult<AirlineListItemDto>> getListHandler,
+            IQueryHandler<GetAirlinesQuery, PagedResponseDto<AirlineListItemDto>> getListHandler,
             IQueryHandler<GetAirlineByIdQuery, AirlineDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,35 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// Получить список авиакомпаний.
         /// </summary>
         /// <remarks>
-        /// Возвращает список авиакомпаний.
-        /// Используется в авиаблоке, рейсах, расписании, перелетах и настройках поставщиков авиаперевозки.
+        /// Возвращает список авиакомпаний с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию, английскому названию и ICAO-коду авиакомпании.
+        /// - query.filter.icaoCode — поиск по ICAO-коду авиакомпании.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - nameEn
+        /// - icaoCode
         /// </remarks>
-        /// <returns>Список авиакомпаний.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка авиакомпаний.</param>
+        /// <returns>Страница списка авиакомпаний.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetAirlinesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetAirlinesQuery(),
+                query ?? new GetAirlinesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

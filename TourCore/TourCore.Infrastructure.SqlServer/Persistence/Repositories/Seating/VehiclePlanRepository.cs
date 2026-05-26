@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Seating;
@@ -17,6 +18,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Seating
         public VehiclePlanRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<VehiclePlan> Query()
+        {
+            return _context.VehiclePlans;
         }
 
         public async Task<VehiclePlan> GetByIdAsync(int id, CancellationToken ct)

@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Seating.VehiclePlans.Commands;
 using TourCore.Application.Seating.VehiclePlans.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Seating.VehiclePlans;
 
 namespace TourCore.Api.Legacy.Controllers.Seating
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Seating
     {
         private readonly ICommandHandler<CreateVehiclePlanCommand, VehiclePlanDto> _createHandler;
         private readonly ICommandHandler<UpdateVehiclePlanCommand, VehiclePlanDto> _updateHandler;
-        private readonly IQueryHandler<GetVehiclePlansQuery, ListResult<VehiclePlanListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetVehiclePlansQuery, PagedResponseDto<VehiclePlanListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetVehiclePlanByIdQuery, VehiclePlanDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Seating
         public VehiclePlansController(
             ICommandHandler<CreateVehiclePlanCommand, VehiclePlanDto> createHandler,
             ICommandHandler<UpdateVehiclePlanCommand, VehiclePlanDto> updateHandler,
-            IQueryHandler<GetVehiclePlansQuery, ListResult<VehiclePlanListItemDto>> getListHandler,
+            IQueryHandler<GetVehiclePlansQuery, PagedResponseDto<VehiclePlanListItemDto>> getListHandler,
             IQueryHandler<GetVehiclePlanByIdQuery, VehiclePlanDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,17 +45,43 @@ namespace TourCore.Api.Legacy.Controllers.Seating
         /// Получить список схем транспорта.
         /// </summary>
         /// <remarks>
-        /// Возвращает список схем транспорта.
+        /// Возвращает список схем транспорта с поддержкой фильтрации, пагинации и сортировки.
         /// Схема транспорта определяет количество рядов, колонок,
         /// номер зоны и параметры отображения схемы размещения.
+        ///
+        /// Фильтрация:
+        /// - query.filter.transportId — фильтр по идентификатору транспорта.
+        /// - query.filter.isAircraft — фильтр по признаку схемы самолета.
+        /// - query.filter.search — поиск по названию схемы транспорта.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - transportId
+        /// - rowsCount
+        /// - columnsCount
+        /// - areaNumber
+        /// - name
+        /// - planOrientation
+        /// - isAircraft
+        /// - dates
+        /// - comment
         /// </remarks>
-        /// <returns>Список схем транспорта.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка схем транспорта.</param>
+        /// <returns>Страница списка схем транспорта.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetVehiclePlansQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetVehiclePlansQuery(),
+                query ?? new GetVehiclePlansQuery(),
                 CancellationToken.None);
 
             return Ok(result);

@@ -7,6 +7,7 @@ using TourCore.Application.Avia.AirClasses.Queries;
 using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Contracts.Avia.AirClasses;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Api.Legacy.Controllers.Avia
 {
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
     {
         private readonly ICommandHandler<CreateAirClassCommand, AirClassDto> _createHandler;
         private readonly ICommandHandler<UpdateAirClassCommand, AirClassDto> _updateHandler;
-        private readonly IQueryHandler<GetAirClassesQuery, ListResult<AirClassListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAirClassesQuery, PagedResponseDto<AirClassListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetAirClassByIdQuery, AirClassDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         public AirClassesController(
             ICommandHandler<CreateAirClassCommand, AirClassDto> createHandler,
             ICommandHandler<UpdateAirClassCommand, AirClassDto> updateHandler,
-            IQueryHandler<GetAirClassesQuery, ListResult<AirClassListItemDto>> getListHandler,
+            IQueryHandler<GetAirClassesQuery, PagedResponseDto<AirClassListItemDto>> getListHandler,
             IQueryHandler<GetAirClassByIdQuery, AirClassDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,36 @@ namespace TourCore.Api.Legacy.Controllers.Avia
         /// Получить список классов обслуживания.
         /// </summary>
         /// <remarks>
-        /// Возвращает список классов обслуживания в авиа.
-        /// Используется в авиаблоке, настройках перелетов, тарифах и отображении условий перевозки.
+        /// Возвращает список классов обслуживания с поддержкой фильтрации, пагинации и сортировки.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и английскому названию класса обслуживания.
+        /// - query.filter.group — поиск по группе класса обслуживания.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - nameEn
+        /// - group
+        /// - sortOrder
         /// </remarks>
-        /// <returns>Список классов обслуживания.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка классов обслуживания.</param>
+        /// <returns>Страница списка классов обслуживания.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetAirClassesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetAirClassesQuery(),
+                query ?? new GetAirClassesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

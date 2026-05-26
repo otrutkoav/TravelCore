@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Data;
 using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Hotels
 {
-    public interface IRoomTypeRepository
+    public interface IRoomTypeRepository : IQueryableRepository<RoomType>
     {
         Task<RoomType> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<RoomType>> ListAsync(CancellationToken cancellationToken);

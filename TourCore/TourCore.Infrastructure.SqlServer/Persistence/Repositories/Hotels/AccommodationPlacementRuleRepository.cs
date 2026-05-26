@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Hotels;
@@ -14,6 +15,12 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Hotels
         public AccommodationPlacementRuleRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<AccommodationPlacementRule> Query()
+        {
+            return _context.AccommodationPlacementRules
+                .Include(x => x.ChildAgeRanges);
         }
 
         public async Task<AccommodationPlacementRule> GetByIdAsync(int id, CancellationToken ct)

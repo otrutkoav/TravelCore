@@ -1,65 +1,104 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Hotels;
-using TourCore.Application.Common.Models;
-using TourCore.Application.Hotels.Hotels.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Hotels.Hotels.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.Hotels;
 
 namespace TourCore.Application.Hotels.Hotels.Handlers
 {
-    public class GetHotelsHandler : IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>>
+    public class GetHotelsHandler : IQueryHandler<GetHotelsQuery, PagedResponseDto<HotelListItemDto>>
     {
         private readonly IHotelRepository _hotelRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetHotelsHandler(IHotelRepository hotelRepository)
+        public GetHotelsHandler(
+            IHotelRepository hotelRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _hotelRepository = hotelRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<HotelListItemDto>> Handle(GetHotelsQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<HotelListItemDto>> Handle(
+            GetHotelsQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _hotelRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetHotelsQuery();
 
-            if (query != null && query.Filter != null)
+            var hotels = _hotelRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    hotels = hotels.Where(x =>
+                        x.Code.Contains(search) ||
+                        x.Name.Contains(search) ||
+                        x.NameEn.Contains(search));
                 }
 
                 if (query.Filter.CountryId.HasValue)
-                    items = items.Where(x => x.CountryId == query.Filter.CountryId.Value);
+                {
+                    hotels = hotels.Where(x =>
+                        x.CountryId == query.Filter.CountryId.Value);
+                }
 
                 if (query.Filter.CityId.HasValue)
-                    items = items.Where(x => x.CityId == query.Filter.CityId.Value);
+                {
+                    hotels = hotels.Where(x =>
+                        x.CityId == query.Filter.CityId.Value);
+                }
 
                 if (query.Filter.ResortId.HasValue)
-                    items = items.Where(x => x.ResortId == query.Filter.ResortId.Value);
+                {
+                    hotels = hotels.Where(x =>
+                        x.ResortId == query.Filter.ResortId.Value);
+                }
 
                 if (query.Filter.CategoryId.HasValue)
-                    items = items.Where(x => x.CategoryId == query.Filter.CategoryId.Value);
+                {
+                    hotels = hotels.Where(x =>
+                        x.CategoryId == query.Filter.CategoryId.Value);
+                }
 
                 if (query.Filter.IsCruise.HasValue)
-                    items = items.Where(x => x.IsCruise == query.Filter.IsCruise.Value);
+                {
+                    hotels = hotels.Where(x =>
+                        x.IsCruise == query.Filter.IsCruise.Value);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.SortOrder)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                hotels = hotels
+                    .OrderBy(x => x.SortOrder)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                hotels = hotels.ApplySorting(
+                    query,
+                    HotelSortDefinition.Instance);
+            }
 
-            return ListResult<HotelListItemDto>.Create(result);
+            var dtoQuery = hotels.Select(HotelProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<HotelListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

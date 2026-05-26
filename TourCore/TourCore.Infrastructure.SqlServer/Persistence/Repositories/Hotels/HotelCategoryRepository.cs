@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Hotels;
@@ -14,6 +15,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Hotels
         public HotelCategoryRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<HotelCategory> Query()
+        {
+            return _context.HotelCategories;
         }
 
         public async Task<HotelCategory> GetByIdAsync(int id, CancellationToken ct)

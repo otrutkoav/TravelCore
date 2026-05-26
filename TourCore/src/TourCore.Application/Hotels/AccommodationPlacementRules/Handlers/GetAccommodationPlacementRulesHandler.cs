@@ -3,47 +3,82 @@ using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Hotels;
-using TourCore.Application.Common.Models;
-using TourCore.Application.Hotels.AccommodationPlacementRules.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Hotels.AccommodationPlacementRules.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.AccommodationPlacementRules;
 
 namespace TourCore.Application.Hotels.AccommodationPlacementRules.Handlers
 {
-    public class GetAccommodationPlacementRulesHandler : IQueryHandler<GetAccommodationPlacementRulesQuery, ListResult<AccommodationPlacementRuleListItemDto>>
+    public class GetAccommodationPlacementRulesHandler
+        : IQueryHandler<GetAccommodationPlacementRulesQuery, PagedResponseDto<AccommodationPlacementRuleListItemDto>>
     {
         private readonly IAccommodationPlacementRuleRepository _repository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetAccommodationPlacementRulesHandler(IAccommodationPlacementRuleRepository repository)
+        public GetAccommodationPlacementRulesHandler(
+            IAccommodationPlacementRuleRepository repository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _repository = repository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<AccommodationPlacementRuleListItemDto>> Handle(GetAccommodationPlacementRulesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<AccommodationPlacementRuleListItemDto>> Handle(
+            GetAccommodationPlacementRulesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _repository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetAccommodationPlacementRulesQuery();
 
-            if (query != null && query.Filter != null)
+            var rules = _repository.Query();
+
+            if (query.Filter != null)
             {
                 if (query.Filter.AdultsCount.HasValue)
-                    items = items.Where(x => x.AdultsCount == query.Filter.AdultsCount.Value);
+                {
+                    rules = rules.Where(x =>
+                        x.AdultsCount == query.Filter.AdultsCount.Value);
+                }
 
                 if (query.Filter.ChildrenCount.HasValue)
-                    items = items.Where(x => x.ChildrenCount == query.Filter.ChildrenCount.Value);
+                {
+                    rules = rules.Where(x =>
+                        x.ChildrenCount == query.Filter.ChildrenCount.Value);
+                }
 
                 if (query.Filter.ChildrenAreInfants.HasValue)
-                    items = items.Where(x => x.ChildrenAreInfants == query.Filter.ChildrenAreInfants.Value);
+                {
+                    rules = rules.Where(x =>
+                        x.ChildrenAreInfants == query.Filter.ChildrenAreInfants.Value);
+                }
             }
 
-            var result = items
-                .OrderBy(x => x.AdultsCount)
-                .ThenBy(x => x.ChildrenCount)
-                .ThenBy(x => x.ChildrenAreInfants)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                rules = rules
+                    .OrderBy(x => x.AdultsCount)
+                    .ThenBy(x => x.ChildrenCount)
+                    .ThenBy(x => x.ChildrenAreInfants);
+            }
+            else
+            {
+                rules = rules.ApplySorting(
+                    query,
+                    AccommodationPlacementRuleSortDefinition.Instance);
+            }
 
-            return ListResult<AccommodationPlacementRuleListItemDto>.Create(result);
+            var dtoQuery = rules.Select(AccommodationPlacementRuleProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<AccommodationPlacementRuleListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

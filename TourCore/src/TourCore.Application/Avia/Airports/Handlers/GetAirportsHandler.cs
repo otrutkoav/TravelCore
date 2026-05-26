@@ -1,64 +1,90 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Contracts.Avia.Airports;
-using TourCore.Application.Common.Models;
 using TourCore.Application.Abstractions.Persistence.Avia;
-using TourCore.Application.Avia.Airports.Mappings;
 using TourCore.Application.Avia.Airports.Queries;
+using TourCore.Application.Common.Queries;
+using TourCore.Contracts.Avia.Airports;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Application.Avia.Airports.Handlers
 {
-    public class GetAirportsHandler : IQueryHandler<GetAirportsQuery, ListResult<AirportListItemDto>>
+    public class GetAirportsHandler : IQueryHandler<GetAirportsQuery, PagedResponseDto<AirportListItemDto>>
     {
         private readonly IAirportRepository _airportRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetAirportsHandler(IAirportRepository airportRepository)
+        public GetAirportsHandler(
+            IAirportRepository airportRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _airportRepository = airportRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<AirportListItemDto>> Handle(GetAirportsQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<AirportListItemDto>> Handle(
+            GetAirportsQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _airportRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetAirportsQuery();
 
-            if (query != null && query.Filter != null)
+            var airports = _airportRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.IcaoCode) && x.IcaoCode.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.LetterCode) && x.LetterCode.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    airports = airports.Where(x =>
+                        x.Code.Contains(search) ||
+                        x.Name.Contains(search) ||
+                        x.NameEn.Contains(search) ||
+                        x.IcaoCode.Contains(search) ||
+                        x.LetterCode.Contains(search));
                 }
 
                 if (query.Filter.CityId.HasValue)
-                    items = items.Where(x => x.CityId == query.Filter.CityId.Value);
+                {
+                    airports = airports.Where(x =>
+                        x.CityId == query.Filter.CityId.Value);
+                }
 
                 if (!string.IsNullOrWhiteSpace(query.Filter.IcaoCode))
                 {
                     var icaoCode = query.Filter.IcaoCode.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.IcaoCode) &&
-                        x.IcaoCode.IndexOf(icaoCode, StringComparison.OrdinalIgnoreCase) >= 0);
+                    airports = airports.Where(x =>
+                        x.IcaoCode.Contains(icaoCode));
                 }
             }
 
-            var result = items
-                .OrderBy(x => x.Name)
-                .ThenBy(x => x.Code)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                airports = airports
+                    .OrderBy(x => x.Name)
+                    .ThenBy(x => x.Code);
+            }
+            else
+            {
+                airports = airports.ApplySorting(
+                    query,
+                    AirportSortDefinition.Instance);
+            }
 
-            return ListResult<AirportListItemDto>.Create(result);
+            var dtoQuery = airports.Select(AirportProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<AirportListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

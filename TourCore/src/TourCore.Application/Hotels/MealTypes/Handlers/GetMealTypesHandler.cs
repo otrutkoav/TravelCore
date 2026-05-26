@@ -1,60 +1,83 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Hotels.MealTypes;
 using TourCore.Application.Abstractions.Persistence.Hotels;
-using TourCore.Application.Hotels.MealTypes.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Hotels.MealTypes.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Hotels.MealTypes;
 
 namespace TourCore.Application.Hotels.MealTypes.Handlers
 {
-    public class GetMealTypesHandler : IQueryHandler<GetMealTypesQuery, ListResult<MealTypeListItemDto>>
+    public class GetMealTypesHandler : IQueryHandler<GetMealTypesQuery, PagedResponseDto<MealTypeListItemDto>>
     {
         private readonly IMealTypeRepository _mealTypeRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetMealTypesHandler(IMealTypeRepository mealTypeRepository)
+        public GetMealTypesHandler(
+            IMealTypeRepository mealTypeRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _mealTypeRepository = mealTypeRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<MealTypeListItemDto>> Handle(GetMealTypesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<MealTypeListItemDto>> Handle(
+            GetMealTypesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _mealTypeRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetMealTypesQuery();
 
-            if (query != null && query.Filter != null)
+            var mealTypes = _mealTypeRepository.Query();
+
+            if (query.Filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(query.Filter.Search))
                 {
                     var search = query.Filter.Search.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        !string.IsNullOrWhiteSpace(x.GlobalCode) && x.GlobalCode.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                    mealTypes = mealTypes.Where(x =>
+                        x.Name.Contains(search) ||
+                        x.NameEn.Contains(search) ||
+                        x.Code.Contains(search) ||
+                        x.GlobalCode.Contains(search));
                 }
 
                 if (!string.IsNullOrWhiteSpace(query.Filter.GlobalCode))
                 {
                     var globalCode = query.Filter.GlobalCode.Trim();
 
-                    items = items.Where(x =>
-                        !string.IsNullOrWhiteSpace(x.GlobalCode) &&
-                        x.GlobalCode.IndexOf(globalCode, StringComparison.OrdinalIgnoreCase) >= 0);
+                    mealTypes = mealTypes.Where(x =>
+                        x.GlobalCode.Contains(globalCode));
                 }
             }
 
-            var result = items
-                .OrderBy(x => x.SortOrder)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                mealTypes = mealTypes
+                    .OrderBy(x => x.SortOrder)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                mealTypes = mealTypes.ApplySorting(
+                    query,
+                    MealTypeSortDefinition.Instance);
+            }
 
-            return ListResult<MealTypeListItemDto>.Create(result);
+            var dtoQuery = mealTypes.Select(MealTypeProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<MealTypeListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

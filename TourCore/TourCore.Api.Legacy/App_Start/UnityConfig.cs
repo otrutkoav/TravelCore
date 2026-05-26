@@ -627,7 +627,7 @@ namespace TourCore.Api.Legacy
 
             // MealType queries
             container.RegisterType<
-                IQueryHandler<GetMealTypesQuery, ListResult<MealTypeListItemDto>>,
+                IQueryHandler<GetMealTypesQuery, PagedResponseDto<MealTypeListItemDto>>,
                 GetMealTypesHandler>();
 
             container.RegisterType<
@@ -636,7 +636,7 @@ namespace TourCore.Api.Legacy
 
             // RoomCategory queries
             container.RegisterType<
-                IQueryHandler<GetRoomCategoriesQuery, ListResult<RoomCategoryListItemDto>>,
+                IQueryHandler<GetRoomCategoriesQuery, PagedResponseDto<RoomCategoryListItemDto>>,
                 GetRoomCategoriesHandler>();
 
             container.RegisterType<
@@ -645,7 +645,7 @@ namespace TourCore.Api.Legacy
 
             // RoomType queries
             container.RegisterType<
-                IQueryHandler<GetRoomTypesQuery, ListResult<RoomTypeListItemDto>>,
+                IQueryHandler<GetRoomTypesQuery, PagedResponseDto<RoomTypeListItemDto>>,
                 GetRoomTypesHandler>();
 
             container.RegisterType<
@@ -654,7 +654,7 @@ namespace TourCore.Api.Legacy
 
             // HotelCategory queries
             container.RegisterType<
-                IQueryHandler<GetHotelCategoriesQuery, ListResult<HotelCategoryListItemDto>>,
+                IQueryHandler<GetHotelCategoriesQuery, PagedResponseDto<HotelCategoryListItemDto>>,
                 GetHotelCategoriesHandler>();
 
             container.RegisterType<
@@ -681,7 +681,7 @@ namespace TourCore.Api.Legacy
 
             // AirClass queries
             container.RegisterType<
-                IQueryHandler<GetAirClassesQuery, ListResult<AirClassListItemDto>>,
+                IQueryHandler<GetAirClassesQuery, PagedResponseDto<AirClassListItemDto>>,
                 GetAirClassesHandler>();
 
             container.RegisterType<
@@ -690,7 +690,7 @@ namespace TourCore.Api.Legacy
 
             // Aircraft queries
             container.RegisterType<
-                IQueryHandler<GetAircraftsQuery, ListResult<AircraftListItemDto>>,
+                IQueryHandler<GetAircraftsQuery, PagedResponseDto<AircraftListItemDto>>,
                 GetAircraftsHandler>();
 
             container.RegisterType<
@@ -699,7 +699,7 @@ namespace TourCore.Api.Legacy
 
             // Airline queries
             container.RegisterType<
-                IQueryHandler<GetAirlinesQuery, ListResult<AirlineListItemDto>>,
+                IQueryHandler<GetAirlinesQuery, PagedResponseDto<AirlineListItemDto>>,
                 GetAirlinesHandler>();
 
             container.RegisterType<
@@ -708,7 +708,7 @@ namespace TourCore.Api.Legacy
 
             // Airport queries
             container.RegisterType<
-                IQueryHandler<GetAirportsQuery, ListResult<AirportListItemDto>>,
+                IQueryHandler<GetAirportsQuery, PagedResponseDto<AirportListItemDto>>,
                 GetAirportsHandler>();
 
             container.RegisterType<
@@ -717,7 +717,7 @@ namespace TourCore.Api.Legacy
 
             // Charter queries
             container.RegisterType<
-                IQueryHandler<GetChartersQuery, ListResult<CharterListItemDto>>,
+                IQueryHandler<GetChartersQuery, PagedResponseDto<CharterListItemDto>>,
                 GetChartersHandler>();
 
             container.RegisterType<
@@ -730,7 +730,7 @@ namespace TourCore.Api.Legacy
                 GetCharterSeasonByIdHandler>();
 
             container.RegisterType<
-                IQueryHandler<GetCharterSeasonsQuery, ListResult<CharterSeasonListItemDto>>,
+                IQueryHandler<GetCharterSeasonsQuery, PagedResponseDto<CharterSeasonListItemDto>>,
                 GetCharterSeasonsHandler>();
 
             // BusTransfer queries
@@ -807,7 +807,7 @@ namespace TourCore.Api.Legacy
 
             // SeatingCell queries
             container.RegisterType<
-                IQueryHandler<GetSeatingCellsQuery, ListResult<SeatingCellListItemDto>>,
+                IQueryHandler<GetSeatingCellsQuery, PagedResponseDto<SeatingCellListItemDto>>,
                 GetSeatingCellsHandler>();
 
             container.RegisterType<
@@ -816,7 +816,7 @@ namespace TourCore.Api.Legacy
 
             // VehiclePlan queries
             container.RegisterType<
-                IQueryHandler<GetVehiclePlansQuery, ListResult<VehiclePlanListItemDto>>,
+                IQueryHandler<GetVehiclePlansQuery, PagedResponseDto<VehiclePlanListItemDto>>,
                 GetVehiclePlansHandler>();
 
             container.RegisterType<
@@ -825,7 +825,7 @@ namespace TourCore.Api.Legacy
 
             // AccommodationPlacementRule queries
             container.RegisterType<
-                IQueryHandler<GetAccommodationPlacementRulesQuery, ListResult<AccommodationPlacementRuleListItemDto>>,
+                IQueryHandler<GetAccommodationPlacementRulesQuery, PagedResponseDto<AccommodationPlacementRuleListItemDto>>,
                 GetAccommodationPlacementRulesHandler>();
 
             container.RegisterType<
@@ -834,7 +834,7 @@ namespace TourCore.Api.Legacy
 
             // AccommodationType queries
             container.RegisterType<
-                IQueryHandler<GetAccommodationTypesQuery, ListResult<AccommodationTypeListItemDto>>,
+                IQueryHandler<GetAccommodationTypesQuery, PagedResponseDto<AccommodationTypeListItemDto>>,
                 GetAccommodationTypesHandler>();
 
             container.RegisterType<
@@ -843,7 +843,7 @@ namespace TourCore.Api.Legacy
 
             // Hotel queries
             container.RegisterType<
-                IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>>,
+                IQueryHandler<GetHotelsQuery, PagedResponseDto<HotelListItemDto>>,
                 GetHotelsHandler>();
 
             container.RegisterType<

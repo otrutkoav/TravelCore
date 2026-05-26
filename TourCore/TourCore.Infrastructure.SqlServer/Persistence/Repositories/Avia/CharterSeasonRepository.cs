@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Persistence.Avia;
@@ -14,6 +15,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Avia
         public CharterSeasonRepository(TourCoreDbContext context)
         {
             _context = context;
+        }
+
+        public IQueryable<CharterSeason> Query()
+        {
+            return _context.CharterSeasons;
         }
 
         public async Task<CharterSeason> GetByIdAsync(int id, CancellationToken ct)

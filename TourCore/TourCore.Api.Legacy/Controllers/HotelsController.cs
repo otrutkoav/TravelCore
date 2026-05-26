@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Hotels.Hotels.Commands;
 using TourCore.Application.Hotels.Hotels.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.Hotels;
 
 namespace TourCore.Api.Legacy.Controllers.Hotels
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
     {
         private readonly ICommandHandler<CreateHotelCommand, HotelDto> _createHandler;
         private readonly ICommandHandler<UpdateHotelCommand, HotelDto> _updateHandler;
-        private readonly IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetHotelsQuery, PagedResponseDto<HotelListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetHotelByIdQuery, HotelDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
         public HotelsController(
             ICommandHandler<CreateHotelCommand, HotelDto> createHandler,
             ICommandHandler<UpdateHotelCommand, HotelDto> updateHandler,
-            IQueryHandler<GetHotelsQuery, ListResult<HotelListItemDto>> getListHandler,
+            IQueryHandler<GetHotelsQuery, PagedResponseDto<HotelListItemDto>> getListHandler,
             IQueryHandler<GetHotelByIdQuery, HotelDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,17 +45,55 @@ namespace TourCore.Api.Legacy.Controllers.Hotels
         /// Получить список отелей.
         /// </summary>
         /// <remarks>
-        /// Возвращает список отелей.
+        /// Возвращает список отелей с поддержкой фильтрации, пагинации и сортировки.
         /// Отель привязан к стране и городу, может быть связан с курортом
         /// и категорией отеля.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и английскому названию отеля.
+        /// - query.filter.countryId — фильтр по идентификатору страны.
+        /// - query.filter.cityId — фильтр по идентификатору города.
+        /// - query.filter.resortId — фильтр по идентификатору курорта.
+        /// - query.filter.categoryId — фильтр по идентификатору категории отеля.
+        /// - query.filter.isCruise — фильтр по признаку круизного отеля.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - countryId
+        /// - cityId
+        /// - resortId
+        /// - categoryId
+        /// - name
+        /// - nameEn
+        /// - stars
+        /// - code
+        /// - address
+        /// - phone
+        /// - fax
+        /// - email
+        /// - website
+        /// - latitude
+        /// - longitude
+        /// - isCruise
+        /// - sortOrder
+        /// - rank
         /// </remarks>
-        /// <returns>Список отелей.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка отелей.</param>
+        /// <returns>Страница списка отелей.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetHotelsQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetHotelsQuery(),
+                query ?? new GetHotelsQuery(),
                 CancellationToken.None);
 
             return Ok(result);

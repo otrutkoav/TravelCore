@@ -6,6 +6,7 @@ using TourCore.Application.Common.Exceptions;
 using TourCore.Application.Common.Models;
 using TourCore.Application.Hotels.MealTypes.Commands;
 using TourCore.Application.Hotels.MealTypes.Queries;
+using TourCore.Contracts.Common;
 using TourCore.Contracts.Hotels.MealTypes;
 
 namespace TourCore.Api.Legacy.Controllers
@@ -18,7 +19,7 @@ namespace TourCore.Api.Legacy.Controllers
     {
         private readonly ICommandHandler<CreateMealTypeCommand, MealTypeDto> _createHandler;
         private readonly ICommandHandler<UpdateMealTypeCommand, MealTypeDto> _updateHandler;
-        private readonly IQueryHandler<GetMealTypesQuery, ListResult<MealTypeListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetMealTypesQuery, PagedResponseDto<MealTypeListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetMealTypeByIdQuery, MealTypeDto> _getByIdHandler;
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TourCore.Api.Legacy.Controllers
         public MealTypesController(
             ICommandHandler<CreateMealTypeCommand, MealTypeDto> createHandler,
             ICommandHandler<UpdateMealTypeCommand, MealTypeDto> updateHandler,
-            IQueryHandler<GetMealTypesQuery, ListResult<MealTypeListItemDto>> getListHandler,
+            IQueryHandler<GetMealTypesQuery, PagedResponseDto<MealTypeListItemDto>> getListHandler,
             IQueryHandler<GetMealTypeByIdQuery, MealTypeDto> getByIdHandler)
         {
             _createHandler = createHandler;
@@ -44,16 +45,38 @@ namespace TourCore.Api.Legacy.Controllers
         /// Получить список типов питания.
         /// </summary>
         /// <remarks>
-        /// Возвращает список типов питания из справочника.
+        /// Возвращает список типов питания из справочника с поддержкой фильтрации, пагинации и сортировки.
         /// Используется в карточке отеля, настройках размещения, ценах и фильтрах поиска.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по названию, английскому названию, коду и глобальному коду типа питания.
+        /// - query.filter.globalCode — поиск по глобальному коду типа питания.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - name
+        /// - nameEn
+        /// - code
+        /// - globalCode
+        /// - sortOrder
+        /// - description
         /// </remarks>
-        /// <returns>Список типов питания.</returns>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка типов питания.</param>
+        /// <returns>Страница списка типов питания.</returns>
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> Get([FromUri] GetMealTypesQuery query)
         {
             var result = await _getListHandler.Handle(
-                new GetMealTypesQuery(),
+                query ?? new GetMealTypesQuery(),
                 CancellationToken.None);
 
             return Ok(result);

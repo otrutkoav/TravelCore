@@ -1,47 +1,71 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Contracts.Avia.Aircrafts;
-using TourCore.Application.Common.Models;
 using TourCore.Application.Abstractions.Persistence.Avia;
-using TourCore.Application.Avia.Aircrafts.Mappings;
 using TourCore.Application.Avia.Aircrafts.Queries;
+using TourCore.Application.Common.Queries;
+using TourCore.Contracts.Avia.Aircrafts;
+using TourCore.Contracts.Common;
 
 namespace TourCore.Application.Avia.Aircrafts.Handlers
 {
-    public class GetAircraftsHandler : IQueryHandler<GetAircraftsQuery, ListResult<AircraftListItemDto>>
+    public class GetAircraftsHandler : IQueryHandler<GetAircraftsQuery, PagedResponseDto<AircraftListItemDto>>
     {
         private readonly IAircraftRepository _aircraftRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetAircraftsHandler(IAircraftRepository aircraftRepository)
+        public GetAircraftsHandler(
+            IAircraftRepository aircraftRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _aircraftRepository = aircraftRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<AircraftListItemDto>> Handle(GetAircraftsQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<AircraftListItemDto>> Handle(
+            GetAircraftsQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _aircraftRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetAircraftsQuery();
 
-            if (query != null && query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
+            var aircrafts = _aircraftRepository.Query();
+
+            if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {
                 var search = query.Filter.Search.Trim();
 
-                items = items.Where(x =>
-                    !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                aircrafts = aircrafts.Where(x =>
+                    x.Code.Contains(search) ||
+                    x.Name.Contains(search) ||
+                    x.NameEn.Contains(search));
             }
 
-            var result = items
-                .OrderBy(x => x.Name)
-                .ThenBy(x => x.Code)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                aircrafts = aircrafts
+                    .OrderBy(x => x.Name)
+                    .ThenBy(x => x.Code);
+            }
+            else
+            {
+                aircrafts = aircrafts.ApplySorting(
+                    query,
+                    AircraftSortDefinition.Instance);
+            }
 
-            return ListResult<AircraftListItemDto>.Create(result);
+            var dtoQuery = aircrafts.Select(AircraftProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<AircraftListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }

@@ -1,47 +1,71 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
-using TourCore.Application.Common.Models;
-using TourCore.Contracts.Hotels.RoomCategories;
 using TourCore.Application.Abstractions.Persistence.Hotels;
-using TourCore.Application.Hotels.RoomCategories.Mappings;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Hotels.RoomCategories.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Hotels.RoomCategories;
 
 namespace TourCore.Application.Hotels.RoomCategories.Handlers
 {
-    public class GetRoomCategoriesHandler : IQueryHandler<GetRoomCategoriesQuery, ListResult<RoomCategoryListItemDto>>
+    public class GetRoomCategoriesHandler : IQueryHandler<GetRoomCategoriesQuery, PagedResponseDto<RoomCategoryListItemDto>>
     {
         private readonly IRoomCategoryRepository _roomCategoryRepository;
+        private readonly PagedQueryExecutor _pagedQueryExecutor;
 
-        public GetRoomCategoriesHandler(IRoomCategoryRepository roomCategoryRepository)
+        public GetRoomCategoriesHandler(
+            IRoomCategoryRepository roomCategoryRepository,
+            PagedQueryExecutor pagedQueryExecutor)
         {
             _roomCategoryRepository = roomCategoryRepository;
+            _pagedQueryExecutor = pagedQueryExecutor;
         }
 
-        public async Task<ListResult<RoomCategoryListItemDto>> Handle(GetRoomCategoriesQuery query, CancellationToken cancellationToken)
+        public async Task<PagedResponseDto<RoomCategoryListItemDto>> Handle(
+            GetRoomCategoriesQuery query,
+            CancellationToken cancellationToken)
         {
-            var entities = await _roomCategoryRepository.ListAsync(cancellationToken);
-            var items = entities.AsEnumerable();
+            query = query ?? new GetRoomCategoriesQuery();
 
-            if (query != null && query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
+            var roomCategories = _roomCategoryRepository.Query();
+
+            if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {
                 var search = query.Filter.Search.Trim();
 
-                items = items.Where(x =>
-                    !string.IsNullOrWhiteSpace(x.Code) && x.Code.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    !string.IsNullOrWhiteSpace(x.NameEn) && x.NameEn.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                roomCategories = roomCategories.Where(x =>
+                    x.Code.Contains(search) ||
+                    x.Name.Contains(search) ||
+                    x.NameEn.Contains(search));
             }
 
-            var result = items
-                .OrderBy(x => x.SortOrder)
-                .ThenBy(x => x.Name)
-                .Select(x => x.ToListItemDto())
-                .ToArray();
+            if (string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                roomCategories = roomCategories
+                    .OrderBy(x => x.SortOrder)
+                    .ThenBy(x => x.Name);
+            }
+            else
+            {
+                roomCategories = roomCategories.ApplySorting(
+                    query,
+                    RoomCategorySortDefinition.Instance);
+            }
 
-            return ListResult<RoomCategoryListItemDto>.Create(result);
+            var dtoQuery = roomCategories.Select(RoomCategoryProjections.ListItem);
+
+            var result = await _pagedQueryExecutor.ExecuteAsync(
+                dtoQuery,
+                query,
+                cancellationToken);
+
+            return new PagedResponseDto<RoomCategoryListItemDto>(
+                result.Items,
+                result.Page,
+                result.PageSize,
+                result.TotalCount);
         }
     }
 }
