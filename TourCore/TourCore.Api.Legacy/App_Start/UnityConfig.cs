@@ -178,6 +178,10 @@ using Unity.WebApi;
 using TourCore.Application.Common.Data;
 using TourCore.Application.Common.Queries;
 using TourCore.Infrastructure.SqlServer.Common;
+using TourCore.Application.Abstractions.Caching;
+using TourCore.Infrastructure.SqlServer.Caching.Legacy;
+using TourCore.Application.Geography.Countries.Catalog;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories;
 
 namespace TourCore.Api.Legacy
 {
@@ -201,6 +205,30 @@ namespace TourCore.Api.Legacy
             container.RegisterType<IAsyncQueryExecutor, Ef6AsyncQueryExecutor>();
 
             container.RegisterType<PagedQueryExecutor>();
+
+            #region Caching
+
+            // Caching
+            container.RegisterType<
+                ICatalogCacheProvider,
+                LegacyCatalogCacheProvider>(
+                new ContainerControlledLifetimeManager());
+
+            container.RegisterType<
+                ICatalogCacheInvalidator,
+                LegacyCatalogCacheInvalidator>(
+                new ContainerControlledLifetimeManager());
+
+            container.RegisterType<
+                ICatalogCacheUpdater,
+                LegacyCatalogCacheUpdater>(
+                new ContainerControlledLifetimeManager());
+
+            container.RegisterType<
+                ICountryCatalogReader,
+                CountryCatalogReader>();
+
+            #endregion
 
             #region  Validators
 
@@ -856,6 +884,11 @@ namespace TourCore.Api.Legacy
 
             // Persistence
             container.RegisterType<TourCoreDbContext>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType(
+                typeof(IQueryableRepository<>),
+                typeof(QueryableRepository<>),
                 new HierarchicalLifetimeManager());
 
             container.RegisterType<ICountryRepository, CountryRepository>(

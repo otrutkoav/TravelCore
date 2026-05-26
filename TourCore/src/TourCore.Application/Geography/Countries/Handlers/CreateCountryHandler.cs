@@ -11,6 +11,7 @@ using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Geography.Countries.Commands;
 using TourCore.Application.Geography.Countries.Mappings;
 using TourCore.Application.Geography.Countries.Validators;
+using TourCore.Application.Abstractions.Caching;
 
 namespace TourCore.Application.Geography.Countries.Handlers
 {
@@ -20,17 +21,20 @@ namespace TourCore.Application.Geography.Countries.Handlers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly CreateCountryCommandValidator _validator;
+        private readonly ICatalogCacheUpdater _catalogCacheUpdater;
 
         public CreateCountryHandler(
             ICountryRepository countryRepository,
             IUnitOfWork unitOfWork,
             IDateTimeProvider dateTimeProvider,
-            CreateCountryCommandValidator validator)
+            CreateCountryCommandValidator validator,
+            ICatalogCacheUpdater catalogCacheUpdater)
         {
             _countryRepository = countryRepository;
             _unitOfWork = unitOfWork;
             _dateTimeProvider = dateTimeProvider;
             _validator = validator;
+            _catalogCacheUpdater = catalogCacheUpdater;
         }
 
         public async Task<CountryDto> Handle(CreateCountryCommand command, CancellationToken cancellationToken)
@@ -64,6 +68,10 @@ namespace TourCore.Application.Geography.Countries.Handlers
 
             await _countryRepository.AddAsync(entity, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _catalogCacheUpdater.CatalogChangedAsync(
+                 CatalogCacheKeys.Countries,
+                 cancellationToken);
 
             return entity.ToDto();
         }

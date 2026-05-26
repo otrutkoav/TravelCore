@@ -71,6 +71,7 @@
       <HintPath>..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -98,6 +99,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\Legacy\LegacyCatalogCacheInvalidator.cs" />
+    <Compile Include="Caching\Legacy\LegacyCatalogCacheProvider.cs" />
+    <Compile Include="Caching\Legacy\LegacyCatalogCacheUpdater.cs" />
     <Compile Include="Common\Ef6AsyncQueryExecutor.cs" />
     <Compile Include="Configurations\Avia\AirClassConfiguration.cs" />
     <Compile Include="Configurations\Avia\AircraftConfiguration.cs" />
@@ -268,6 +272,7 @@
     <Compile Include="Persistence\Repositories\Geography\ResortRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomCategoryRepository.cs" />
     <Compile Include="Persistence\Repositories\Hotels\RoomTypeRepository.cs" />
+    <Compile Include="Persistence\Repositories\QueryableRepository.cs" />
     <Compile Include="Persistence\Repositories\Railway\RailwayTransferRepository.cs" />
     <Compile Include="Persistence\Repositories\Railway\TrainScheduleRepository.cs" />
     <Compile Include="Persistence\Repositories\Seating\SeatingCellRepository.cs" />
