@@ -1,6 +1,6 @@
 ﻿using TourCore.Application.Common.Errors;
 
-namespace TourCore.Api.Legacy.Models
+namespace TourCore.Application.Common.Errors
 {
     public static class ValidationErrorMessageResolver
     {
