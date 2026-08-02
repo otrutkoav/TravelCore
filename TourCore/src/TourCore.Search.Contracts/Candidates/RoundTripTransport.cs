@@ -1,4 +1,4 @@
-namespace TourCore.Search.Contracts
+﻿namespace TourCore.Search.Contracts
 {
     /// <summary>Пара транспортных сегментов одного вида туда и обратно.</summary>
     public sealed class RoundTripTransport

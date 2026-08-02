@@ -1,0 +1,41 @@
+﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TourCore.Application.Abstractions.Persistence.Avia;
+using TourCore.Domain.Avia.Entities;
+
+namespace TourCore.Infrastructure.Postgres.Persistence.Repositories.Avia
+{
+    public class CharterSeasonRepository : ICharterSeasonRepository
+    {
+        private readonly TourCoreDbContext _context;
+
+        public CharterSeasonRepository(TourCoreDbContext context)
+        {
+            _context = context;
+        }
+
+        public IQueryable<CharterSeason> Query()
+        {
+            return _context.CharterSeasons;
+        }
+
+        public async Task<CharterSeason> GetByIdAsync(int id, CancellationToken ct)
+        {
+            return await _context.CharterSeasons.FirstOrDefaultAsync(x => x.Id == id, ct);
+        }
+
+        public async Task<IReadOnlyCollection<CharterSeason>> ListAsync(CancellationToken ct)
+        {
+            return await _context.CharterSeasons.ToListAsync(ct);
+        }
+
+        public Task AddAsync(CharterSeason charterSeason, CancellationToken ct)
+        {
+            _context.CharterSeasons.Add(charterSeason);
+            return Task.CompletedTask;
+        }
+    }
+}

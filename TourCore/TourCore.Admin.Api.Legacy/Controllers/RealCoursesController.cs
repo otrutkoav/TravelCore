@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Finance
     /// <summary>
     /// Контроллер для работы с курсами валют.
     /// </summary>
-    [RoutePrefix("api/finance/real-courses")]
+    [RoutePrefix("api/v1/finance/real-courses")]
     public class RealCoursesController : ApiController
     {
         private readonly ICommandHandler<CreateRealCourseCommand, RealCourseDto> _createHandler;

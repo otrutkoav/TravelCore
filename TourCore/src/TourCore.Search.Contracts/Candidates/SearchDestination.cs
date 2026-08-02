@@ -1,4 +1,4 @@
-namespace TourCore.Search.Contracts
+﻿namespace TourCore.Search.Contracts
 {
     /// <summary>Направление назначения.</summary>
     public sealed class SearchDestination

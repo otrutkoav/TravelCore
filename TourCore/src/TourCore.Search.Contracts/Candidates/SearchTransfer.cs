@@ -1,4 +1,4 @@
-namespace TourCore.Search.Contracts
+﻿namespace TourCore.Search.Contracts
 {
     /// <summary>Трансфер, доступный в городе назначения.</summary>
     public sealed class SearchTransfer

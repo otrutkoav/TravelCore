@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Seating
     /// <summary>
     /// Контроллер для работы со схемами транспорта.
     /// </summary>
-    [RoutePrefix("api/seating/vehicle-plans")]
+    [RoutePrefix("api/v1/seating/vehicle-plans")]
     public class VehiclePlansController : ApiController
     {
         private readonly ICommandHandler<CreateVehiclePlanCommand, VehiclePlanDto> _createHandler;

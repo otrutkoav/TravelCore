@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers
     /// <summary>
     /// Контроллер для работы с курортами.
     /// </summary>
-    [RoutePrefix("api/geography/resorts")]
+    [RoutePrefix("api/v1/geography/resorts")]
     public class ResortsController : ApiController
     {
         private readonly ICommandHandler<CreateResortCommand, ResortDto> _createHandler;

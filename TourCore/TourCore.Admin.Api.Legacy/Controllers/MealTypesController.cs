@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers
     /// <summary>
     /// Контроллер для работы с типами питания.
     /// </summary>
-    [RoutePrefix("api/hotels/meal-types")]
+    [RoutePrefix("api/v1/hotels/meal-types")]
     public class MealTypesController : ApiController
     {
         private readonly ICommandHandler<CreateMealTypeCommand, MealTypeDto> _createHandler;

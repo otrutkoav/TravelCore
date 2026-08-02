@@ -282,6 +282,9 @@
     <Compile Include="Persistence\Repositories\Transportation\TransportRepository.cs" />
     <Compile Include="Persistence\TourCoreDbContext.cs" />
     <Compile Include="Persistence\UnitOfWork.cs" />
+    <Compile Include="Search\Persistence\SearchReadDbContext.cs" />
+    <Compile Include="Search\Queries\Ef6TourSearchDataSource.cs" />
+    <Compile Include="Search\Queries\TourSearchSql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +296,10 @@
       <Project>{778943c5-f022-4c6a-ba97-1675e5263db1}</Project>
       <Name>TourCore.Application</Name>
     </ProjectReference>
+    <ProjectReference Include="..\src\TourCore.Contracts\TourCore.Contracts.csproj">
+      <Project>{04793C00-7E5C-42CC-97E6-C7FB3C06E0C1}</Project>
+      <Name>TourCore.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\src\TourCore.Domain\TourCore.Domain.csproj">
       <Project>{d1617892-dcbd-40eb-a390-846a66bcd11b}</Project>
       <Name>TourCore.Domain</Name>
@@ -300,6 +307,14 @@
     <ProjectReference Include="..\src\TourCore.Shared\TourCore.Shared.csproj">
       <Project>{e17c83d4-19d7-4c97-954b-9dae977e836a}</Project>
       <Name>TourCore.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\src\TourCore.Search.Application\TourCore.Search.Application.csproj">
+      <Project>{6433C67B-3948-4FC1-B50C-764E0ED84AD1}</Project>
+      <Name>TourCore.Search.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\src\TourCore.Search.Contracts\TourCore.Search.Contracts.csproj">
+      <Project>{45E19487-B2F3-4B2D-928D-4A2789E4848A}</Project>
+      <Name>TourCore.Search.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

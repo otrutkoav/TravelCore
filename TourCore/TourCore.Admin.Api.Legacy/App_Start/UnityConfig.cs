@@ -1,6 +1,8 @@
 #pragma warning disable 1591
 
 using System.Collections.Generic;
+using System;
+using System.Linq;
 using System.Web.Http;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence;
@@ -181,7 +183,6 @@ using TourCore.Infrastructure.SqlServer.Common;
 using TourCore.Application.Abstractions.Caching;
 using TourCore.Infrastructure.SqlServer.Caching.Legacy;
 using TourCore.Application.Geography.Countries.Catalog;
-using TourCore.Infrastructure.SqlServer.Persistence.Repositories;
 
 namespace TourCore.Admin.Api.Legacy
 {
@@ -191,13 +192,19 @@ namespace TourCore.Admin.Api.Legacy
         {
             var container = new UnityContainer();
 
-            RegisterApplication(container);
+            RegisterCore(container);
+            RegisterCaching(container);
+            RegisterValidators(container);
+            RegisterCommands(container);
+            RegisterQueries(container);
+            RegisterPersistence(container);
+            VerifyControllerRegistrations(container);
 
             GlobalConfiguration.Configuration.DependencyResolver =
                 new UnityDependencyResolver(container);
         }
 
-        private static void RegisterApplication(IUnityContainer container)
+        private static void RegisterCore(IUnityContainer container)
         {
             // Services
             container.RegisterType<IDateTimeProvider, DateTimeProvider>();
@@ -206,6 +213,10 @@ namespace TourCore.Admin.Api.Legacy
 
             container.RegisterType<PagedQueryExecutor>();
 
+        }
+
+        private static void RegisterCaching(IUnityContainer container)
+        {
             #region Caching
 
             // Caching
@@ -230,6 +241,10 @@ namespace TourCore.Admin.Api.Legacy
 
             #endregion
 
+        }
+
+        private static void RegisterValidators(IUnityContainer container)
+        {
             #region  Validators
 
             // Country Validators
@@ -350,6 +365,10 @@ namespace TourCore.Admin.Api.Legacy
 
             #endregion
 
+        }
+
+        private static void RegisterCommands(IUnityContainer container)
+        {
             #region Commands
 
             // Country commands
@@ -615,6 +634,10 @@ namespace TourCore.Admin.Api.Legacy
 
             #endregion
 
+        }
+
+        private static void RegisterQueries(IUnityContainer container)
+        {
             #region Queries
 
             // Country queries
@@ -880,6 +903,10 @@ namespace TourCore.Admin.Api.Legacy
 
             #endregion
 
+        }
+
+        private static void RegisterPersistence(IUnityContainer container)
+        {
             #region Persistence
 
             // Persistence
@@ -982,6 +1009,25 @@ namespace TourCore.Admin.Api.Legacy
                 new HierarchicalLifetimeManager());
 
             #endregion
+        }
+
+        private static void VerifyControllerRegistrations(IUnityContainer container)
+        {
+            var missingDependencies = typeof(UnityConfig).Assembly
+                .GetTypes()
+                .Where(type => !type.IsAbstract && typeof(ApiController).IsAssignableFrom(type))
+                .SelectMany(type => type.GetConstructors()
+                    .SelectMany(constructor => constructor.GetParameters())
+                    .Where(parameter => parameter.ParameterType.IsInterface || parameter.ParameterType.IsAbstract)
+                    .Where(parameter => !container.IsRegistered(parameter.ParameterType))
+                    .Select(parameter => $"{type.FullName}: {parameter.ParameterType.FullName}"))
+                .Distinct()
+                .ToArray();
+
+            if (missingDependencies.Length > 0)
+                throw new InvalidOperationException(
+                    "Не зарегистрированы зависимости контроллеров:" + Environment.NewLine +
+                    string.Join(Environment.NewLine, missingDependencies));
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace TourCore.Search.Contracts
+﻿namespace TourCore.Search.Contracts
 {
     /// <summary>Поддерживаемый вид транспорта.</summary>
     public enum SearchTransportKind

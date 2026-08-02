@@ -9,7 +9,6 @@ using TourCore.Application.Geography.Countries.Mappings;
 using TourCore.Application.Geography.Countries.Queries;
 using TourCore.Contracts.Geography.Countries;
 using TourCore.Domain.Geography.Entities;
-using TourCore.Application.Common.Data;
 
 namespace TourCore.Application.Geography.Countries.Catalog
 {

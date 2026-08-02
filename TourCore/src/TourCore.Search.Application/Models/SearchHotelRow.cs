@@ -1,4 +1,4 @@
-namespace TourCore.Search.Application.Models
+﻿namespace TourCore.Search.Application.Models
 {
     public sealed class SearchHotelRow
     {

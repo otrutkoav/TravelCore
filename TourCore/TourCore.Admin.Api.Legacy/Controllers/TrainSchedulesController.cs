@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Railway
     /// <summary>
     /// Контроллер для работы с расписаниями ЖД-переездов.
     /// </summary>
-    [RoutePrefix("api/railway/schedules")]
+    [RoutePrefix("api/v1/railway/schedules")]
     public class TrainSchedulesController : ApiController
     {
         private readonly ICommandHandler<CreateTrainScheduleCommand, TrainScheduleDto> _createHandler;

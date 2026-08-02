@@ -1,8 +1,6 @@
-using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
-using TourCore.Search.Api.Legacy.Models;
-using TourCore.Search.Application.Exceptions;
+using TourCore.Api.Errors;
 
 namespace TourCore.Search.Api.Legacy.Filters
 {
@@ -10,13 +8,8 @@ namespace TourCore.Search.Api.Legacy.Filters
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            var validationException = context.Exception as TourSearchValidationException;
-            if (validationException == null)
-                return;
-
-            context.Response = context.Request.CreateResponse(
-                HttpStatusCode.BadRequest,
-                new SearchValidationErrorResponse(validationException.Message, validationException.Errors));
+            var mapping = ApiExceptionMapper.Map(context.Exception);
+            context.Response = context.Request.CreateResponse(mapping.StatusCode, mapping.Response);
         }
     }
 }

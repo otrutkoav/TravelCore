@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Transfers
     /// <summary>
     /// Контроллер для работы с трансферами.
     /// </summary>
-    [RoutePrefix("api/transfers")]
+    [RoutePrefix("api/v1/transfers")]
     public class TransfersController : ApiController
     {
         private readonly ICommandHandler<CreateTransferCommand, TransferDto> _createHandler;

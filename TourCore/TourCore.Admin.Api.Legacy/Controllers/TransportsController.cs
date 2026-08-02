@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Transportation
     /// <summary>
     /// Контроллер для работы с транспортом.
     /// </summary>
-    [RoutePrefix("api/transportation/transports")]
+    [RoutePrefix("api/v1/transportation/transports")]
     public class TransportsController : ApiController
     {
         private readonly ICommandHandler<CreateTransportCommand, TransportDto> _createHandler;

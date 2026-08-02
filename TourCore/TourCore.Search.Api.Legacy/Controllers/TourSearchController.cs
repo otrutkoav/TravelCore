@@ -1,8 +1,8 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using TourCore.Search.Application.Abstractions;
+using TourCore.Application.Abstractions;
 using TourCore.Search.Contracts;
 
 namespace TourCore.Search.Api.Legacy.Controllers
@@ -10,7 +10,7 @@ namespace TourCore.Search.Api.Legacy.Controllers
     /// <summary>
     /// Выполняет поиск кандидатов тура.
     /// </summary>
-    [RoutePrefix("api/search/tours")]
+    [RoutePrefix("api/v1/search/tours")]
     public sealed class TourSearchController : ApiController
     {
         private readonly IQueryHandler<TourSearchRequest, TourSearchResponse> _handler;

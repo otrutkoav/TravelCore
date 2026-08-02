@@ -1,4 +1,4 @@
-namespace TourCore.Search.Contracts
+﻿namespace TourCore.Search.Contracts
 {
     /// <summary>Краткие данные отеля в поисковой выдаче.</summary>
     public sealed class SearchHotel

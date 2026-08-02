@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Seating
     /// <summary>
     /// Контроллер для работы с ячейками схем размещения.
     /// </summary>
-    [RoutePrefix("api/seating/cells")]
+    [RoutePrefix("api/v1/seating/cells")]
     public class SeatingCellsController : ApiController
     {
         private readonly ICommandHandler<CreateSeatingCellCommand, SeatingCellDto> _createHandler;

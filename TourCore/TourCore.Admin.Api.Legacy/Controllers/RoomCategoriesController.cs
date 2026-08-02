@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers
     /// <summary>
     /// Контроллер для работы с категориями номеров.
     /// </summary>
-    [RoutePrefix("api/hotels/room-categories")]
+    [RoutePrefix("api/v1/hotels/room-categories")]
     public class RoomCategoriesController : ApiController
     {
         private readonly ICommandHandler<CreateRoomCategoryCommand, RoomCategoryDto> _createHandler;

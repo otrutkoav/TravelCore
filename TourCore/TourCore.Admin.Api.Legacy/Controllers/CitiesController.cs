@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers
     /// <summary>
     /// Контроллер для работы с городами.
     /// </summary>
-    [RoutePrefix("api/geography/cities")]
+    [RoutePrefix("api/v1/geography/cities")]
     public class CitiesController : ApiController
     {
         private readonly ICommandHandler<CreateCityCommand, CityDto> _createHandler;

@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Bus
     /// <summary>
     /// Контроллер для работы с расписаниями автобусных переездов.
     /// </summary>
-    [RoutePrefix("api/bus/schedules")]
+    [RoutePrefix("api/v1/bus/schedules")]
     public class BusSchedulesController : ApiController
     {
         private readonly ICommandHandler<CreateBusScheduleCommand, BusScheduleDto> _createHandler;

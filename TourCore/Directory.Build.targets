@@ -1,0 +1,23 @@
+<Project>
+  <Target Name="ValidateTourCoreArchitecture" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('.Application')) and ($([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Infrastructure')) or $([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Api')))" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('.Contracts')) and ($([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Application')) or $([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Infrastructure')) or $([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Api')))" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="'$(MSBuildProjectName)' == 'TourCore.Shared'" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="$([System.String]::Copy('$(MSBuildProjectName)').Contains('.Infrastructure')) and $([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Api'))" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="'$(MSBuildProjectName)' == 'TourCore.Application' and '%(ProjectReference.Filename)' != 'TourCore.Contracts' and '%(ProjectReference.Filename)' != 'TourCore.Domain' and '%(ProjectReference.Filename)' != 'TourCore.Shared'" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="'$(MSBuildProjectName)' == 'TourCore.Contracts' and '%(ProjectReference.Filename)' != 'TourCore.Shared'" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="'$(MSBuildProjectName)' == 'TourCore.Domain' and '%(ProjectReference.Filename)' != 'TourCore.Shared'" />
+    </ItemGroup>
+
+    <Error Condition="'@(_ForbiddenArchitectureReference)' != ''"
+      Text="Запрещённая архитектурная зависимость в $(MSBuildProjectName): @(_ForbiddenArchitectureReference->'%(Filename)', ', '). См. ARCHITECTURE.md." />
+  </Target>
+</Project>

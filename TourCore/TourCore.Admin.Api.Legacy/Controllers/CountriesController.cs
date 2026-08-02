@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers
     /// <summary>
     /// Контроллер для работы со странами.
     /// </summary>
-    [RoutePrefix("api/geography/countries")]
+    [RoutePrefix("api/v1/geography/countries")]
     public class CountriesController : ApiController
     {
         private readonly ICommandHandler<CreateCountryCommand, CountryDto> _createHandler;

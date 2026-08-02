@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Finance
     /// <summary>
     /// Контроллер для работы с валютами.
     /// </summary>
-    [RoutePrefix("api/finance/rates")]
+    [RoutePrefix("api/v1/finance/rates")]
     public class RatesController : ApiController
     {
         private readonly ICommandHandler<CreateRateCommand, RateDto> _createHandler;

@@ -1,4 +1,4 @@
-namespace TourCore.Search.Contracts
+﻿namespace TourCore.Search.Contracts
 {
     /// <summary>Результат поиска и статусы ещё не подключённых расчётов.</summary>
     public sealed class TourSearchResponse

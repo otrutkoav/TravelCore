@@ -1,0 +1,46 @@
+﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TourCore.Application.Abstractions.Persistence.Hotels;
+using TourCore.Domain.Hotels.Entities;
+
+namespace TourCore.Infrastructure.Postgres.Persistence.Repositories.Hotels
+{
+    public class AccommodationPlacementRuleRepository : IAccommodationPlacementRuleRepository
+    {
+        private readonly TourCoreDbContext _context;
+
+        public AccommodationPlacementRuleRepository(TourCoreDbContext context)
+        {
+            _context = context;
+        }
+
+        public IQueryable<AccommodationPlacementRule> Query()
+        {
+            return _context.AccommodationPlacementRules
+                .Include(x => x.ChildAgeRanges);
+        }
+
+        public async Task<AccommodationPlacementRule> GetByIdAsync(int id, CancellationToken ct)
+        {
+            return await _context.AccommodationPlacementRules
+                .Include(x => x.ChildAgeRanges)
+                .FirstOrDefaultAsync(x => x.Id == id, ct);
+        }
+
+        public async Task<IReadOnlyCollection<AccommodationPlacementRule>> ListAsync(CancellationToken ct)
+        {
+            return await _context.AccommodationPlacementRules
+                .Include(x => x.ChildAgeRanges)
+                .ToListAsync(ct);
+        }
+
+        public Task AddAsync(AccommodationPlacementRule accommodationPlacementRule, CancellationToken ct)
+        {
+            _context.AccommodationPlacementRules.Add(accommodationPlacementRule);
+            return Task.CompletedTask;
+        }
+    }
+}

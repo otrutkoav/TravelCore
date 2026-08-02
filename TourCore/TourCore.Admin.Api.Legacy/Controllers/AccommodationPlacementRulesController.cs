@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Hotels
     /// <summary>
     /// Контроллер для работы с правилами размещения.
     /// </summary>
-    [RoutePrefix("api/hotels/accommodation-placement-rules")]
+    [RoutePrefix("api/v1/hotels/accommodation-placement-rules")]
     public class AccommodationPlacementRulesController : ApiController
     {
         private readonly ICommandHandler<CreateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto> _createHandler;

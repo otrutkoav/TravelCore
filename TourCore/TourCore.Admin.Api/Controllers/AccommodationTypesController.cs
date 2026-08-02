@@ -1,0 +1,161 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using TourCore.Application.Abstractions;
+using TourCore.Application.Common.Exceptions;
+using TourCore.Application.Common.Models;
+using TourCore.Application.Hotels.AccommodationTypes.Commands;
+using TourCore.Application.Hotels.AccommodationTypes.Queries;
+using TourCore.Contracts.Common;
+using TourCore.Contracts.Hotels.AccommodationTypes;
+
+namespace TourCore.Admin.Api.Controllers.Hotels
+{
+    /// <summary>
+    /// Контроллер для работы с типами размещения.
+    /// </summary>
+    [ApiController]
+    [Route("api/v1/hotels/accommodation-types")]
+    public class AccommodationTypesController : ControllerBase
+    {
+        private readonly ICommandHandler<CreateAccommodationTypeCommand, AccommodationTypeDto> _createHandler;
+        private readonly ICommandHandler<UpdateAccommodationTypeCommand, AccommodationTypeDto> _updateHandler;
+        private readonly IQueryHandler<GetAccommodationTypesQuery, PagedResponseDto<AccommodationTypeListItemDto>> _getListHandler;
+        private readonly IQueryHandler<GetAccommodationTypeByIdQuery, AccommodationTypeDto> _getByIdHandler;
+
+        /// <summary>
+        /// Создает экземпляр контроллера типов размещения.
+        /// </summary>
+        /// <param name="createHandler">Обработчик создания типа размещения.</param>
+        /// <param name="updateHandler">Обработчик обновления типа размещения.</param>
+        /// <param name="getListHandler">Обработчик получения списка типов размещения.</param>
+        /// <param name="getByIdHandler">Обработчик получения типа размещения по идентификатору.</param>
+        public AccommodationTypesController(
+            ICommandHandler<CreateAccommodationTypeCommand, AccommodationTypeDto> createHandler,
+            ICommandHandler<UpdateAccommodationTypeCommand, AccommodationTypeDto> updateHandler,
+            IQueryHandler<GetAccommodationTypesQuery, PagedResponseDto<AccommodationTypeListItemDto>> getListHandler,
+            IQueryHandler<GetAccommodationTypeByIdQuery, AccommodationTypeDto> getByIdHandler)
+        {
+            _createHandler = createHandler;
+            _updateHandler = updateHandler;
+            _getListHandler = getListHandler;
+            _getByIdHandler = getByIdHandler;
+        }
+
+        /// <summary>
+        /// Получить список типов размещения.
+        /// </summary>
+        /// <remarks>
+        /// Возвращает справочник типов размещения с поддержкой фильтрации, пагинации и сортировки.
+        /// Тип размещения определяет код, название, возрастные ограничения,
+        /// количество человек на номер и правила основных/дополнительных мест.
+        ///
+        /// Фильтрация:
+        /// - query.filter.search — поиск по коду, названию и английскому названию типа размещения.
+        /// - query.filter.isMain — фильтр по признаку основного размещения.
+        ///
+        /// Пагинация:
+        /// - query.page — номер страницы. Минимальное значение: 1. По умолчанию: 1.
+        /// - query.pageSize — размер страницы. По умолчанию: 20. Максимальное значение: 100.
+        ///
+        /// Сортировка:
+        /// - query.sortBy — поле сортировки.
+        /// - query.sortDirection — направление сортировки: 0 — по возрастанию, 1 — по убыванию.
+        ///
+        /// Допустимые значения query.sortBy:
+        /// - id
+        /// - code
+        /// - name
+        /// - nameEn
+        /// - isMain
+        /// - ageFrom
+        /// - ageTo
+        /// - perRoom
+        /// - sortOrder
+        /// - description
+        /// - mainPlacementRuleId
+        /// - extraPlacementRuleId
+        /// </remarks>
+        /// <param name="query">Параметры фильтрации, пагинации и сортировки списка типов размещения.</param>
+        /// <returns>Страница списка типов размещения.</returns>
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> Get([FromQuery] GetAccommodationTypesQuery query)
+        {
+            var result = await _getListHandler.Handle(
+                query ?? new GetAccommodationTypesQuery(),
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить тип размещения по идентификатору.
+        /// </summary>
+        /// <remarks>
+        /// Возвращает данные одного типа размещения.
+        /// Используется для просмотра или открытия формы редактирования.
+        /// </remarks>
+        /// <param name="id">Идентификатор типа размещения.</param>
+        /// <returns>Данные типа размещения.</returns>
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _getByIdHandler.Handle(
+                new GetAccommodationTypeByIdQuery(id),
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Создать тип размещения.
+        /// </summary>
+        /// <remarks>
+        /// Создает новый тип размещения.
+        /// Можно указать код, название, возрастные ограничения,
+        /// количество человек на номер, порядок сортировки и правила размещения.
+        /// </remarks>
+        /// <param name="command">Данные нового типа размещения.</param>
+        /// <returns>Созданный тип размещения.</returns>
+        [HttpPost]
+        [Route("")]
+        public async Task<IActionResult> Create([FromBody] CreateAccommodationTypeCommand command)
+        {
+            if (command == null)
+                throw new ValidationException(new[] { "Тело запроса не передано." });
+
+            var result = await _createHandler.Handle(
+                command,
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Обновить тип размещения.
+        /// </summary>
+        /// <remarks>
+        /// Обновляет параметры существующего типа размещения.
+        /// </remarks>
+        /// <param name="id">Идентификатор типа размещения.</param>
+        /// <param name="command">Новые данные типа размещения.</param>
+        /// <returns>Обновленный тип размещения.</returns>
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateAccommodationTypeCommand command)
+        {
+            if (command == null)
+                throw new ValidationException(new[] { "Тело запроса не передано." });
+
+            command.Id = id;
+
+            var result = await _updateHandler.Handle(
+                command,
+                CancellationToken.None);
+
+            return Ok(result);
+        }
+    }
+}

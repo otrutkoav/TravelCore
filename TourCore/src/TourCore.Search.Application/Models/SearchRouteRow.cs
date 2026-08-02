@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using TourCore.Search.Contracts;
 
 namespace TourCore.Search.Application.Models

@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Avia
     /// <summary>
     /// Контроллер для работы с аэропортами.
     /// </summary>
-    [RoutePrefix("api/avia/airports")]
+    [RoutePrefix("api/v1/avia/airports")]
     public class AirportsController : ApiController
     {
         private readonly ICommandHandler<CreateAirportCommand, AirportDto> _createHandler;

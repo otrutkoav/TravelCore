@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Avia
     /// <summary>
     /// Контроллер для работы с сезонами чартерных рейсов.
     /// </summary>
-    [RoutePrefix("api/avia/charter-seasons")]
+    [RoutePrefix("api/v1/avia/charter-seasons")]
     public class CharterSeasonsController : ApiController
     {
         private readonly ICommandHandler<CreateCharterSeasonCommand, CharterSeasonDto> _createHandler;
@@ -22,6 +22,11 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Avia
         private readonly IQueryHandler<GetCharterSeasonsQuery, PagedResponseDto<CharterSeasonListItemDto>> _getListHandler;
         private readonly IQueryHandler<GetCharterSeasonByIdQuery, CharterSeasonDto> _getByIdHandler;
 
+        /// <summary>Создаёт контроллер сезонов чартерных рейсов.</summary>
+        /// <param name="createHandler">Обработчик создания сезона.</param>
+        /// <param name="updateHandler">Обработчик обновления сезона.</param>
+        /// <param name="getListHandler">Обработчик получения списка сезонов.</param>
+        /// <param name="getByIdHandler">Обработчик получения сезона по идентификатору.</param>
         public CharterSeasonsController(
             ICommandHandler<CreateCharterSeasonCommand, CharterSeasonDto> createHandler,
             ICommandHandler<UpdateCharterSeasonCommand, CharterSeasonDto> updateHandler,

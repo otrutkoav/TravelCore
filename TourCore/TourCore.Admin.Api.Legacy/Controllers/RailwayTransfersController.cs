@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Railway
     /// <summary>
     /// Контроллер для работы с ЖД-переездами.
     /// </summary>
-    [RoutePrefix("api/railway/transfers")]
+    [RoutePrefix("api/v1/railway/transfers")]
     public class RailwayTransfersController : ApiController
     {
         private readonly ICommandHandler<CreateRailwayTransferCommand, RailwayTransferDto> _createHandler;

@@ -14,7 +14,7 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Avia
     /// <summary>
     /// Контроллер для работы с чартерными рейсами.
     /// </summary>
-    [RoutePrefix("api/avia/charters")]
+    [RoutePrefix("api/v1/avia/charters")]
     public class ChartersController : ApiController
     {
         private readonly ICommandHandler<CreateCharterCommand, CharterDto> _createHandler;

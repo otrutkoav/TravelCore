@@ -4,5 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TourCore.Search.Contracts\TourCore.Search.Contracts.csproj" />
+    <ProjectReference Include="..\TourCore.Shared\TourCore.Shared.csproj" />
   </ItemGroup>
 </Project>
