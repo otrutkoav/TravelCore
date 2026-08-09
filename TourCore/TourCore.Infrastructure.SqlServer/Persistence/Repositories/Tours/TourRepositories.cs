@@ -147,7 +147,9 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Tours
         public Task<TourService> GetWithFlightsAsync(int tourId, int id, CancellationToken ct)
         {
             return c
-                .TourServices.Include(x => x.FlightGroups.Select(g => g.Flights))
+                .TourServices.Include(x =>
+                    x.FlightGroups.Select(g => g.Flights.Select(f => f.Restrictions))
+                )
                 .FirstOrDefaultAsync(x => x.TourId == tourId && x.Id == id, ct);
         }
 

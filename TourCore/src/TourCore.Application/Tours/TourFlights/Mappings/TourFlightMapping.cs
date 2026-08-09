@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TourCore.Contracts.Tours;
@@ -8,19 +7,16 @@ namespace TourCore.Application.Tours
 {
     internal static class TourFlightMapping
     {
-        public static string Pack(IEnumerable<int> values)
+        private static IReadOnlyCollection<int> GetIds(
+            TourFlight flight,
+            TourFlightRestrictionType type
+        )
         {
-            return string.Join(
-                ",",
-                (values ?? Enumerable.Empty<int>()).Where(x => x > 0).Distinct().OrderBy(x => x)
-            );
-        }
-
-        public static IReadOnlyCollection<int> Unpack(string value)
-        {
-            return string.IsNullOrWhiteSpace(value)
-                ? Array.Empty<int>()
-                : value.Split(',').Select(int.Parse).ToArray();
+            return flight
+                .Restrictions.Where(x => x.Type == type)
+                .Select(x => x.ReferenceId)
+                .OrderBy(x => x)
+                .ToArray();
         }
 
         public static TourFlightDto ToDto(this TourFlight flight)
@@ -29,15 +25,15 @@ namespace TourCore.Application.Tours
             {
                 Id = flight.Id,
                 OrderIndex = flight.OrderIndex,
-                DepartureCountryIds = Unpack(flight.DepartureCountryIds),
-                DepartureCityIds = Unpack(flight.DepartureCityIds),
-                ArrivalCountryIds = Unpack(flight.ArrivalCountryIds),
-                ArrivalCityIds = Unpack(flight.ArrivalCityIds),
-                AirlineIds = Unpack(flight.AirlineIds),
-                FlightIds = Unpack(flight.FlightIds),
-                DepartureAirportIds = Unpack(flight.DepartureAirportIds),
-                ArrivalAirportIds = Unpack(flight.ArrivalAirportIds),
-                FareIds = Unpack(flight.FareIds),
+                DepartureCountryIds = GetIds(flight, TourFlightRestrictionType.DepartureCountry),
+                DepartureCityIds = GetIds(flight, TourFlightRestrictionType.DepartureCity),
+                ArrivalCountryIds = GetIds(flight, TourFlightRestrictionType.ArrivalCountry),
+                ArrivalCityIds = GetIds(flight, TourFlightRestrictionType.ArrivalCity),
+                AirlineIds = GetIds(flight, TourFlightRestrictionType.Airline),
+                FlightIds = GetIds(flight, TourFlightRestrictionType.Flight),
+                DepartureAirportIds = GetIds(flight, TourFlightRestrictionType.DepartureAirport),
+                ArrivalAirportIds = GetIds(flight, TourFlightRestrictionType.ArrivalAirport),
+                FareIds = GetIds(flight, TourFlightRestrictionType.Fare),
                 MinConnectionMinutes = flight.MinConnectionMinutes,
                 MaxConnectionMinutes = flight.MaxConnectionMinutes,
             };

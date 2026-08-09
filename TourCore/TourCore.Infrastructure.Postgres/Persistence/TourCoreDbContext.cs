@@ -54,6 +54,7 @@ public sealed class TourCoreDbContext : DbContext
     public DbSet<TourService> TourServices => Set<TourService>();
     public DbSet<TourFlightGroup> TourFlightGroups => Set<TourFlightGroup>();
     public DbSet<TourFlight> TourFlights => Set<TourFlight>();
+    public DbSet<TourFlightRestriction> TourFlightRestrictions => Set<TourFlightRestriction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

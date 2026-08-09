@@ -77,6 +77,7 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
         public DbSet<TourService> TourServices { get; set; }
         public DbSet<TourFlightGroup> TourFlightGroups { get; set; }
         public DbSet<TourFlight> TourFlights { get; set; }
+        public DbSet<TourFlightRestriction> TourFlightRestrictions { get; set; }
 
       
 
@@ -127,6 +128,7 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
             modelBuilder.Configurations.Add(new TourServiceConfiguration());
             modelBuilder.Configurations.Add(new TourFlightGroupConfiguration());
             modelBuilder.Configurations.Add(new TourFlightConfiguration());
+            modelBuilder.Configurations.Add(new TourFlightRestrictionConfiguration());
 
             
 

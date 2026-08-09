@@ -138,6 +138,7 @@ namespace TourCore.Infrastructure.Postgres.Persistence.Repositories.Tours
             return c
                 .TourServices.Include(x => x.FlightGroups)
                     .ThenInclude(x => x.Flights)
+                        .ThenInclude(x => x.Restrictions)
                 .FirstOrDefaultAsync(x => x.TourId == tourId && x.Id == id, ct);
         }
 

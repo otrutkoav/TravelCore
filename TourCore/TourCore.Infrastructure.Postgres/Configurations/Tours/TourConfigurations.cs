@@ -136,18 +136,35 @@ namespace TourCore.Infrastructure.Postgres.Configurations.Tours
             b.HasKey(x => x.Id);
             b.Property(x => x.OrderIndex).IsRequired();
             b.HasIndex(x => new { x.TourFlightGroupId, x.OrderIndex });
-            b.Property(x => x.DepartureCountryIds).HasColumnType("text");
-            b.Property(x => x.DepartureCityIds).HasColumnType("text");
-            b.Property(x => x.ArrivalCountryIds).HasColumnType("text");
-            b.Property(x => x.ArrivalCityIds).HasColumnType("text");
-            b.Property(x => x.AirlineIds).HasColumnType("text");
-            b.Property(x => x.FlightIds).HasColumnType("text");
-            b.Property(x => x.DepartureAirportIds).HasColumnType("text");
-            b.Property(x => x.ArrivalAirportIds).HasColumnType("text");
-            b.Property(x => x.FareIds).HasColumnType("text");
             b.HasOne(x => x.TourFlightGroup)
                 .WithMany(x => x.Flights)
                 .HasForeignKey(x => x.TourFlightGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourFlightRestrictionConfiguration
+        : IEntityTypeConfiguration<TourFlightRestriction>
+    {
+        public void Configure(EntityTypeBuilder<TourFlightRestriction> builder)
+        {
+            builder.ToTable("TourFlightRestrictions");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Type).IsRequired();
+            builder.Property(x => x.ReferenceId).IsRequired();
+            builder
+                .HasIndex(x => new
+                {
+                    x.TourFlightId,
+                    x.Type,
+                    x.ReferenceId,
+                })
+                .IsUnique();
+            builder.HasIndex(x => new { x.Type, x.ReferenceId });
+            builder
+                .HasOne(x => x.TourFlight)
+                .WithMany(x => x.Restrictions)
+                .HasForeignKey(x => x.TourFlightId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

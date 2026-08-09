@@ -1403,35 +1403,8 @@ namespace TourCore.Infrastructure.Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AirlineIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ArrivalAirportIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ArrivalCityIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ArrivalCountryIds")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DepartureAirportIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DepartureCityIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DepartureCountryIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FareIds")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FlightIds")
-                        .HasColumnType("text");
 
                     b.Property<int?>("MaxConnectionMinutes")
                         .HasColumnType("integer");
@@ -1488,6 +1461,33 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.HasIndex("TourServiceId", "OrderIndex");
 
                     b.ToTable("TourFlightGroups", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourFlightRestriction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ReferenceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourFlightId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Type", "ReferenceId");
+
+                    b.HasIndex("TourFlightId", "Type", "ReferenceId")
+                        .IsUnique();
+
+                    b.ToTable("TourFlightRestrictions", (string)null);
                 });
 
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
@@ -2061,6 +2061,17 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("TourService");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourFlightRestriction", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourFlight", "TourFlight")
+                        .WithMany("Restrictions")
+                        .HasForeignKey("TourFlightId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourFlight");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
                 {
                     b.HasOne("TourCore.Domain.Tours.TourService", "ParentService")
@@ -2144,6 +2155,11 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("AvailableDates");
 
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourFlight", b =>
+                {
+                    b.Navigation("Restrictions");
                 });
 
             modelBuilder.Entity("TourCore.Domain.Tours.TourFlightGroup", b =>

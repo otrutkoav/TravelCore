@@ -100,22 +100,37 @@ namespace TourCore.Application.Tours
 
         private static TourFlight CreateFlight(TourFlightInput input, DateTime createdAt)
         {
-            return new TourFlight(
+            var flight = new TourFlight(
                 0,
                 input.OrderIndex,
-                TourFlightMapping.Pack(input.DepartureCountryIds),
-                TourFlightMapping.Pack(input.DepartureCityIds),
-                TourFlightMapping.Pack(input.ArrivalCountryIds),
-                TourFlightMapping.Pack(input.ArrivalCityIds),
-                TourFlightMapping.Pack(input.AirlineIds),
-                TourFlightMapping.Pack(input.FlightIds),
-                TourFlightMapping.Pack(input.DepartureAirportIds),
-                TourFlightMapping.Pack(input.ArrivalAirportIds),
-                TourFlightMapping.Pack(input.FareIds),
                 input.MinConnectionMinutes,
                 input.MaxConnectionMinutes,
                 createdAt
             );
+
+            flight.AddRestrictions(
+                TourFlightRestrictionType.DepartureCountry,
+                input.DepartureCountryIds
+            );
+            flight.AddRestrictions(TourFlightRestrictionType.DepartureCity, input.DepartureCityIds);
+            flight.AddRestrictions(
+                TourFlightRestrictionType.ArrivalCountry,
+                input.ArrivalCountryIds
+            );
+            flight.AddRestrictions(TourFlightRestrictionType.ArrivalCity, input.ArrivalCityIds);
+            flight.AddRestrictions(TourFlightRestrictionType.Airline, input.AirlineIds);
+            flight.AddRestrictions(TourFlightRestrictionType.Flight, input.FlightIds);
+            flight.AddRestrictions(
+                TourFlightRestrictionType.DepartureAirport,
+                input.DepartureAirportIds
+            );
+            flight.AddRestrictions(
+                TourFlightRestrictionType.ArrivalAirport,
+                input.ArrivalAirportIds
+            );
+            flight.AddRestrictions(TourFlightRestrictionType.Fare, input.FareIds);
+
+            return flight;
         }
     }
 

@@ -207,6 +207,10 @@
     <Compile Include="Migrations\202608091409266_AddTourFlights.Designer.cs">
       <DependentUpon>202608091409266_AddTourFlights.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608091541262_NormalizeTourFlightRestrictions.cs" />
+    <Compile Include="Migrations\202608091541262_NormalizeTourFlightRestrictions.Designer.cs">
+      <DependentUpon>202608091541262_NormalizeTourFlightRestrictions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202605011942421_AddAircrafts.cs" />
     <Compile Include="Migrations\202605011942421_AddAircrafts.designer.cs">
       <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>
@@ -403,6 +407,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608091409266_AddTourFlights.resx">
       <DependentUpon>202608091409266_AddTourFlights.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608091541262_NormalizeTourFlightRestrictions.resx">
+      <DependentUpon>202608091541262_NormalizeTourFlightRestrictions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605011942421_AddAircrafts.resx">
       <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>

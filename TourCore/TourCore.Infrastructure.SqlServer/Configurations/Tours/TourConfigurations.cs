@@ -145,18 +145,24 @@ namespace TourCore.Infrastructure.SqlServer.Configurations.Tours
             ToTable("TourFlights");
             HasKey(x => x.Id);
             Property(x => x.OrderIndex).IsRequired();
-            Property(x => x.DepartureCountryIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.DepartureCityIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.ArrivalCountryIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.ArrivalCityIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.AirlineIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.FlightIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.DepartureAirportIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.ArrivalAirportIds).IsOptional().HasColumnType("nvarchar(max)");
-            Property(x => x.FareIds).IsOptional().HasColumnType("nvarchar(max)");
             HasRequired(x => x.TourFlightGroup)
                 .WithMany(x => x.Flights)
                 .HasForeignKey(x => x.TourFlightGroupId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourFlightRestrictionConfiguration : EntityTypeConfiguration<TourFlightRestriction>
+    {
+        public TourFlightRestrictionConfiguration()
+        {
+            ToTable("TourFlightRestrictions");
+            HasKey(x => x.Id);
+            Property(x => x.Type).IsRequired();
+            Property(x => x.ReferenceId).IsRequired();
+            HasRequired(x => x.TourFlight)
+                .WithMany(x => x.Restrictions)
+                .HasForeignKey(x => x.TourFlightId)
                 .WillCascadeOnDelete(true);
         }
     }

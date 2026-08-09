@@ -1,112 +1,62 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TourCore.Domain.Common.Exceptions;
 using TourCore.Shared.Primitives;
 
 namespace TourCore.Domain.Tours
 {
+    /// <summary>
+    /// Один последовательный перелёт внутри варианта авиаперевозки тура.
+    /// </summary>
+    /// <remarks>
+    /// Направления, рейсы, авиакомпании, аэропорты и тарифы задаются коллекцией
+    /// <see cref="Restrictions"/>. Это позволяет хранить несколько допустимых значений
+    /// каждого вида без строковых списков и без связей с внешними справочниками.
+    /// </remarks>
     public class TourFlight : AuditableEntity
     {
         public int TourFlightGroupId { get; protected set; }
         public virtual TourFlightGroup TourFlightGroup { get; protected set; }
         public int OrderIndex { get; protected set; }
-        public string DepartureCountryIds { get; protected set; }
-        public string DepartureCityIds { get; protected set; }
-        public string ArrivalCountryIds { get; protected set; }
-        public string ArrivalCityIds { get; protected set; }
-        public string AirlineIds { get; protected set; }
-        public string FlightIds { get; protected set; }
-        public string DepartureAirportIds { get; protected set; }
-        public string ArrivalAirportIds { get; protected set; }
-        public string FareIds { get; protected set; }
         public int? MinConnectionMinutes { get; protected set; }
         public int? MaxConnectionMinutes { get; protected set; }
+        /// <summary>Допустимые справочные значения для данного перелёта.</summary>
+        public virtual ICollection<TourFlightRestriction> Restrictions { get; protected set; }
 
-        protected TourFlight() { }
+        protected TourFlight()
+        {
+            Restrictions = new List<TourFlightRestriction>();
+        }
 
         public TourFlight(
             int groupId,
             int orderIndex,
-            string departureCountries,
-            string departureCities,
-            string arrivalCountries,
-            string arrivalCities,
-            string airlines,
-            string flights,
-            string departureAirports,
-            string arrivalAirports,
-            string fares,
             int? minConnectionMinutes,
             int? maxConnectionMinutes,
             DateTime createdAt
         )
+            : this()
         {
             if (groupId < 0)
                 throw new DomainException("Flight group is invalid.");
             TourFlightGroupId = groupId;
-            SetValues(
-                orderIndex,
-                departureCountries,
-                departureCities,
-                arrivalCountries,
-                arrivalCities,
-                airlines,
-                flights,
-                departureAirports,
-                arrivalAirports,
-                fares,
-                minConnectionMinutes,
-                maxConnectionMinutes
-            );
+            SetValues(orderIndex, minConnectionMinutes, maxConnectionMinutes);
             SetCreated(createdAt);
         }
 
         public void Update(
             int orderIndex,
-            string departureCountries,
-            string departureCities,
-            string arrivalCountries,
-            string arrivalCities,
-            string airlines,
-            string flights,
-            string departureAirports,
-            string arrivalAirports,
-            string fares,
             int? minConnectionMinutes,
             int? maxConnectionMinutes,
             DateTime updatedAt
         )
         {
-            SetValues(
-                orderIndex,
-                departureCountries,
-                departureCities,
-                arrivalCountries,
-                arrivalCities,
-                airlines,
-                flights,
-                departureAirports,
-                arrivalAirports,
-                fares,
-                minConnectionMinutes,
-                maxConnectionMinutes
-            );
+            SetValues(orderIndex, minConnectionMinutes, maxConnectionMinutes);
             SetUpdated(updatedAt);
         }
 
-        private void SetValues(
-            int orderIndex,
-            string departureCountries,
-            string departureCities,
-            string arrivalCountries,
-            string arrivalCities,
-            string airlines,
-            string flights,
-            string departureAirports,
-            string arrivalAirports,
-            string fares,
-            int? minConnectionMinutes,
-            int? maxConnectionMinutes
-        )
+        private void SetValues(int orderIndex, int? minConnectionMinutes, int? maxConnectionMinutes)
         {
             if (orderIndex <= 0)
                 throw new DomainException("Order index must be greater than zero.");
@@ -117,17 +67,14 @@ namespace TourCore.Domain.Tours
             if (minConnectionMinutes > maxConnectionMinutes)
                 throw new DomainException("Minimum connection interval cannot exceed maximum.");
             OrderIndex = orderIndex;
-            DepartureCountryIds = departureCountries;
-            DepartureCityIds = departureCities;
-            ArrivalCountryIds = arrivalCountries;
-            ArrivalCityIds = arrivalCities;
-            AirlineIds = airlines;
-            FlightIds = flights;
-            DepartureAirportIds = departureAirports;
-            ArrivalAirportIds = arrivalAirports;
-            FareIds = fares;
             MinConnectionMinutes = minConnectionMinutes;
             MaxConnectionMinutes = maxConnectionMinutes;
+        }
+
+        public void AddRestrictions(TourFlightRestrictionType type, IEnumerable<int> referenceIds)
+        {
+            foreach (var referenceId in (referenceIds ?? Enumerable.Empty<int>()).Distinct())
+                Restrictions.Add(new TourFlightRestriction(type, referenceId));
         }
     }
 }
