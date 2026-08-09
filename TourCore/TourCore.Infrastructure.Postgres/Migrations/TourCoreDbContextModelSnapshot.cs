@@ -1316,6 +1316,179 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.ToTable("ServiceTypes", (string)null);
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.Tour", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 100000000L, null, null, null, null, null);
+
+                    b.Property<DateTime?>("AvailableDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("AvailableDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<string>("BookingConditionsHtml")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DateMode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DescriptionHtml")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DescriptionUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<long>("Revision")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(1L);
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("Tours", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourAvailableDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<int>("TourId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourId", "Date")
+                        .IsUnique();
+
+                    b.ToTable("TourAvailableDates", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsHidden")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsOptional")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsRemovable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ParentServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Revision")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(1L);
+
+                    b.Property<int>("ServiceTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentServiceId");
+
+                    b.HasIndex("ServiceTypeId");
+
+                    b.HasIndex("TourId", "OrderIndex");
+
+                    b.ToTable("TourServices", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("TourTypes", (string)null);
+                });
+
             modelBuilder.Entity("TourCore.Domain.Transfers.Entities.Transfer", b =>
                 {
                     b.Property<int>("Id")
@@ -1444,6 +1617,21 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Transports", (string)null);
+                });
+
+            modelBuilder.Entity("TourTourTypes", b =>
+                {
+                    b.Property<int>("TourId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("TourId", "TourTypeId");
+
+                    b.HasIndex("TourTypeId");
+
+                    b.ToTable("TourTourTypes", (string)null);
                 });
 
             modelBuilder.Entity("TourCore.Domain.Avia.Entities.Airport", b =>
@@ -1734,6 +1922,64 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("Transport");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.Tour", b =>
+                {
+                    b.HasOne("TourCore.Domain.Finance.Entities.Rate", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourAvailableDate", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.Tour", "Tour")
+                        .WithMany("AvailableDates")
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tour");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourService", "ParentService")
+                        .WithMany()
+                        .HasForeignKey("ParentServiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TourCore.Domain.Services.Entities.ServiceType", "ServiceType")
+                        .WithMany()
+                        .HasForeignKey("ServiceTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TourCore.Domain.Tours.Tour", "Tour")
+                        .WithMany("Services")
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentService");
+
+                    b.Navigation("ServiceType");
+
+                    b.Navigation("Tour");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourType", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourType", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Transfers.Entities.Transfer", b =>
                 {
                     b.HasOne("TourCore.Domain.Geography.Entities.City", "City")
@@ -1751,6 +1997,21 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("Direction");
                 });
 
+            modelBuilder.Entity("TourTourTypes", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.Tour", null)
+                        .WithMany()
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TourCore.Domain.Tours.TourType", null)
+                        .WithMany()
+                        .HasForeignKey("TourTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TourCore.Domain.Hotels.Entities.AccommodationPlacementRule", b =>
                 {
                     b.Navigation("ChildAgeRanges");
@@ -1759,6 +2020,18 @@ namespace TourCore.Infrastructure.Postgres.Migrations
             modelBuilder.Entity("TourCore.Domain.Seating.Entities.VehiclePlan", b =>
                 {
                     b.Navigation("Cells");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.Tour", b =>
+                {
+                    b.Navigation("AvailableDates");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourType", b =>
+                {
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }

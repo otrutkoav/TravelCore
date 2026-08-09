@@ -23,9 +23,17 @@ namespace TourCore.Admin.Api
             {
                 options.SwaggerDoc("v1", new() { Title = "TourCore Admin API", Version = "v1" });
                 options.CustomSchemaIds(type => type.FullName?.Replace('+', '.') ?? type.Name);
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
+                var xmlComments = new[]
+                {
+                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml",
+                    "TourCore.Application.xml",
+                    "TourCore.Contracts.xml"
+                };
+                foreach (var xmlFile in xmlComments)
+                {
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    if (File.Exists(xmlPath)) options.IncludeXmlComments(xmlPath);
+                }
             });
 
             var app = builder.Build();

@@ -139,5 +139,17 @@
         // Тип услуги
         public const string ServiceTypeNotFound = "Тип услуги не найден.";
         public const string ServiceTypeCodeExists = "Тип услуги с таким кодом уже существует.";
+
+        // Туры
+        public const string TourNotFound = "Тур не найден.";
+        public const string TourTypeNotFound = "Тип тура не найден.";
+        public const string TourTypeParentNotFound = "Родительский тип тура не найден.";
+        public const string TourTypeNameExists = "Тип тура с таким названием уже существует.";
+        public const string TourTypeCycle = "Нельзя создать циклическую иерархию типов туров.";
+        public const string TourTypeHasChildren = "Нельзя удалить тип тура, у которого есть дочерние типы.";
+        public const string TourTypeIsUsed = "Нельзя удалить тип тура, используемый в турах.";
+        public const string TourServiceNotFound = "Услуга тура не найдена.";
+        public const string TourServiceParentNotFound = "Родительская услуга тура не найдена.";
+        public const string TourServiceHasChildren = "Нельзя удалить услугу тура, у которой есть дочерние услуги.";
     }
 }

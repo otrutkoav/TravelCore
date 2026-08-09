@@ -9,6 +9,7 @@ using TourCore.Domain.Seating.Entities;
 using TourCore.Domain.Services.Entities;
 using TourCore.Domain.Transfers.Entities;
 using TourCore.Domain.Transportation.Entities;
+using TourCore.Domain.Tours;
 
 namespace TourCore.Infrastructure.Postgres.Persistence;
 
@@ -47,6 +48,10 @@ public sealed class TourCoreDbContext : DbContext
     public DbSet<SeatingCell> SeatingCells => Set<SeatingCell>();
     public DbSet<VehiclePlan> VehiclePlans => Set<VehiclePlan>();
     public DbSet<ServiceType> ServiceTypes => Set<ServiceType>();
+    public DbSet<TourType> TourTypes => Set<TourType>();
+    public DbSet<Tour> Tours => Set<Tour>();
+    public DbSet<TourAvailableDate> TourAvailableDates => Set<TourAvailableDate>();
+    public DbSet<TourService> TourServices => Set<TourService>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

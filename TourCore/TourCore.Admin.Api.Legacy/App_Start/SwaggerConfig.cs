@@ -193,6 +193,12 @@ namespace TourCore.Admin.Api.Legacy
                                 case "RealCourses":
                                     return "09. Finance / Real Courses";
 
+                                // Tours
+                                case "Tours":
+                                    return "10. Tours / Tours";
+                                case "TourTypes":
+                                    return "10. Tours / Tour Types";
+
                                 // System
                                 case "Values":
                                     return "99. System / Values";

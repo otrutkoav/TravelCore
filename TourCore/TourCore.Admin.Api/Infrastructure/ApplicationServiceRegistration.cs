@@ -3,6 +3,7 @@ using TourCore.Application.Abstractions.Caching;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Queries;
 using Microsoft.AspNetCore.Mvc;
+using TourCore.Application.Tours;
 
 namespace TourCore.Admin.Api.Infrastructure;
 
@@ -42,6 +43,9 @@ internal static class ApplicationServiceRegistration
             services.AddScoped(validator);
 
         services.AddScoped<PagedQueryExecutor>();
+        services.AddScoped<TourTypeCommandValidator>();
+        services.AddScoped<TourCommandValidator>();
+        services.AddScoped<TourServiceCommandValidator>();
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<NoCacheCatalogServices>();
         services.AddSingleton<ICatalogCacheProvider>(provider => provider.GetRequiredService<NoCacheCatalogServices>());

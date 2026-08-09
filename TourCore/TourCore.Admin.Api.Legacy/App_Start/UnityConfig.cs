@@ -16,6 +16,7 @@ using TourCore.Application.Abstractions.Persistence.Seating;
 using TourCore.Application.Abstractions.Persistence.Services;
 using TourCore.Application.Abstractions.Persistence.Transfers;
 using TourCore.Application.Abstractions.Persistence.Transportation;
+using TourCore.Application.Abstractions.Persistence.Tours;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Avia.AirClasses.Commands;
 using TourCore.Application.Avia.AirClasses.Handlers;
@@ -138,6 +139,7 @@ using TourCore.Application.Transportation.Transports.Commands;
 using TourCore.Application.Transportation.Transports.Handlers;
 using TourCore.Application.Transportation.Transports.Queries;
 using TourCore.Application.Transportation.Transports.Validators;
+using TourCore.Application.Tours;
 using TourCore.Contracts.Avia.AirClasses;
 using TourCore.Contracts.Avia.Aircrafts;
 using TourCore.Contracts.Avia.Airlines;
@@ -169,6 +171,7 @@ using TourCore.Contracts.Services.ServiceTypes;
 using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Contracts.Transfers.Transfers;
 using TourCore.Contracts.Transportation.Transports;
+using TourCore.Contracts.Tours;
 using TourCore.Infrastructure.Services;
 using TourCore.Infrastructure.SqlServer.Persistence;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories;
@@ -181,6 +184,7 @@ using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Seating;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Services;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transfers;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transportation;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Tours;
 using Unity;
 using Unity.Lifetime;
 using Unity.WebApi;
@@ -345,6 +349,9 @@ namespace TourCore.Admin.Api.Legacy
             // ServiceType validators
             container.RegisterType<CreateServiceTypeCommandValidator>();
             container.RegisterType<UpdateServiceTypeCommandValidator>();
+            container.RegisterType<TourTypeCommandValidator>();
+            container.RegisterType<TourCommandValidator>();
+            container.RegisterType<TourServiceCommandValidator>();
 
             // Transfer validators
             container.RegisterType<CreateTransferCommandValidator>();
@@ -599,6 +606,17 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<
                 ICommandHandler<DeleteServiceTypeCommand, bool>,
                 DeleteServiceTypeHandler>();
+
+            container.RegisterType<ICommandHandler<CreateTourTypeCommand, TourTypeDto>, CreateTourTypeHandler>();
+            container.RegisterType<ICommandHandler<UpdateTourTypeCommand, TourTypeDto>, UpdateTourTypeHandler>();
+            container.RegisterType<ICommandHandler<DeleteTourTypeCommand, bool>, DeleteTourTypeHandler>();
+            container.RegisterType<ICommandHandler<CreateTourCommand, TourDto>, CreateTourHandler>();
+            container.RegisterType<ICommandHandler<UpdateTourCommand, TourDto>, UpdateTourHandler>();
+            container.RegisterType<ICommandHandler<DeleteTourCommand, bool>, DeleteTourHandler>();
+            container.RegisterType<ICommandHandler<CreateTourServiceCommand, TourServiceDto>, CreateTourServiceHandler>();
+            container.RegisterType<ICommandHandler<UpdateTourServiceCommand, TourServiceDto>, UpdateTourServiceHandler>();
+            container.RegisterType<ICommandHandler<DeleteTourServiceCommand, bool>, DeleteTourServiceHandler>();
+            container.RegisterType<ICommandHandler<ReorderTourServicesCommand, IReadOnlyCollection<TourServiceDto>>, ReorderTourServicesHandler>();
 
             // Transfer commands
             container.RegisterType<
@@ -868,6 +886,13 @@ namespace TourCore.Admin.Api.Legacy
                 IQueryHandler<GetServiceTypeByIdQuery, ServiceTypeDto>,
                 GetServiceTypeByIdHandler>();
 
+            container.RegisterType<IQueryHandler<GetTourTypesQuery, PagedResponseDto<TourTypeListItemDto>>, GetTourTypesHandler>();
+            container.RegisterType<IQueryHandler<GetTourTypeByIdQuery, TourTypeDto>, GetTourTypeByIdHandler>();
+            container.RegisterType<IQueryHandler<GetToursQuery, PagedResponseDto<TourListItemDto>>, GetToursHandler>();
+            container.RegisterType<IQueryHandler<GetTourByIdQuery, TourDto>, GetTourByIdHandler>();
+            container.RegisterType<IQueryHandler<GetTourServicesQuery, IReadOnlyCollection<TourServiceDto>>, GetTourServicesHandler>();
+            container.RegisterType<IQueryHandler<GetTourServiceByIdQuery, TourServiceDto>, GetTourServiceByIdHandler>();
+
             // Transfer queries
             container.RegisterType<
                 IQueryHandler<GetTransfersQuery, PagedResponseDto<TransferListItemDto>>,
@@ -1019,6 +1044,10 @@ namespace TourCore.Admin.Api.Legacy
 
             container.RegisterType<IServiceTypeRepository, ServiceTypeRepository>(
                 new HierarchicalLifetimeManager());
+
+            container.RegisterType<ITourTypeRepository, TourTypeRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<ITourRepository, TourRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<ITourServiceRepository, TourServiceRepository>(new HierarchicalLifetimeManager());
 
             container.RegisterType<ITransferRepository, TransferRepository>(
                 new HierarchicalLifetimeManager());

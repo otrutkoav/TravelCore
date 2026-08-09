@@ -1,0 +1,2 @@
+using System;
+namespace TourCore.Contracts.Tours { public class TourServiceDto { public int Id{get;set;} public int TourId{get;set;} public int ServiceTypeId{get;set;} public string Name{get;set;} public int OrderIndex{get;set;} public int? ParentServiceId{get;set;} public bool IsHidden{get;set;} public bool IsRemovable{get;set;} public bool IsOptional{get;set;} public long Revision{get;set;} public DateTime CreatedAt{get;set;} public DateTime? UpdatedAt{get;set;} } }

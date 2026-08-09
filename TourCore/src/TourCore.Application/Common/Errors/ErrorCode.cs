@@ -156,6 +156,18 @@
         public const string ServiceTypeNotFound = "service_type_not_found";
         public const string ServiceTypeCodeExists = "service_type_code_exists";
 
+        // Tours
+        public const string TourNotFound = "tour_not_found";
+        public const string TourTypeNotFound = "tour_type_not_found";
+        public const string TourTypeParentNotFound = "tour_type_parent_not_found";
+        public const string TourTypeNameExists = "tour_type_name_exists";
+        public const string TourTypeCycle = "tour_type_cycle";
+        public const string TourTypeHasChildren = "tour_type_has_children";
+        public const string TourTypeIsUsed = "tour_type_is_used";
+        public const string TourServiceNotFound = "tour_service_not_found";
+        public const string TourServiceParentNotFound = "tour_service_parent_not_found";
+        public const string TourServiceHasChildren = "tour_service_has_children";
+
        
     }
 }

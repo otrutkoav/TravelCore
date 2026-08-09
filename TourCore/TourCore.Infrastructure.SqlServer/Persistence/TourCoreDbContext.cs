@@ -9,6 +9,7 @@ using TourCore.Domain.Seating.Entities;
 using TourCore.Domain.Services.Entities;
 using TourCore.Domain.Transfers.Entities;
 using TourCore.Domain.Transportation.Entities;
+using TourCore.Domain.Tours;
 using TourCore.Infrastructure.Persistence.Configurations.Avia;
 using TourCore.Infrastructure.SqlServer.Configurations;
 using TourCore.Infrastructure.SqlServer.Configurations.Avia;
@@ -20,6 +21,7 @@ using TourCore.Infrastructure.SqlServer.Configurations.Seating;
 using TourCore.Infrastructure.SqlServer.Configurations.Services;
 using TourCore.Infrastructure.SqlServer.Configurations.Transfers;
 using TourCore.Infrastructure.SqlServer.Configurations.Transportation;
+using TourCore.Infrastructure.SqlServer.Configurations.Tours;
 
 namespace TourCore.Infrastructure.SqlServer.Persistence
 {
@@ -69,6 +71,10 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
         public DbSet<SeatingCell> SeatingCells { get; set; }
         public DbSet<VehiclePlan> VehiclePlans { get; set; }
         public DbSet<ServiceType> ServiceTypes { get; set; }
+        public DbSet<TourType> TourTypes { get; set; }
+        public DbSet<Tour> Tours { get; set; }
+        public DbSet<TourAvailableDate> TourAvailableDates { get; set; }
+        public DbSet<TourService> TourServices { get; set; }
 
       
 
@@ -113,6 +119,10 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
             modelBuilder.Configurations.Add(new SeatingCellConfiguration());
             modelBuilder.Configurations.Add(new VehiclePlanConfiguration());
             modelBuilder.Configurations.Add(new ServiceTypeConfiguration());
+            modelBuilder.Configurations.Add(new TourTypeConfiguration());
+            modelBuilder.Configurations.Add(new TourConfiguration());
+            modelBuilder.Configurations.Add(new TourAvailableDateConfiguration());
+            modelBuilder.Configurations.Add(new TourServiceConfiguration());
 
             
 
