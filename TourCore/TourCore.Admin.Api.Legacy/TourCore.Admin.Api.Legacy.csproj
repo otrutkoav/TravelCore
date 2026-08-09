@@ -193,6 +193,7 @@
     <Compile Include="Controllers\AccommodationPlacementRulesController.cs" />
     <Compile Include="Controllers\AccommodationTypesController.cs" />
     <Compile Include="Controllers\AirClassesController.cs" />
+    <Compile Include="Controllers\ServiceTypesController.cs" />
     <Compile Include="Controllers\AircraftsController.cs" />
     <Compile Include="Controllers\AirlinesController.cs" />
     <Compile Include="Controllers\AirportsController.cs" />

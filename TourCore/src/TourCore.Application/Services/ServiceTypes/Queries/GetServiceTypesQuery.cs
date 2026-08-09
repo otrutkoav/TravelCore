@@ -1,8 +1,9 @@
-﻿using TourCore.Application.Services.ServiceTypes.DTOs;
+using TourCore.Application.Common.Queries;
+using TourCore.Application.Services.ServiceTypes.DTOs;
 
 namespace TourCore.Application.Services.ServiceTypes.Queries
 {
-    public class GetServiceTypesQuery
+    public class GetServiceTypesQuery : PagedQuery
     {
         public GetServiceTypesQuery()
         {

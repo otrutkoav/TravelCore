@@ -37,18 +37,6 @@ namespace TourCore.Application.Services.ServiceTypes.Validators
             if (!string.IsNullOrWhiteSpace(command.Code) && command.Code.Trim().Length > 10)
                 errors.Add("Code must be 10 characters or less.");
 
-            if (command.Category.HasValue && command.Category.Value < 0)
-                errors.Add("Category cannot be negative.");
-
-            if (command.ControlMode.HasValue && command.ControlMode.Value < 0)
-                errors.Add("ControlMode cannot be negative.");
-
-            if (command.SmallAmountPercent.HasValue && command.SmallAmountPercent.Value < 0)
-                errors.Add("SmallAmountPercent cannot be negative.");
-
-            if (command.SmallAmountThreshold.HasValue && command.SmallAmountThreshold.Value < 0)
-                errors.Add("SmallAmountThreshold cannot be negative.");
-
             return errors;
         }
     }

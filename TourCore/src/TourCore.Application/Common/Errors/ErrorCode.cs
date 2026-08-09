@@ -152,6 +152,10 @@
         public const string AccommodationPlacementRuleNotFound = "accommodation_placement_rule_not_found";
         public const string AccommodationPlacementRuleAgeRangeNotFound = "accommodation_placement_rule_age_range_not_found";
 
+        // ServiceType
+        public const string ServiceTypeNotFound = "service_type_not_found";
+        public const string ServiceTypeCodeExists = "service_type_code_exists";
+
        
     }
 }

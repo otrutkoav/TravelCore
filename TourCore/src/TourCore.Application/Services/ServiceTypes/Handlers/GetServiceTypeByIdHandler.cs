@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions;
 using TourCore.Application.Abstractions.Persistence.Services;
 using TourCore.Application.Common.Exceptions;
-using TourCore.Application.Services.ServiceTypes.DTOs;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Services.ServiceTypes.Mapping;
 using TourCore.Application.Services.ServiceTypes.Queries;
+using TourCore.Contracts.Services.ServiceTypes;
 
 namespace TourCore.Application.Services.ServiceTypes.Handlers
 {
@@ -22,7 +23,7 @@ namespace TourCore.Application.Services.ServiceTypes.Handlers
         {
             var entity = await _serviceTypeRepository.GetByIdAsync(query.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Service type was not found.");
+                throw new NotFoundException(ErrorMessages.ServiceTypeNotFound, ErrorCode.ServiceTypeNotFound);
 
             return entity.ToDto();
         }

@@ -1,5 +1,5 @@
-﻿using TourCore.Application.Services.ServiceTypes.DTOs;
 using TourCore.Domain.Services.Entities;
+using TourCore.Contracts.Services.ServiceTypes;
 
 namespace TourCore.Application.Services.ServiceTypes.Mapping
 {
@@ -13,37 +13,10 @@ namespace TourCore.Application.Services.ServiceTypes.Mapping
                 Name = entity.Name,
                 NameEn = entity.NameEn,
                 Code = entity.Code,
-                Category = entity.Category,
-                ControlMode = entity.ControlMode,
-                IsCity = entity.IsCity,
-                HasPrimaryParameter = entity.HasPrimaryParameter,
-                HasSecondaryParameter = entity.HasSecondaryParameter,
-                RoundGrossAmount = entity.RoundGrossAmount,
                 IsDuration = entity.IsDuration,
-                UseManualInput = entity.UseManualInput,
-                IsQuoted = entity.IsQuoted,
-                IsIndividual = entity.IsIndividual,
-                SmallAmountPercent = entity.SmallAmountPercent,
-                SmallAmountThreshold = entity.SmallAmountThreshold,
-                UseSmallAmountAndRule = entity.UseSmallAmountAndRule,
                 IsRoute = entity.IsRoute,
-                IsPartnerBasedOn = entity.IsPartnerBasedOn,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
-            };
-        }
-
-        public static ServiceTypeListItemDto ToListItemDto(this ServiceType entity)
-        {
-            return new ServiceTypeListItemDto
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                NameEn = entity.NameEn,
-                Code = entity.Code,
-                HasPrimaryParameter = entity.HasPrimaryParameter,
-                HasSecondaryParameter = entity.HasSecondaryParameter,
-                IsRoute = entity.IsRoute
             };
         }
     }

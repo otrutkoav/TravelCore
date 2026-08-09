@@ -22,20 +22,11 @@ namespace TourCore.Application.Services.ServiceTypes.Validators
             else if (command.Name.Trim().Length > 50)
                 errors.Add("Name must be 50 characters or less.");
 
+            if (!string.IsNullOrWhiteSpace(command.NameEn) && command.NameEn.Trim().Length > 50)
+                errors.Add("NameEn must be 50 characters or less.");
+
             if (!string.IsNullOrWhiteSpace(command.Code) && command.Code.Trim().Length > 10)
                 errors.Add("Code must be 10 characters or less.");
-
-            if (command.Category.HasValue && command.Category < 0)
-                errors.Add("Category cannot be negative.");
-
-            if (command.ControlMode.HasValue && command.ControlMode < 0)
-                errors.Add("ControlMode cannot be negative.");
-
-            if (command.SmallAmountPercent.HasValue && command.SmallAmountPercent < 0)
-                errors.Add("SmallAmountPercent cannot be negative.");
-
-            if (command.SmallAmountThreshold.HasValue && command.SmallAmountThreshold < 0)
-                errors.Add("SmallAmountThreshold cannot be negative.");
 
             return errors;
         }

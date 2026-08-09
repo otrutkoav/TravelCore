@@ -6,6 +6,7 @@ using TourCore.Domain.Geography.Entities;
 using TourCore.Domain.Hotels.Entities;
 using TourCore.Domain.Railway.Entities;
 using TourCore.Domain.Seating.Entities;
+using TourCore.Domain.Services.Entities;
 using TourCore.Domain.Transfers.Entities;
 using TourCore.Domain.Transportation.Entities;
 using TourCore.Infrastructure.Persistence.Configurations.Avia;
@@ -16,6 +17,7 @@ using TourCore.Infrastructure.SqlServer.Configurations.Finance;
 using TourCore.Infrastructure.SqlServer.Configurations.Hotels;
 using TourCore.Infrastructure.SqlServer.Configurations.Railway;
 using TourCore.Infrastructure.SqlServer.Configurations.Seating;
+using TourCore.Infrastructure.SqlServer.Configurations.Services;
 using TourCore.Infrastructure.SqlServer.Configurations.Transfers;
 using TourCore.Infrastructure.SqlServer.Configurations.Transportation;
 
@@ -66,6 +68,7 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
 
         public DbSet<SeatingCell> SeatingCells { get; set; }
         public DbSet<VehiclePlan> VehiclePlans { get; set; }
+        public DbSet<ServiceType> ServiceTypes { get; set; }
 
       
 
@@ -109,6 +112,7 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
 
             modelBuilder.Configurations.Add(new SeatingCellConfiguration());
             modelBuilder.Configurations.Add(new VehiclePlanConfiguration());
+            modelBuilder.Configurations.Add(new ServiceTypeConfiguration());
 
             
 

@@ -135,5 +135,9 @@
         // Правило размещения
         public const string AccommodationPlacementRuleNotFound = "Правило размещения не найдено.";
         public const string AccommodationPlacementRuleAgeRangeNotFound = "Возрастной диапазон правила размещения не найден.";
+
+        // Тип услуги
+        public const string ServiceTypeNotFound = "Тип услуги не найден.";
+        public const string ServiceTypeCodeExists = "Тип услуги с таким кодом уже существует.";
     }
 }

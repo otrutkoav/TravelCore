@@ -6,6 +6,7 @@ using TourCore.Domain.Geography.Entities;
 using TourCore.Domain.Hotels.Entities;
 using TourCore.Domain.Railway.Entities;
 using TourCore.Domain.Seating.Entities;
+using TourCore.Domain.Services.Entities;
 using TourCore.Domain.Transfers.Entities;
 using TourCore.Domain.Transportation.Entities;
 
@@ -45,6 +46,7 @@ public sealed class TourCoreDbContext : DbContext
     public DbSet<TransferDirection> TransferDirections => Set<TransferDirection>();
     public DbSet<SeatingCell> SeatingCells => Set<SeatingCell>();
     public DbSet<VehiclePlan> VehiclePlans => Set<VehiclePlan>();
+    public DbSet<ServiceType> ServiceTypes => Set<ServiceType>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

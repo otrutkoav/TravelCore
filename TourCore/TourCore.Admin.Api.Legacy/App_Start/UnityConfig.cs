@@ -13,6 +13,7 @@ using TourCore.Application.Abstractions.Persistence.Geography;
 using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Abstractions.Persistence.Seating;
+using TourCore.Application.Abstractions.Persistence.Services;
 using TourCore.Application.Abstractions.Persistence.Transfers;
 using TourCore.Application.Abstractions.Persistence.Transportation;
 using TourCore.Application.Abstractions.Services;
@@ -121,6 +122,10 @@ using TourCore.Application.Seating.VehiclePlans.Commands;
 using TourCore.Application.Seating.VehiclePlans.Handlers;
 using TourCore.Application.Seating.VehiclePlans.Queries;
 using TourCore.Application.Seating.VehiclePlans.Validators;
+using TourCore.Application.Services.ServiceTypes.Commands;
+using TourCore.Application.Services.ServiceTypes.Handlers;
+using TourCore.Application.Services.ServiceTypes.Queries;
+using TourCore.Application.Services.ServiceTypes.Validators;
 using TourCore.Application.Transfers.TransferDirections.Commands;
 using TourCore.Application.Transfers.TransferDirections.Handlers;
 using TourCore.Application.Transfers.TransferDirections.Queries;
@@ -160,6 +165,7 @@ using TourCore.Contracts.Railway.RailwayTransfers;
 using TourCore.Contracts.Railway.TrainSchedules;
 using TourCore.Contracts.Seating.SeatingCells;
 using TourCore.Contracts.Seating.VehiclePlans;
+using TourCore.Contracts.Services.ServiceTypes;
 using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Contracts.Transfers.Transfers;
 using TourCore.Contracts.Transportation.Transports;
@@ -172,6 +178,7 @@ using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Finance;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Hotels;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Railway;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Seating;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Services;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transfers;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transportation;
 using Unity;
@@ -334,6 +341,10 @@ namespace TourCore.Admin.Api.Legacy
             // Transport validators
             container.RegisterType<CreateTransportCommandValidator>();
             container.RegisterType<UpdateTransportCommandValidator>();
+
+            // ServiceType validators
+            container.RegisterType<CreateServiceTypeCommandValidator>();
+            container.RegisterType<UpdateServiceTypeCommandValidator>();
 
             // Transfer validators
             container.RegisterType<CreateTransferCommandValidator>();
@@ -577,6 +588,17 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<
                 ICommandHandler<UpdateTransportCommand, TransportDto>,
                 UpdateTransportHandler>();
+
+            // ServiceType commands
+            container.RegisterType<
+                ICommandHandler<CreateServiceTypeCommand, ServiceTypeDto>,
+                CreateServiceTypeHandler>();
+            container.RegisterType<
+                ICommandHandler<UpdateServiceTypeCommand, ServiceTypeDto>,
+                UpdateServiceTypeHandler>();
+            container.RegisterType<
+                ICommandHandler<DeleteServiceTypeCommand, bool>,
+                DeleteServiceTypeHandler>();
 
             // Transfer commands
             container.RegisterType<
@@ -838,6 +860,14 @@ namespace TourCore.Admin.Api.Legacy
                 IQueryHandler<GetTransportByIdQuery, TransportDto>,
                 GetTransportByIdHandler>();
 
+            // ServiceType queries
+            container.RegisterType<
+                IQueryHandler<GetServiceTypesQuery, PagedResponseDto<ServiceTypeListItemDto>>,
+                GetServiceTypesHandler>();
+            container.RegisterType<
+                IQueryHandler<GetServiceTypeByIdQuery, ServiceTypeDto>,
+                GetServiceTypeByIdHandler>();
+
             // Transfer queries
             container.RegisterType<
                 IQueryHandler<GetTransfersQuery, PagedResponseDto<TransferListItemDto>>,
@@ -985,6 +1015,9 @@ namespace TourCore.Admin.Api.Legacy
                 new HierarchicalLifetimeManager());
 
             container.RegisterType<ITransportRepository, TransportRepository>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IServiceTypeRepository, ServiceTypeRepository>(
                 new HierarchicalLifetimeManager());
 
             container.RegisterType<ITransferRepository, TransferRepository>(

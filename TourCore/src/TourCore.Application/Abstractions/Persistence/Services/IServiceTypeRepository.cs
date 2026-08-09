@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Data;
 using TourCore.Domain.Services.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Services
 {
-    public interface IServiceTypeRepository
+    public interface IServiceTypeRepository : IQueryableRepository<ServiceType>
     {
         Task<ServiceType> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<ServiceType>> ListAsync(CancellationToken cancellationToken);
@@ -14,5 +15,6 @@ namespace TourCore.Application.Abstractions.Persistence.Services
         Task<bool> ExistsByCodeAsync(string code, int excludeId, CancellationToken cancellationToken);
 
         Task AddAsync(ServiceType entity, CancellationToken cancellationToken);
+        void Remove(ServiceType entity);
     }
 }

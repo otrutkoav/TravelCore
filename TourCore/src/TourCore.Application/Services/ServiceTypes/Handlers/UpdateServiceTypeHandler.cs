@@ -5,10 +5,11 @@ using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Services;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Common.Exceptions;
+using TourCore.Application.Common.Errors;
 using TourCore.Application.Services.ServiceTypes.Commands;
-using TourCore.Application.Services.ServiceTypes.DTOs;
 using TourCore.Application.Services.ServiceTypes.Mapping;
 using TourCore.Application.Services.ServiceTypes.Validators;
+using TourCore.Contracts.Services.ServiceTypes;
 
 namespace TourCore.Application.Services.ServiceTypes.Handlers
 {
@@ -37,14 +38,14 @@ namespace TourCore.Application.Services.ServiceTypes.Handlers
 
             var entity = await _serviceTypeRepository.GetByIdAsync(command.Id, cancellationToken);
             if (entity == null)
-                throw new NotFoundException("Service type was not found.");
+                throw new NotFoundException(ErrorMessages.ServiceTypeNotFound, ErrorCode.ServiceTypeNotFound);
 
             if (!string.IsNullOrWhiteSpace(command.Code))
             {
                 var normalizedCode = command.Code.Trim().ToUpperInvariant();
 
                 if (await _serviceTypeRepository.ExistsByCodeAsync(normalizedCode, command.Id, cancellationToken))
-                    throw new ConflictException("Service type with same code exists.");
+                    throw new ConflictException(ErrorMessages.ServiceTypeCodeExists, ErrorCode.ServiceTypeCodeExists);
             }
 
             entity.Update(
@@ -52,21 +53,8 @@ namespace TourCore.Application.Services.ServiceTypes.Handlers
                 _dateTimeProvider.UtcNow,
                 command.Code,
                 command.NameEn,
-                command.Category,
-                command.ControlMode,
-                command.IsCity,
-                command.HasPrimaryParameter,
-                command.HasSecondaryParameter,
-                command.RoundGrossAmount,
                 command.IsDuration,
-                command.UseManualInput,
-                command.IsQuoted,
-                command.IsIndividual,
-                command.SmallAmountPercent,
-                command.SmallAmountThreshold,
-                command.UseSmallAmountAndRule,
-                command.IsRoute,
-                command.IsPartnerBasedOn);
+                command.IsRoute);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -1275,6 +1275,47 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.ToTable("VehiclePlans", (string)null);
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Services.Entities.ServiceType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDuration")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRoute")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("ServiceTypes", (string)null);
+                });
+
             modelBuilder.Entity("TourCore.Domain.Transfers.Entities.Transfer", b =>
                 {
                     b.Property<int>("Id")

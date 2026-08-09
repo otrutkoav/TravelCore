@@ -130,6 +130,7 @@
     <Compile Include="Configurations\Railway\TrainScheduleConfiguration.cs" />
     <Compile Include="Configurations\Seating\SeatingCellConfiguration.cs" />
     <Compile Include="Configurations\Seating\VehiclePlanConfiguration.cs" />
+    <Compile Include="Configurations\Services\ServiceTypeConfiguration.cs" />
     <Compile Include="Configurations\Transfers\TransferConfiguration.cs" />
     <Compile Include="Configurations\Transfers\TransferDirectionConfiguration.cs" />
     <Compile Include="Configurations\Transportation\TransportConfiguration.cs" />
@@ -176,6 +177,14 @@
     <Compile Include="Migrations\202605011914338_AddAirClasses.cs" />
     <Compile Include="Migrations\202605011914338_AddAirClasses.designer.cs">
       <DependentUpon>202605011914338_AddAirClasses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608090813000_AddServiceTypes.cs" />
+    <Compile Include="Migrations\202608090813000_AddServiceTypes.Designer.cs">
+      <DependentUpon>202608090813000_AddServiceTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608090826032_SeedStandardServiceTypes.cs" />
+    <Compile Include="Migrations\202608090826032_SeedStandardServiceTypes.Designer.cs">
+      <DependentUpon>202608090826032_SeedStandardServiceTypes.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202605011942421_AddAircrafts.cs" />
     <Compile Include="Migrations\202605011942421_AddAircrafts.designer.cs">
@@ -277,6 +286,7 @@
     <Compile Include="Persistence\Repositories\Railway\TrainScheduleRepository.cs" />
     <Compile Include="Persistence\Repositories\Seating\SeatingCellRepository.cs" />
     <Compile Include="Persistence\Repositories\Seating\VehiclePlanRepository.cs" />
+    <Compile Include="Persistence\Repositories\Services\ServiceTypeRepository.cs" />
     <Compile Include="Persistence\Repositories\Transfers\TransferDirectionRepository.cs" />
     <Compile Include="Persistence\Repositories\Transfers\TransferRepository.cs" />
     <Compile Include="Persistence\Repositories\Transportation\TransportRepository.cs" />
@@ -350,6 +360,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605011914338_AddAirClasses.resx">
       <DependentUpon>202605011914338_AddAirClasses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608090813000_AddServiceTypes.resx">
+      <DependentUpon>202608090813000_AddServiceTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608090826032_SeedStandardServiceTypes.resx">
+      <DependentUpon>202608090826032_SeedStandardServiceTypes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605011942421_AddAircrafts.resx">
       <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>
