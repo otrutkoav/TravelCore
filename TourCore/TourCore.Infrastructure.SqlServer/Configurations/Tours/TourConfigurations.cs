@@ -166,4 +166,184 @@ namespace TourCore.Infrastructure.SqlServer.Configurations.Tours
                 .WillCascadeOnDelete(true);
         }
     }
+
+    public class TourHotelGroupConfiguration : EntityTypeConfiguration<TourHotelGroup>
+    {
+        public TourHotelGroupConfiguration()
+        {
+            ToTable("TourHotelGroups");
+            HasKey(x => x.Id);
+            Property(x => x.Name).IsRequired().HasMaxLength(128);
+            Property(x => x.Priority).IsRequired();
+            Property(x => x.OrderIndex)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotelGroups_Service_Order", 1)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.TourServiceId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotelGroups_Service_Order", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            HasRequired(x => x.TourService)
+                .WithMany(x => x.HotelGroups)
+                .HasForeignKey(x => x.TourServiceId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourHotelConfiguration : EntityTypeConfiguration<TourHotel>
+    {
+        public TourHotelConfiguration()
+        {
+            ToTable("TourHotels");
+            HasKey(x => x.Id);
+            Property(x => x.OrderIndex)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotels_Group_Order", 1) { IsUnique = true }
+                    )
+                );
+            Property(x => x.TourHotelGroupId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotels_Group_Order", 0) { IsUnique = true }
+                    )
+                );
+            Property(x => x.CountryId)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(new IndexAttribute("IX_TourHotels_Country"))
+                );
+            HasRequired(x => x.TourHotelGroup)
+                .WithMany(x => x.Hotels)
+                .HasForeignKey(x => x.TourHotelGroupId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourHotelDurationConfiguration : EntityTypeConfiguration<TourHotelDuration>
+    {
+        public TourHotelDurationConfiguration()
+        {
+            ToTable("TourHotelDurations");
+            HasKey(x => x.Id);
+            Property(x => x.Nights)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotelDurations_Hotel_Nights", 1)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.TourHotelId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotelDurations_Hotel_Nights", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            HasRequired(x => x.TourHotel)
+                .WithMany(x => x.Durations)
+                .HasForeignKey(x => x.TourHotelId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourHotelAllowedHotelConfiguration : EntityTypeConfiguration<TourHotelAllowedHotel>
+    {
+        public TourHotelAllowedHotelConfiguration()
+        {
+            ToTable("TourHotelAllowedHotels");
+            HasKey(x => x.Id);
+            Property(x => x.HotelId)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourHotelAllowedHotels_TourHotel_Hotel", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourHotelAllowedHotels_Hotel"),
+                        }
+                    )
+                );
+            Property(x => x.TourHotelId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotelAllowedHotels_TourHotel_Hotel", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            HasRequired(x => x.TourHotel)
+                .WithMany(x => x.AllowedHotels)
+                .HasForeignKey(x => x.TourHotelId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourHotelCityConfiguration : EntityTypeConfiguration<TourHotelCity>
+    {
+        public TourHotelCityConfiguration()
+        {
+            ToTable("TourHotelCities");
+            HasKey(x => x.Id);
+            Property(x => x.CityId)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourHotelCities_TourHotel_City", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourHotelCities_City"),
+                        }
+                    )
+                );
+            Property(x => x.TourHotelId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourHotelCities_TourHotel_City", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            HasRequired(x => x.TourHotel)
+                .WithMany(x => x.Cities)
+                .HasForeignKey(x => x.TourHotelId)
+                .WillCascadeOnDelete(true);
+        }
+    }
 }

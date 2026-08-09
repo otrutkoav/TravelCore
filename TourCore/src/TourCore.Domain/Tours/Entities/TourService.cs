@@ -24,10 +24,16 @@ namespace TourCore.Domain.Tours
             get;
             protected set;
         }
+        public virtual System.Collections.Generic.ICollection<TourHotelGroup> HotelGroups
+        {
+            get;
+            protected set;
+        }
 
         protected TourService()
         {
             FlightGroups = new System.Collections.Generic.List<TourFlightGroup>();
+            HotelGroups = new System.Collections.Generic.List<TourHotelGroup>();
         }
 
         public TourService(
@@ -41,6 +47,7 @@ namespace TourCore.Domain.Tours
             bool isOptional,
             DateTime createdAt
         )
+            : this()
         {
             if (tourId <= 0)
                 throw new DomainException("Tour is required.");
@@ -72,26 +79,29 @@ namespace TourCore.Domain.Tours
             ServiceTypeId = serviceTypeId;
             ParentServiceId = parentServiceId;
             SetBehavior(isHidden, isRemovable, isOptional);
-            checked
-            {
-                Revision++;
-            }
+            AdvanceRevision();
             SetUpdated(updatedAt);
         }
 
         public void MoveTo(int orderIndex, DateTime updatedAt)
         {
             SetOrderIndex(orderIndex);
+            AdvanceRevision();
             SetUpdated(updatedAt);
         }
 
         public void IncrementRevision(DateTime updatedAt)
         {
+            AdvanceRevision();
+            SetUpdated(updatedAt);
+        }
+
+        private void AdvanceRevision()
+        {
             checked
             {
                 Revision++;
             }
-            SetUpdated(updatedAt);
         }
 
         private void SetName(string value)

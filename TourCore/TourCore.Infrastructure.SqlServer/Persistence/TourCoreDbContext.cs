@@ -78,6 +78,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
         public DbSet<TourFlightGroup> TourFlightGroups { get; set; }
         public DbSet<TourFlight> TourFlights { get; set; }
         public DbSet<TourFlightRestriction> TourFlightRestrictions { get; set; }
+        public DbSet<TourHotelGroup> TourHotelGroups { get; set; }
+        public DbSet<TourHotel> TourHotels { get; set; }
+        public DbSet<TourHotelDuration> TourHotelDurations { get; set; }
+        public DbSet<TourHotelAllowedHotel> TourHotelAllowedHotels { get; set; }
+        public DbSet<TourHotelCity> TourHotelCities { get; set; }
 
       
 
@@ -129,6 +134,11 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
             modelBuilder.Configurations.Add(new TourFlightGroupConfiguration());
             modelBuilder.Configurations.Add(new TourFlightConfiguration());
             modelBuilder.Configurations.Add(new TourFlightRestrictionConfiguration());
+            modelBuilder.Configurations.Add(new TourHotelGroupConfiguration());
+            modelBuilder.Configurations.Add(new TourHotelConfiguration());
+            modelBuilder.Configurations.Add(new TourHotelDurationConfiguration());
+            modelBuilder.Configurations.Add(new TourHotelAllowedHotelConfiguration());
+            modelBuilder.Configurations.Add(new TourHotelCityConfiguration());
 
             
 

@@ -353,6 +353,7 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<TourCommandValidator>();
             container.RegisterType<TourServiceCommandValidator>();
             container.RegisterType<TourFlightCommandValidator>();
+            container.RegisterType<TourHotelCommandValidator>();
 
             // Transfer validators
             container.RegisterType<CreateTransferCommandValidator>();
@@ -619,6 +620,7 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<ICommandHandler<DeleteTourServiceCommand, bool>, DeleteTourServiceHandler>();
             container.RegisterType<ICommandHandler<ReorderTourServicesCommand, IReadOnlyCollection<TourServiceDto>>, ReorderTourServicesHandler>();
             container.RegisterType<ICommandHandler<ReplaceTourFlightsCommand, IReadOnlyCollection<TourFlightGroupDto>>, ReplaceTourFlightsHandler>();
+            container.RegisterType<ICommandHandler<ReplaceTourHotelsCommand, IReadOnlyCollection<TourHotelGroupDto>>, ReplaceTourHotelsHandler>();
 
             // Transfer commands
             container.RegisterType<
@@ -895,6 +897,7 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<IQueryHandler<GetTourServicesQuery, IReadOnlyCollection<TourServiceDto>>, GetTourServicesHandler>();
             container.RegisterType<IQueryHandler<GetTourServiceByIdQuery, TourServiceDto>, GetTourServiceByIdHandler>();
             container.RegisterType<IQueryHandler<GetTourFlightsQuery, IReadOnlyCollection<TourFlightGroupDto>>, GetTourFlightsHandler>();
+            container.RegisterType<IQueryHandler<GetTourHotelsQuery, IReadOnlyCollection<TourHotelGroupDto>>, GetTourHotelsHandler>();
 
             // Transfer queries
             container.RegisterType<

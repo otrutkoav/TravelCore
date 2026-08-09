@@ -1490,6 +1490,145 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.ToTable("TourFlightRestrictions", (string)null);
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourHotelGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("TourHotelGroupId", "OrderIndex")
+                        .IsUnique();
+
+                    b.ToTable("TourHotels", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelAllowedHotel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("HotelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourHotelId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
+
+                    b.HasIndex("TourHotelId", "HotelId")
+                        .IsUnique();
+
+                    b.ToTable("TourHotelAllowedHotels", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelCity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourHotelId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TourHotelId", "CityId")
+                        .IsUnique();
+
+                    b.ToTable("TourHotelCities", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelDuration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Nights")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourHotelId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourHotelId", "Nights")
+                        .IsUnique();
+
+                    b.ToTable("TourHotelDurations", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourServiceId", "OrderIndex")
+                        .IsUnique();
+
+                    b.ToTable("TourHotelGroups", (string)null);
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
                 {
                     b.Property<int>("Id")
@@ -2072,6 +2211,61 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("TourFlight");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotel", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourHotelGroup", "TourHotelGroup")
+                        .WithMany("Hotels")
+                        .HasForeignKey("TourHotelGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourHotelGroup");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelAllowedHotel", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourHotel", "TourHotel")
+                        .WithMany("AllowedHotels")
+                        .HasForeignKey("TourHotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourHotel");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelCity", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourHotel", "TourHotel")
+                        .WithMany("Cities")
+                        .HasForeignKey("TourHotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourHotel");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelDuration", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourHotel", "TourHotel")
+                        .WithMany("Durations")
+                        .HasForeignKey("TourHotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourHotel");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelGroup", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourService", "TourService")
+                        .WithMany("HotelGroups")
+                        .HasForeignKey("TourServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourService");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
                 {
                     b.HasOne("TourCore.Domain.Tours.TourService", "ParentService")
@@ -2167,9 +2361,25 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("Flights");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotel", b =>
+                {
+                    b.Navigation("AllowedHotels");
+
+                    b.Navigation("Cities");
+
+                    b.Navigation("Durations");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourHotelGroup", b =>
+                {
+                    b.Navigation("Hotels");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
                 {
                     b.Navigation("FlightGroups");
+
+                    b.Navigation("HotelGroups");
                 });
 
             modelBuilder.Entity("TourCore.Domain.Tours.TourType", b =>

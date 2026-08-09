@@ -161,6 +161,11 @@ namespace TourCore.Application.Tours
                     ErrorCode.TourServiceNotFound
                 );
 
+            if (service.ServiceTypeId != (int)ServiceTypeEnum.Flight)
+                throw new ValidationException(
+                    new[] { "Flight settings are allowed only for the Flight service type." }
+                );
+
             return service
                 .FlightGroups.OrderBy(x => x.OrderIndex)
                 .Select(TourFlightMapping.ToDto)

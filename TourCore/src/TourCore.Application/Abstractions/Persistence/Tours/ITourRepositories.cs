@@ -38,6 +38,8 @@ namespace TourCore.Application.Abstractions.Persistence.Tours
         Task<bool> IsDescendantAsync(int ancestorId, int candidateId, CancellationToken ct);
         Task<TourService> GetWithFlightsAsync(int tourId, int id, CancellationToken ct);
         void ReplaceFlightGroups(TourService service, IEnumerable<TourFlightGroup> groups);
+        Task<TourService> GetWithHotelsAsync(int tourId, int id, CancellationToken ct);
+        void ReplaceHotelGroups(TourService service, IEnumerable<TourHotelGroup> groups);
         Task AddAsync(TourService entity, CancellationToken ct);
         void Remove(TourService entity);
     }

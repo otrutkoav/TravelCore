@@ -168,4 +168,91 @@ namespace TourCore.Infrastructure.Postgres.Configurations.Tours
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
+    public class TourHotelGroupConfiguration : IEntityTypeConfiguration<TourHotelGroup>
+    {
+        public void Configure(EntityTypeBuilder<TourHotelGroup> builder)
+        {
+            builder.ToTable("TourHotelGroups");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
+            builder.Property(x => x.Priority).IsRequired();
+            builder.Property(x => x.OrderIndex).IsRequired();
+            builder.HasIndex(x => new { x.TourServiceId, x.OrderIndex }).IsUnique();
+            builder
+                .HasOne(x => x.TourService)
+                .WithMany(x => x.HotelGroups)
+                .HasForeignKey(x => x.TourServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourHotelConfiguration : IEntityTypeConfiguration<TourHotel>
+    {
+        public void Configure(EntityTypeBuilder<TourHotel> builder)
+        {
+            builder.ToTable("TourHotels");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.OrderIndex).IsRequired();
+            builder.Property(x => x.CountryId).IsRequired();
+            builder.HasIndex(x => new { x.TourHotelGroupId, x.OrderIndex }).IsUnique();
+            builder.HasIndex(x => x.CountryId);
+            builder
+                .HasOne(x => x.TourHotelGroup)
+                .WithMany(x => x.Hotels)
+                .HasForeignKey(x => x.TourHotelGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourHotelDurationConfiguration : IEntityTypeConfiguration<TourHotelDuration>
+    {
+        public void Configure(EntityTypeBuilder<TourHotelDuration> builder)
+        {
+            builder.ToTable("TourHotelDurations");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Nights).IsRequired();
+            builder.HasIndex(x => new { x.TourHotelId, x.Nights }).IsUnique();
+            builder
+                .HasOne(x => x.TourHotel)
+                .WithMany(x => x.Durations)
+                .HasForeignKey(x => x.TourHotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourHotelAllowedHotelConfiguration
+        : IEntityTypeConfiguration<TourHotelAllowedHotel>
+    {
+        public void Configure(EntityTypeBuilder<TourHotelAllowedHotel> builder)
+        {
+            builder.ToTable("TourHotelAllowedHotels");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.HotelId).IsRequired();
+            builder.HasIndex(x => new { x.TourHotelId, x.HotelId }).IsUnique();
+            builder.HasIndex(x => x.HotelId);
+            builder
+                .HasOne(x => x.TourHotel)
+                .WithMany(x => x.AllowedHotels)
+                .HasForeignKey(x => x.TourHotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourHotelCityConfiguration : IEntityTypeConfiguration<TourHotelCity>
+    {
+        public void Configure(EntityTypeBuilder<TourHotelCity> builder)
+        {
+            builder.ToTable("TourHotelCities");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.CityId).IsRequired();
+            builder.HasIndex(x => new { x.TourHotelId, x.CityId }).IsUnique();
+            builder.HasIndex(x => x.CityId);
+            builder
+                .HasOne(x => x.TourHotel)
+                .WithMany(x => x.Cities)
+                .HasForeignKey(x => x.TourHotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
 }

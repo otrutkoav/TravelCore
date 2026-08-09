@@ -151,6 +151,30 @@ namespace TourCore.Infrastructure.Postgres.Persistence.Repositories.Tours
                 service.FlightGroups.Add(group);
         }
 
+        public Task<TourService> GetWithHotelsAsync(int tourId, int id, CancellationToken ct)
+        {
+            return c
+                .TourServices.Include(x => x.HotelGroups)
+                    .ThenInclude(x => x.Hotels)
+                        .ThenInclude(x => x.Durations)
+                .Include(x => x.HotelGroups)
+                    .ThenInclude(x => x.Hotels)
+                        .ThenInclude(x => x.AllowedHotels)
+                .Include(x => x.HotelGroups)
+                    .ThenInclude(x => x.Hotels)
+                        .ThenInclude(x => x.Cities)
+                .FirstOrDefaultAsync(x => x.TourId == tourId && x.Id == id, ct);
+        }
+
+        public void ReplaceHotelGroups(TourService service, IEnumerable<TourHotelGroup> groups)
+        {
+            c.TourHotelGroups.RemoveRange(service.HotelGroups);
+            service.HotelGroups.Clear();
+
+            foreach (var group in groups)
+                service.HotelGroups.Add(group);
+        }
+
         public async Task<bool> IsDescendantAsync(
             int ancestorId,
             int candidateId,

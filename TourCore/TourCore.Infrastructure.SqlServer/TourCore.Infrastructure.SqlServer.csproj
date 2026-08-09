@@ -211,6 +211,14 @@
     <Compile Include="Migrations\202608091541262_NormalizeTourFlightRestrictions.Designer.cs">
       <DependentUpon>202608091541262_NormalizeTourFlightRestrictions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608091637052_AddTourHotels.cs" />
+    <Compile Include="Migrations\202608091637052_AddTourHotels.Designer.cs">
+      <DependentUpon>202608091637052_AddTourHotels.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608091644092_AddTourHotelCities.cs" />
+    <Compile Include="Migrations\202608091644092_AddTourHotelCities.Designer.cs">
+      <DependentUpon>202608091644092_AddTourHotelCities.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202605011942421_AddAircrafts.cs" />
     <Compile Include="Migrations\202605011942421_AddAircrafts.designer.cs">
       <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>
@@ -410,6 +418,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608091541262_NormalizeTourFlightRestrictions.resx">
       <DependentUpon>202608091541262_NormalizeTourFlightRestrictions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608091637052_AddTourHotels.resx">
+      <DependentUpon>202608091637052_AddTourHotels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608091644092_AddTourHotelCities.resx">
+      <DependentUpon>202608091644092_AddTourHotelCities.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605011942421_AddAircrafts.resx">
       <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>
