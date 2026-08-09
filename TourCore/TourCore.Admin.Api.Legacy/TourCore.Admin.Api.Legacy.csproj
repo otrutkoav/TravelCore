@@ -196,6 +196,7 @@
     <Compile Include="Controllers\ServiceTypesController.cs" />
     <Compile Include="Controllers\ToursController.cs" />
     <Compile Include="Controllers\TourServicesController.cs" />
+    <Compile Include="Controllers\TourFlightsController.cs" />
     <Compile Include="Controllers\AircraftsController.cs" />
     <Compile Include="Controllers\AirlinesController.cs" />
     <Compile Include="Controllers\AirportsController.cs" />

@@ -46,6 +46,7 @@ internal static class ApplicationServiceRegistration
         services.AddScoped<TourTypeCommandValidator>();
         services.AddScoped<TourCommandValidator>();
         services.AddScoped<TourServiceCommandValidator>();
+        services.AddScoped<TourFlightCommandValidator>();
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<NoCacheCatalogServices>();
         services.AddSingleton<ICatalogCacheProvider>(provider => provider.GetRequiredService<NoCacheCatalogServices>());

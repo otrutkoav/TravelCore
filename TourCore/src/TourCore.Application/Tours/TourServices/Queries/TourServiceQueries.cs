@@ -1,1 +1,24 @@
-namespace TourCore.Application.Tours { public class GetTourServicesQuery{public GetTourServicesQuery(int tourId){TourId=tourId;}public int TourId{get;}} public class GetTourServiceByIdQuery{public GetTourServiceByIdQuery(int tourId,int id){TourId=tourId;Id=id;}public int TourId{get;}public int Id{get;}} }
+namespace TourCore.Application.Tours
+{
+    public class GetTourServicesQuery
+    {
+        public GetTourServicesQuery(int tourId)
+        {
+            TourId = tourId;
+        }
+
+        public int TourId { get; }
+    }
+
+    public class GetTourServiceByIdQuery
+    {
+        public GetTourServiceByIdQuery(int tourId, int id)
+        {
+            TourId = tourId;
+            Id = id;
+        }
+
+        public int TourId { get; }
+        public int Id { get; }
+    }
+}
