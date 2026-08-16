@@ -65,7 +65,6 @@ namespace TourCore.Domain.Tours
 
         public void Update(
             string name,
-            int serviceTypeId,
             int? parentServiceId,
             bool isHidden,
             bool isRemovable,
@@ -73,10 +72,7 @@ namespace TourCore.Domain.Tours
             DateTime updatedAt
         )
         {
-            if (serviceTypeId <= 0)
-                throw new DomainException("Service type is required.");
             SetName(name);
-            ServiceTypeId = serviceTypeId;
             ParentServiceId = parentServiceId;
             SetBehavior(isHidden, isRemovable, isOptional);
             AdvanceRevision();

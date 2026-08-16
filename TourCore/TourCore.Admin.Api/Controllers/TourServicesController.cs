@@ -89,7 +89,7 @@ public class TourServicesController : ControllerBase
     }
 
     /// <summary>Изменить содержательные данные услуги тура.</summary>
-    /// <remarks>Заменяет ServiceTypeId, Name, ParentServiceId, IsHidden, IsRemovable и IsOptional, но не меняет OrderIndex. Скрытая услуга не может быть удаляемой или опциональной. Родителем нельзя назначить саму услугу, услугу другого тура или собственного потомка. При успехе увеличиваются Revision услуги и тура. Возможные ошибки: tour_not_found, tour_service_not_found, service_type_not_found, tour_service_parent_not_found.</remarks>
+    /// <remarks>Заменяет Name, ParentServiceId, IsHidden, IsRemovable и IsOptional, но не меняет ServiceTypeId и OrderIndex. Тип услуги задаётся при создании и является неизменяемым. Скрытая услуга не может быть удаляемой или опциональной. Родителем нельзя назначить саму услугу, услугу другого тура или собственного потомка. При успехе увеличиваются Revision услуги и тура. Возможные ошибки: tour_not_found, tour_service_not_found, tour_service_parent_not_found.</remarks>
     /// <param name="tourId">Идентификатор тура.</param><param name="id">Идентификатор изменяемой услуги.</param><param name="command">Новые данные услуги.</param><returns>Обновлённая услуга с новой Revision.</returns>
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(TourServiceDto), StatusCodes.Status200OK)]
@@ -113,7 +113,8 @@ public class TourServicesController : ControllerBase
     /// структура: группы и ограничения перелётов, варианты проживания либо
     /// настройки автобусного/железнодорожного переезда. Услугу, являющуюся
     /// родителем других TourService, удалить нельзя. После удаления сервер
-    /// уплотняет OrderIndex оставшихся услуг до 1..N и увеличивает Revision тура.
+    /// уплотняет OrderIndex оставшихся услуг до 1..N, увеличивает Revision
+    /// перемещённых услуг и один раз увеличивает Revision тура.
     /// Возможные ошибки: tour_not_found, tour_service_not_found,
     /// tour_service_has_children.
     /// </remarks>

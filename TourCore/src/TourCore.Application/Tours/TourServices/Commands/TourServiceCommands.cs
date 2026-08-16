@@ -28,21 +28,46 @@ namespace TourCore.Application.Tours
     }
 
     /// <summary>Команда изменения услуги в составе тура.</summary>
-    public class UpdateTourServiceCommand : CreateTourServiceCommand
+    public class UpdateTourServiceCommand
     {
+        /// <summary>Идентификатор тура из маршрута запроса.</summary>
+        public int TourId { get; set; }
+
         /// <summary>Идентификатор изменяемой услуги из маршрута запроса.</summary>
         public int Id { get; set; }
+
+        /// <summary>Название услуги в составе тура длиной до 256 символов.</summary>
+        public string Name { get; set; }
+
+        /// <summary>Идентификатор родительской услуги того же тура; null означает верхний уровень.</summary>
+        public int? ParentServiceId { get; set; }
+
+        /// <summary>Скрывать ли услугу в клиентских интерфейсах.</summary>
+        public bool IsHidden { get; set; }
+
+        /// <summary>Можно ли удалить услугу из выбранного варианта в корзине.</summary>
+        public bool IsRemovable { get; set; }
+
+        /// <summary>Исключать ли услугу из первоначального расчёта до выбора пользователем.</summary>
+        public bool IsOptional { get; set; }
     }
 
+    /// <summary>Команда удаления услуги из состава конкретного тура.</summary>
     public class DeleteTourServiceCommand
     {
+        /// <summary>Создаёт команду удаления услуги.</summary>
+        /// <param name="tourId">Идентификатор тура-владельца.</param>
+        /// <param name="id">Идентификатор удаляемой услуги.</param>
         public DeleteTourServiceCommand(int tourId, int id)
         {
             TourId = tourId;
             Id = id;
         }
 
+        /// <summary>Идентификатор тура-владельца.</summary>
         public int TourId { get; }
+
+        /// <summary>Идентификатор удаляемой услуги.</summary>
         public int Id { get; }
     }
 

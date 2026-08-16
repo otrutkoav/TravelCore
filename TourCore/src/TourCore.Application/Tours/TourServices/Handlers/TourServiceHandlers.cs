@@ -150,11 +150,9 @@ namespace TourCore.Application.Tours
             validator.Validate(c);
             var tour = await Tour(c.TourId, ct);
             var x = await Service(c.TourId, c.Id, ct);
-            await EnsureType(c.ServiceTypeId, ct);
             await EnsureParent(c.TourId, c.ParentServiceId, c.Id, ct);
             x.Update(
                 c.Name,
-                c.ServiceTypeId,
                 c.ParentServiceId,
                 c.IsHidden,
                 c.IsRemovable,

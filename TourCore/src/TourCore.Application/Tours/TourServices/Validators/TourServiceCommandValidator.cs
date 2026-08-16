@@ -15,17 +15,33 @@ namespace TourCore.Application.Tours
             {
                 if (c.ServiceTypeId <= 0)
                     e.Add("ServiceTypeId must be greater than zero.");
-                if (string.IsNullOrWhiteSpace(c.Name))
-                    e.Add("Name is required.");
-                else if (c.Name.Trim().Length > 256)
-                    e.Add("Name must be 256 characters or less.");
-                if (c.ParentServiceId.HasValue && c.ParentServiceId <= 0)
-                    e.Add("ParentServiceId must be greater than zero.");
-                if (c.IsHidden && c.IsRemovable)
-                    e.Add("A hidden service cannot be removable.");
-                if (c.IsHidden && c.IsOptional)
-                    e.Add("A hidden service cannot be optional.");
+                ValidateEditableFields(
+                    c.Name,
+                    c.ParentServiceId,
+                    c.IsHidden,
+                    c.IsRemovable,
+                    c.IsOptional,
+                    e
+                );
             }
+            if (e.Count > 0)
+                throw new ValidationException(e);
+        }
+
+        public void Validate(UpdateTourServiceCommand c)
+        {
+            var e = new List<string>();
+            if (c == null)
+                e.Add("Request body is required.");
+            else
+                ValidateEditableFields(
+                    c.Name,
+                    c.ParentServiceId,
+                    c.IsHidden,
+                    c.IsRemovable,
+                    c.IsOptional,
+                    e
+                );
             if (e.Count > 0)
                 throw new ValidationException(e);
         }
@@ -41,6 +57,27 @@ namespace TourCore.Application.Tours
                 throw new ValidationException(
                     new[] { "ServiceIds must contain unique positive identifiers." }
                 );
+        }
+
+        private static void ValidateEditableFields(
+            string name,
+            int? parentServiceId,
+            bool isHidden,
+            bool isRemovable,
+            bool isOptional,
+            ICollection<string> errors
+        )
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                errors.Add("Name is required.");
+            else if (name.Trim().Length > 256)
+                errors.Add("Name must be 256 characters or less.");
+            if (parentServiceId.HasValue && parentServiceId <= 0)
+                errors.Add("ParentServiceId must be greater than zero.");
+            if (isHidden && isRemovable)
+                errors.Add("A hidden service cannot be removable.");
+            if (isHidden && isOptional)
+                errors.Add("A hidden service cannot be optional.");
         }
     }
 }

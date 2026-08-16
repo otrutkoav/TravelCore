@@ -95,10 +95,10 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Tours
         }
 
         /// <summary>Изменить содержательные данные услуги без изменения порядка.</summary>
-        /// <remarks>Заменяет ServiceTypeId, Name, ParentServiceId, IsHidden, IsRemovable и IsOptional, не изменяя OrderIndex.
+        /// <remarks>Заменяет Name, ParentServiceId, IsHidden, IsRemovable и IsOptional, не изменяя ServiceTypeId и OrderIndex. Тип услуги задаётся при создании и является неизменяемым.
         /// Скрытая услуга не может быть удаляемой или опциональной. Родителем нельзя назначить саму услугу, услугу другого тура или собственного потомка.
         /// При успехе увеличиваются Revision услуги и тура.
-        /// Возможные ошибки: tour_not_found, tour_service_not_found, service_type_not_found, tour_service_parent_not_found.</remarks>
+        /// Возможные ошибки: tour_not_found, tour_service_not_found, tour_service_parent_not_found.</remarks>
         /// <param name="tourId">Идентификатор тура.</param>
         /// <param name="id">Идентификатор услуги.</param><param name="command">Новые данные услуги.</param>
         /// <returns>Обновлённая услуга с новой Revision.</returns>
@@ -123,7 +123,8 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Tours
         /// структура: группы и ограничения перелётов, варианты проживания либо
         /// настройки автобусного/железнодорожного переезда. Услугу, являющуюся
         /// родителем других TourService, удалить нельзя. Сервер перенумеровывает
-        /// оставшиеся OrderIndex до 1..N и увеличивает Revision тура.
+        /// оставшиеся OrderIndex до 1..N, увеличивает Revision перемещённых услуг
+        /// и один раз увеличивает Revision тура.
         /// Возможные ошибки: tour_not_found, tour_service_not_found,
         /// tour_service_has_children.
         /// </remarks>

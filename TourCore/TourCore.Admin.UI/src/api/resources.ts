@@ -1,5 +1,5 @@
 import { http } from './http'
-import type { LookupItem,PagedResponse,TourBusTransferDto,TourCommand,TourDto,TourFlightGroupDto,TourHotelGroupDto,TourListItemDto,TourRailwayTransferDto,TourServiceCommand,TourServiceDto } from './contracts'
+import type { CreateTourServiceCommand,LookupItem,PagedResponse,TourBusTransferDto,TourCommand,TourDto,TourFlightGroupDto,TourHotelGroupDto,TourListItemDto,TourRailwayTransferDto,TourServiceDto,UpdateTourServiceCommand } from './contracts'
 
 export const toursApi={
   async list(params:Record<string,unknown>){return (await http.get<PagedResponse<TourListItemDto>>('/api/v1/tours',{params})).data},
@@ -9,8 +9,8 @@ export const toursApi={
 }
 export const tourServicesApi={
   async list(tourId:number){return (await http.get<TourServiceDto[]>(`/api/v1/tours/${tourId}/services`)).data},
-  async create(tourId:number,command:TourServiceCommand){return (await http.post<TourServiceDto>(`/api/v1/tours/${tourId}/services`,command)).data},
-  async update(tourId:number,id:number,command:TourServiceCommand){return (await http.put<TourServiceDto>(`/api/v1/tours/${tourId}/services/${id}`,command)).data},
+  async create(tourId:number,command:CreateTourServiceCommand){return (await http.post<TourServiceDto>(`/api/v1/tours/${tourId}/services`,command)).data},
+  async update(tourId:number,id:number,command:UpdateTourServiceCommand){return (await http.put<TourServiceDto>(`/api/v1/tours/${tourId}/services/${id}`,command)).data},
   async remove(tourId:number,id:number){await http.delete(`/api/v1/tours/${tourId}/services/${id}`)},
   async reorder(tourId:number,serviceIds:number[]){return (await http.put<TourServiceDto[]>(`/api/v1/tours/${tourId}/services/order`,{ServiceIds:serviceIds})).data},
 }

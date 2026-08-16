@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed,onMounted,ref,watch } from 'vue'
-import type { LookupItem,TourServiceCommand,TourServiceDto } from '@/api/contracts'
+import type { LookupItem,TourServiceDto,UpdateTourServiceCommand } from '@/api/contracts'
 import { loadLookup,tourServicesApi } from '@/api/resources'
 import TourHotelsEditor from './TourHotelsEditor.vue'
 import TourFlightsEditor from './TourFlightsEditor.vue'
@@ -12,7 +12,7 @@ const services=ref<TourServiceDto[]>([]),serviceTypes=ref<LookupItem[]>([]),erro
 const deleteChildren=computed(()=>deleteService.value?services.value.filter(service=>service.ParentServiceId===deleteService.value?.Id):[])
 async function load(){loading.value=true;try{services.value=await tourServicesApi.list(props.tourId)}catch(e){error.value=e instanceof Error?e.message:'Ошибка загрузки'}finally{loading.value=false}}
 function specialized(typeId:number){return typeId===1||typeId===3}
-function command(source:TourServiceCommand|TourServiceDto):TourServiceCommand{const fixed=specialized(source.ServiceTypeId);return{ServiceTypeId:source.ServiceTypeId,Name:source.Name,ParentServiceId:source.ParentServiceId??null,IsHidden:fixed?false:source.IsHidden,IsRemovable:fixed?false:source.IsRemovable,IsOptional:fixed?false:source.IsOptional}}
+function command(source:TourServiceDto):UpdateTourServiceCommand{const fixed=specialized(source.ServiceTypeId);return{Name:source.Name,ParentServiceId:source.ParentServiceId??null,IsHidden:fixed?false:source.IsHidden,IsRemovable:fixed?false:source.IsRemovable,IsOptional:fixed?false:source.IsOptional}}
 async function move(index:number,delta:number){const next=index+delta;if(next<0||next>=services.value.length)return;const copy=[...services.value];const a=copy[index],b=copy[next];if(!a||!b)return;copy[index]=b;copy[next]=a;try{services.value=await tourServicesApi.reorder(props.tourId,copy.map(x=>x.Id));emit('tourChanged')}catch(e){error.value=e instanceof Error?e.message:'Ошибка изменения порядка';await load()}}
 async function quickAdd(typeId:number){if(adding.value)return;const type=serviceTypes.value.find(item=>item.Id===typeId);if(!type)return;adding.value=true;error.value='';try{await tourServicesApi.create(props.tourId,{ServiceTypeId:type.Id,Name:type.Name,ParentServiceId:null,IsHidden:false,IsRemovable:false,IsOptional:false});addMenuOpen.value=false;await load();emit('tourChanged')}catch(e){error.value=e instanceof Error?e.message:'Ошибка добавления услуги'}finally{adding.value=false;addTypeId.value=null}}
 function openRename(service:TourServiceDto){renameService.value=service;renameName.value=service.Name}

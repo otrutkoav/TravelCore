@@ -6,7 +6,8 @@ export interface TourTypeListItemDto { Id:number; Name:string; ParentId?:number 
 export interface TourDto extends TourListItemDto { AvailableDates:string[]; TourTypes:TourTypeListItemDto[]; DescriptionUrl?:string; DescriptionHtml?:string; BookingConditionsHtml?:string; CreatedAt:string; UpdatedAt?:string }
 export interface TourCommand { Name:string; CurrencyId:number; DateMode:number; AvailableDateFrom?:string|null; AvailableDateTo?:string|null; AvailableDates:string[]; TourTypeIds:number[]; DescriptionUrl?:string; DescriptionHtml?:string; BookingConditionsHtml?:string; Status?:number }
 export interface TourServiceDto { Id:number; TourId:number; ServiceTypeId:number; Name:string; OrderIndex:number; ParentServiceId?:number; IsHidden:boolean; IsRemovable:boolean; IsOptional:boolean; Revision:number }
-export interface TourServiceCommand { ServiceTypeId:number; Name:string; ParentServiceId?:number|null; IsHidden:boolean; IsRemovable:boolean; IsOptional:boolean }
+export interface CreateTourServiceCommand { ServiceTypeId:number; Name:string; ParentServiceId?:number|null; IsHidden:boolean; IsRemovable:boolean; IsOptional:boolean }
+export interface UpdateTourServiceCommand { Name:string; ParentServiceId?:number|null; IsHidden:boolean; IsRemovable:boolean; IsOptional:boolean }
 export interface TourHotelDto { Id?:number; OrderIndex:number; CountryId:number; CityIds:number[]; DurationsInNights:number[]; HotelIds:number[] }
 export interface TourHotelGroupDto { Id?:number; Name:string; Priority:number; OrderIndex:number; Hotels:TourHotelDto[] }
 export interface TourFlightDto { Id?:number; OrderIndex:number; DepartureCountryIds:number[]; DepartureCityIds:number[]; ArrivalCountryIds:number[]; ArrivalCityIds:number[]; AirlineIds:number[]; FlightIds:number[]; DepartureAirportIds:number[]; ArrivalAirportIds:number[]; FareIds:number[]; MinConnectionMinutes?:number|null; MaxConnectionMinutes?:number|null }
