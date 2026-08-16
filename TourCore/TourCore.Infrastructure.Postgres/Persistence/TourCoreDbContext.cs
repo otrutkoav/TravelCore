@@ -7,15 +7,16 @@ using TourCore.Domain.Hotels.Entities;
 using TourCore.Domain.Railway.Entities;
 using TourCore.Domain.Seating.Entities;
 using TourCore.Domain.Services.Entities;
+using TourCore.Domain.Tours;
 using TourCore.Domain.Transfers.Entities;
 using TourCore.Domain.Transportation.Entities;
-using TourCore.Domain.Tours;
 
 namespace TourCore.Infrastructure.Postgres.Persistence;
 
 public sealed class TourCoreDbContext : DbContext
 {
-    public TourCoreDbContext(DbContextOptions<TourCoreDbContext> options) : base(options) { }
+    public TourCoreDbContext(DbContextOptions<TourCoreDbContext> options)
+        : base(options) { }
 
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<Region> Regions => Set<Region>();
@@ -27,8 +28,10 @@ public sealed class TourCoreDbContext : DbContext
     public DbSet<RoomType> RoomTypes => Set<RoomType>();
     public DbSet<HotelCategory> HotelCategories => Set<HotelCategory>();
     public DbSet<AccommodationType> AccommodationTypes => Set<AccommodationType>();
-    public DbSet<AccommodationPlacementRule> AccommodationPlacementRules => Set<AccommodationPlacementRule>();
-    public DbSet<AccommodationPlacementRuleAgeRange> AccommodationPlacementRuleAgeRanges => Set<AccommodationPlacementRuleAgeRange>();
+    public DbSet<AccommodationPlacementRule> AccommodationPlacementRules =>
+        Set<AccommodationPlacementRule>();
+    public DbSet<AccommodationPlacementRuleAgeRange> AccommodationPlacementRuleAgeRanges =>
+        Set<AccommodationPlacementRuleAgeRange>();
     public DbSet<Rate> Rates => Set<Rate>();
     public DbSet<RealCourse> RealCourses => Set<RealCourse>();
     public DbSet<AirClass> AirClasses => Set<AirClass>();
@@ -60,6 +63,33 @@ public sealed class TourCoreDbContext : DbContext
     public DbSet<TourHotelDuration> TourHotelDurations => Set<TourHotelDuration>();
     public DbSet<TourHotelAllowedHotel> TourHotelAllowedHotels => Set<TourHotelAllowedHotel>();
     public DbSet<TourHotelCity> TourHotelCities => Set<TourHotelCity>();
+    public DbSet<TourBusTransfer> TourBusTransfers => Set<TourBusTransfer>();
+    public DbSet<TourBusTransferDepartureCountry> TourBusTransferDepartureCountries =>
+        Set<TourBusTransferDepartureCountry>();
+    public DbSet<TourBusTransferDepartureCity> TourBusTransferDepartureCities =>
+        Set<TourBusTransferDepartureCity>();
+    public DbSet<TourBusTransferArrivalCountry> TourBusTransferArrivalCountries =>
+        Set<TourBusTransferArrivalCountry>();
+    public DbSet<TourBusTransferArrivalCity> TourBusTransferArrivalCities =>
+        Set<TourBusTransferArrivalCity>();
+    public DbSet<TourBusTransferOption> TourBusTransferOptions => Set<TourBusTransferOption>();
+    public DbSet<TourBusTransferBoardingPoint> TourBusTransferBoardingPoints =>
+        Set<TourBusTransferBoardingPoint>();
+    public DbSet<TourBusTransferTransport> TourBusTransferTransports =>
+        Set<TourBusTransferTransport>();
+    public DbSet<TourRailwayTransfer> TourRailwayTransfers => Set<TourRailwayTransfer>();
+    public DbSet<TourRailwayTransferDepartureCountry> TourRailwayTransferDepartureCountries =>
+        Set<TourRailwayTransferDepartureCountry>();
+    public DbSet<TourRailwayTransferDepartureCity> TourRailwayTransferDepartureCities =>
+        Set<TourRailwayTransferDepartureCity>();
+    public DbSet<TourRailwayTransferArrivalCountry> TourRailwayTransferArrivalCountries =>
+        Set<TourRailwayTransferArrivalCountry>();
+    public DbSet<TourRailwayTransferArrivalCity> TourRailwayTransferArrivalCities =>
+        Set<TourRailwayTransferArrivalCity>();
+    public DbSet<TourRailwayTransferOption> TourRailwayTransferOptions =>
+        Set<TourRailwayTransferOption>();
+    public DbSet<TourRailwayTransferTransport> TourRailwayTransferTransports =>
+        Set<TourRailwayTransferTransport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -7,9 +7,9 @@ using TourCore.Domain.Hotels.Entities;
 using TourCore.Domain.Railway.Entities;
 using TourCore.Domain.Seating.Entities;
 using TourCore.Domain.Services.Entities;
+using TourCore.Domain.Tours;
 using TourCore.Domain.Transfers.Entities;
 using TourCore.Domain.Transportation.Entities;
-using TourCore.Domain.Tours;
 using TourCore.Infrastructure.Persistence.Configurations.Avia;
 using TourCore.Infrastructure.SqlServer.Configurations;
 using TourCore.Infrastructure.SqlServer.Configurations.Avia;
@@ -19,18 +19,16 @@ using TourCore.Infrastructure.SqlServer.Configurations.Hotels;
 using TourCore.Infrastructure.SqlServer.Configurations.Railway;
 using TourCore.Infrastructure.SqlServer.Configurations.Seating;
 using TourCore.Infrastructure.SqlServer.Configurations.Services;
+using TourCore.Infrastructure.SqlServer.Configurations.Tours;
 using TourCore.Infrastructure.SqlServer.Configurations.Transfers;
 using TourCore.Infrastructure.SqlServer.Configurations.Transportation;
-using TourCore.Infrastructure.SqlServer.Configurations.Tours;
 
 namespace TourCore.Infrastructure.SqlServer.Persistence
 {
     public class TourCoreDbContext : DbContext
     {
         public TourCoreDbContext()
-            : base("name=TourCoreDb")
-        {
-        }
+            : base("name=TourCoreDb") { }
 
         public DbSet<Country> Countries { get; set; }
         public DbSet<Region> Regions { get; set; }
@@ -45,7 +43,6 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
         public DbSet<AccommodationType> AccommodationTypes { get; set; }
         public DbSet<AccommodationPlacementRule> AccommodationPlacementRules { get; set; }
         public DbSet<AccommodationPlacementRuleAgeRange> AccommodationPlacementRuleAgeRanges { get; set; }
-       
 
         public DbSet<Rate> Rates { get; set; }
         public DbSet<RealCourse> RealCourses { get; set; }
@@ -83,8 +80,21 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
         public DbSet<TourHotelDuration> TourHotelDurations { get; set; }
         public DbSet<TourHotelAllowedHotel> TourHotelAllowedHotels { get; set; }
         public DbSet<TourHotelCity> TourHotelCities { get; set; }
-
-      
+        public DbSet<TourBusTransfer> TourBusTransfers { get; set; }
+        public DbSet<TourBusTransferDepartureCountry> TourBusTransferDepartureCountries { get; set; }
+        public DbSet<TourBusTransferDepartureCity> TourBusTransferDepartureCities { get; set; }
+        public DbSet<TourBusTransferArrivalCountry> TourBusTransferArrivalCountries { get; set; }
+        public DbSet<TourBusTransferArrivalCity> TourBusTransferArrivalCities { get; set; }
+        public DbSet<TourBusTransferOption> TourBusTransferOptions { get; set; }
+        public DbSet<TourBusTransferBoardingPoint> TourBusTransferBoardingPoints { get; set; }
+        public DbSet<TourBusTransferTransport> TourBusTransferTransports { get; set; }
+        public DbSet<TourRailwayTransfer> TourRailwayTransfers { get; set; }
+        public DbSet<TourRailwayTransferDepartureCountry> TourRailwayTransferDepartureCountries { get; set; }
+        public DbSet<TourRailwayTransferDepartureCity> TourRailwayTransferDepartureCities { get; set; }
+        public DbSet<TourRailwayTransferArrivalCountry> TourRailwayTransferArrivalCountries { get; set; }
+        public DbSet<TourRailwayTransferArrivalCity> TourRailwayTransferArrivalCities { get; set; }
+        public DbSet<TourRailwayTransferOption> TourRailwayTransferOptions { get; set; }
+        public DbSet<TourRailwayTransferTransport> TourRailwayTransferTransports { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -139,8 +149,21 @@ namespace TourCore.Infrastructure.SqlServer.Persistence
             modelBuilder.Configurations.Add(new TourHotelDurationConfiguration());
             modelBuilder.Configurations.Add(new TourHotelAllowedHotelConfiguration());
             modelBuilder.Configurations.Add(new TourHotelCityConfiguration());
-
-            
+            modelBuilder.Configurations.Add(new TourBusTransferConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferDepartureCountryConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferDepartureCityConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferArrivalCountryConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferArrivalCityConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferOptionConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferBoardingPointConfiguration());
+            modelBuilder.Configurations.Add(new TourBusTransferTransportConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferDepartureCountryConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferDepartureCityConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferArrivalCountryConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferArrivalCityConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferOptionConfiguration());
+            modelBuilder.Configurations.Add(new TourRailwayTransferTransportConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

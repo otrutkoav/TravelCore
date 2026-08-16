@@ -40,6 +40,12 @@ namespace TourCore.Application.Abstractions.Persistence.Tours
         void ReplaceFlightGroups(TourService service, IEnumerable<TourFlightGroup> groups);
         Task<TourService> GetWithHotelsAsync(int tourId, int id, CancellationToken ct);
         void ReplaceHotelGroups(TourService service, IEnumerable<TourHotelGroup> groups);
+        Task<TourBusTransfer> GetBusTransferAsync(int tourServiceId, CancellationToken ct);
+        Task AddBusTransferAsync(TourBusTransfer entity, CancellationToken ct);
+        void RemoveBusTransferDetails(TourBusTransfer entity);
+        Task<TourRailwayTransfer> GetRailwayTransferAsync(int tourServiceId, CancellationToken ct);
+        Task AddRailwayTransferAsync(TourRailwayTransfer entity, CancellationToken ct);
+        void RemoveRailwayTransferDetails(TourRailwayTransfer entity);
         Task AddAsync(TourService entity, CancellationToken ct);
         void Remove(TourService entity);
     }

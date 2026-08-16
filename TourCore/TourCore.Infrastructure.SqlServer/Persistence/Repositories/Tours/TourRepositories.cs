@@ -180,6 +180,67 @@ namespace TourCore.Infrastructure.SqlServer.Persistence.Repositories.Tours
                 service.HotelGroups.Add(group);
         }
 
+        public Task<TourBusTransfer> GetBusTransferAsync(int tourServiceId, CancellationToken ct)
+        {
+            return c
+                .TourBusTransfers.Include(x => x.DepartureCountries)
+                .Include(x => x.DepartureCities)
+                .Include(x => x.ArrivalCountries)
+                .Include(x => x.ArrivalCities)
+                .Include(x => x.Options)
+                .Include(x => x.BoardingPoints)
+                .Include(x => x.Transports)
+                .FirstOrDefaultAsync(x => x.TourServiceId == tourServiceId, ct);
+        }
+
+        public Task AddBusTransferAsync(TourBusTransfer entity, CancellationToken ct)
+        {
+            c.TourBusTransfers.Add(entity);
+            return Task.CompletedTask;
+        }
+
+        public void RemoveBusTransferDetails(TourBusTransfer entity)
+        {
+            c.TourBusTransferDepartureCountries.RemoveRange(entity.DepartureCountries);
+            c.TourBusTransferDepartureCities.RemoveRange(entity.DepartureCities);
+            c.TourBusTransferArrivalCountries.RemoveRange(entity.ArrivalCountries);
+            c.TourBusTransferArrivalCities.RemoveRange(entity.ArrivalCities);
+            c.TourBusTransferOptions.RemoveRange(entity.Options);
+            c.TourBusTransferBoardingPoints.RemoveRange(entity.BoardingPoints);
+            c.TourBusTransferTransports.RemoveRange(entity.Transports);
+        }
+
+        public Task<TourRailwayTransfer> GetRailwayTransferAsync(
+            int tourServiceId,
+            CancellationToken ct
+        )
+        {
+            return c
+                .TourRailwayTransfers.Include(x => x.DepartureCountries)
+                .Include(x => x.DepartureCities)
+                .Include(x => x.ArrivalCountries)
+                .Include(x => x.ArrivalCities)
+                .Include(x => x.Options)
+                .Include(x => x.Transports)
+                .FirstOrDefaultAsync(x => x.TourServiceId == tourServiceId, ct);
+        }
+
+        public Task AddRailwayTransferAsync(TourRailwayTransfer entity, CancellationToken ct)
+        {
+            c.TourRailwayTransfers.Add(entity);
+            return Task.CompletedTask;
+        }
+
+        public void RemoveRailwayTransferDetails(TourRailwayTransfer entity)
+        {
+            c.TourRailwayTransferDepartureCountries.RemoveRange(entity.DepartureCountries);
+            c.TourRailwayTransferDepartureCities.RemoveRange(entity.DepartureCities);
+            c.TourRailwayTransferArrivalCountries.RemoveRange(entity.ArrivalCountries);
+            c.TourRailwayTransferArrivalCities.RemoveRange(entity.ArrivalCities);
+            c.TourRailwayTransferOptions.RemoveRange(entity.Options);
+            c.TourRailwayTransferTransports.RemoveRange(entity.Transports);
+        }
+
         public async Task<IReadOnlyCollection<TourService>> ListByTourIdAsync(
             int tourId,
             CancellationToken ct

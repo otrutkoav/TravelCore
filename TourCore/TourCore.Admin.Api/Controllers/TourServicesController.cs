@@ -108,7 +108,15 @@ public class TourServicesController : ControllerBase
     }
 
     /// <summary>Удалить услугу из состава тура.</summary>
-    /// <remarks>После удаления сервер уплотняет OrderIndex оставшихся услуг до 1..N и один раз увеличивает Revision тура. Услугу с дочерними элементами удалить нельзя. Возможные ошибки: tour_not_found, tour_service_not_found, tour_service_has_children.</remarks>
+    /// <remarks>
+    /// Вместе с услугой каскадно удаляется принадлежащая ей специализированная
+    /// структура: группы и ограничения перелётов, варианты проживания либо
+    /// настройки автобусного/железнодорожного переезда. Услугу, являющуюся
+    /// родителем других TourService, удалить нельзя. После удаления сервер
+    /// уплотняет OrderIndex оставшихся услуг до 1..N и увеличивает Revision тура.
+    /// Возможные ошибки: tour_not_found, tour_service_not_found,
+    /// tour_service_has_children.
+    /// </remarks>
     /// <param name="tourId">Идентификатор тура.</param><param name="id">Идентификатор удаляемой услуги.</param><returns>Пустой ответ 204 No Content.</returns>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

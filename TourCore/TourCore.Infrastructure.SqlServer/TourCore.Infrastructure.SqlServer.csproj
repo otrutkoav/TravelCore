@@ -132,6 +132,7 @@
     <Compile Include="Configurations\Seating\VehiclePlanConfiguration.cs" />
     <Compile Include="Configurations\Services\ServiceTypeConfiguration.cs" />
     <Compile Include="Configurations\Tours\TourConfigurations.cs" />
+    <Compile Include="Configurations\Tours\TourRailwayTransferConfigurations.cs" />
     <Compile Include="Configurations\Transfers\TransferConfiguration.cs" />
     <Compile Include="Configurations\Transfers\TransferDirectionConfiguration.cs" />
     <Compile Include="Configurations\Transportation\TransportConfiguration.cs" />
@@ -218,6 +219,14 @@
     <Compile Include="Migrations\202608091644092_AddTourHotelCities.cs" />
     <Compile Include="Migrations\202608091644092_AddTourHotelCities.Designer.cs">
       <DependentUpon>202608091644092_AddTourHotelCities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608161159235_AddTourBusTransfers.cs" />
+    <Compile Include="Migrations\202608161159235_AddTourBusTransfers.Designer.cs">
+      <DependentUpon>202608161159235_AddTourBusTransfers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608161250340_AddTourRailwayTransfers.cs" />
+    <Compile Include="Migrations\202608161250340_AddTourRailwayTransfers.Designer.cs">
+      <DependentUpon>202608161250340_AddTourRailwayTransfers.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202605011942421_AddAircrafts.cs" />
     <Compile Include="Migrations\202605011942421_AddAircrafts.designer.cs">
@@ -424,6 +433,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608091644092_AddTourHotelCities.resx">
       <DependentUpon>202608091644092_AddTourHotelCities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608161159235_AddTourBusTransfers.resx">
+      <DependentUpon>202608161159235_AddTourBusTransfers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608161250340_AddTourRailwayTransfers.resx">
+      <DependentUpon>202608161250340_AddTourRailwayTransfers.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605011942421_AddAircrafts.resx">
       <DependentUpon>202605011942421_AddAircrafts.cs</DependentUpon>

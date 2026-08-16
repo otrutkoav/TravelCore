@@ -1395,6 +1395,211 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.ToTable("TourAvailableDates", (string)null);
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransfer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan>("ArrivalTimeFrom")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeSpan>("ArrivalTimeTo")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("DepartureTimeFrom")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeSpan>("DepartureTimeTo")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("TourServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourServiceId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransfers", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferArrivalCity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TourBusTransferId", "CityId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferArrivalCities", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferArrivalCountry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("TourBusTransferId", "CountryId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferArrivalCountries", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferBoardingPoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BoardingPointId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoardingPointId");
+
+                    b.HasIndex("TourBusTransferId", "BoardingPointId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferBoardingPoints", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferDepartureCity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TourBusTransferId", "CityId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferDepartureCities", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferDepartureCountry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("TourBusTransferId", "CountryId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferDepartureCountries", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BusTransferId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusTransferId");
+
+                    b.HasIndex("TourBusTransferId", "BusTransferId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferOptions", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferTransport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("TourBusTransferId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TransportId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransportId");
+
+                    b.HasIndex("TourBusTransferId", "TransportId")
+                        .IsUnique();
+
+                    b.ToTable("TourBusTransferTransports", (string)null);
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourFlight", b =>
                 {
                     b.Property<int>("Id")
@@ -1627,6 +1832,187 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                         .IsUnique();
 
                     b.ToTable("TourHotelGroups", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransfer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan>("ArrivalTimeFrom")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeSpan>("ArrivalTimeTo")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("DepartureTimeFrom")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeSpan>("DepartureTimeTo")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("TourServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourServiceId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransfers", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferArrivalCity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourRailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TourRailwayTransferId", "CityId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransferArrivalCities", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferArrivalCountry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourRailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("TourRailwayTransferId", "CountryId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransferArrivalCountries", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferDepartureCity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourRailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("TourRailwayTransferId", "CityId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransferDepartureCities", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferDepartureCountry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourRailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("TourRailwayTransferId", "CountryId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransferDepartureCountries", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TourRailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RailwayTransferId");
+
+                    b.HasIndex("TourRailwayTransferId", "RailwayTransferId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransferOptions", (string)null);
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferTransport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("TourRailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TransportId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransportId");
+
+                    b.HasIndex("TourRailwayTransferId", "TransportId")
+                        .IsUnique();
+
+                    b.ToTable("TourRailwayTransferTransports", (string)null);
                 });
 
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
@@ -2178,6 +2564,94 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("Tour");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransfer", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourService", "TourService")
+                        .WithMany()
+                        .HasForeignKey("TourServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourService");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferArrivalCity", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("ArrivalCities")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferArrivalCountry", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("ArrivalCountries")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferBoardingPoint", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("BoardingPoints")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferDepartureCity", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("DepartureCities")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferDepartureCountry", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("DepartureCountries")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferOption", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("Options")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransferTransport", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourBusTransfer", "TourBusTransfer")
+                        .WithMany("Transports")
+                        .HasForeignKey("TourBusTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourBusTransfer");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourFlight", b =>
                 {
                     b.HasOne("TourCore.Domain.Tours.TourFlightGroup", "TourFlightGroup")
@@ -2266,6 +2740,83 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("TourService");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransfer", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourService", "TourService")
+                        .WithMany()
+                        .HasForeignKey("TourServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourService");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferArrivalCity", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourRailwayTransfer", "TourRailwayTransfer")
+                        .WithMany("ArrivalCities")
+                        .HasForeignKey("TourRailwayTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourRailwayTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferArrivalCountry", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourRailwayTransfer", "TourRailwayTransfer")
+                        .WithMany("ArrivalCountries")
+                        .HasForeignKey("TourRailwayTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourRailwayTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferDepartureCity", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourRailwayTransfer", "TourRailwayTransfer")
+                        .WithMany("DepartureCities")
+                        .HasForeignKey("TourRailwayTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourRailwayTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferDepartureCountry", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourRailwayTransfer", "TourRailwayTransfer")
+                        .WithMany("DepartureCountries")
+                        .HasForeignKey("TourRailwayTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourRailwayTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferOption", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourRailwayTransfer", "TourRailwayTransfer")
+                        .WithMany("Options")
+                        .HasForeignKey("TourRailwayTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourRailwayTransfer");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransferTransport", b =>
+                {
+                    b.HasOne("TourCore.Domain.Tours.TourRailwayTransfer", "TourRailwayTransfer")
+                        .WithMany("Transports")
+                        .HasForeignKey("TourRailwayTransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TourRailwayTransfer");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>
                 {
                     b.HasOne("TourCore.Domain.Tours.TourService", "ParentService")
@@ -2351,6 +2902,23 @@ namespace TourCore.Infrastructure.Postgres.Migrations
                     b.Navigation("Services");
                 });
 
+            modelBuilder.Entity("TourCore.Domain.Tours.TourBusTransfer", b =>
+                {
+                    b.Navigation("ArrivalCities");
+
+                    b.Navigation("ArrivalCountries");
+
+                    b.Navigation("BoardingPoints");
+
+                    b.Navigation("DepartureCities");
+
+                    b.Navigation("DepartureCountries");
+
+                    b.Navigation("Options");
+
+                    b.Navigation("Transports");
+                });
+
             modelBuilder.Entity("TourCore.Domain.Tours.TourFlight", b =>
                 {
                     b.Navigation("Restrictions");
@@ -2373,6 +2941,21 @@ namespace TourCore.Infrastructure.Postgres.Migrations
             modelBuilder.Entity("TourCore.Domain.Tours.TourHotelGroup", b =>
                 {
                     b.Navigation("Hotels");
+                });
+
+            modelBuilder.Entity("TourCore.Domain.Tours.TourRailwayTransfer", b =>
+                {
+                    b.Navigation("ArrivalCities");
+
+                    b.Navigation("ArrivalCountries");
+
+                    b.Navigation("DepartureCities");
+
+                    b.Navigation("DepartureCountries");
+
+                    b.Navigation("Options");
+
+                    b.Navigation("Transports");
                 });
 
             modelBuilder.Entity("TourCore.Domain.Tours.TourService", b =>

@@ -346,4 +346,302 @@ namespace TourCore.Infrastructure.SqlServer.Configurations.Tours
                 .WillCascadeOnDelete(true);
         }
     }
+
+    public class TourBusTransferConfiguration : EntityTypeConfiguration<TourBusTransfer>
+    {
+        public TourBusTransferConfiguration()
+        {
+            ToTable("TourBusTransfers");
+            HasKey(x => x.Id);
+            Property(x => x.DepartureTimeFrom).HasColumnType("time");
+            Property(x => x.DepartureTimeTo).HasColumnType("time");
+            Property(x => x.ArrivalTimeFrom).HasColumnType("time");
+            Property(x => x.ArrivalTimeTo).HasColumnType("time");
+            Property(x => x.TourServiceId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransfers_TourService") { IsUnique = true }
+                    )
+                );
+            HasRequired(x => x.TourService)
+                .WithMany()
+                .HasForeignKey(x => x.TourServiceId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferDepartureCountryConfiguration
+        : EntityTypeConfiguration<TourBusTransferDepartureCountry>
+    {
+        public TourBusTransferDepartureCountryConfiguration()
+        {
+            ToTable("TourBusTransferDepartureCountries");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute(
+                            "UX_TourBusTransferDepartureCountries_Transfer_Country",
+                            0
+                        )
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.CountryId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute(
+                                "UX_TourBusTransferDepartureCountries_Transfer_Country",
+                                1
+                            )
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferDepartureCountries_Country"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.DepartureCountries)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferDepartureCityConfiguration
+        : EntityTypeConfiguration<TourBusTransferDepartureCity>
+    {
+        public TourBusTransferDepartureCityConfiguration()
+        {
+            ToTable("TourBusTransferDepartureCities");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransferDepartureCities_Transfer_City", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.CityId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourBusTransferDepartureCities_Transfer_City", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferDepartureCities_City"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.DepartureCities)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferArrivalCountryConfiguration
+        : EntityTypeConfiguration<TourBusTransferArrivalCountry>
+    {
+        public TourBusTransferArrivalCountryConfiguration()
+        {
+            ToTable("TourBusTransferArrivalCountries");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransferArrivalCountries_Transfer_Country", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.CountryId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute(
+                                "UX_TourBusTransferArrivalCountries_Transfer_Country",
+                                1
+                            )
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferArrivalCountries_Country"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.ArrivalCountries)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferArrivalCityConfiguration
+        : EntityTypeConfiguration<TourBusTransferArrivalCity>
+    {
+        public TourBusTransferArrivalCityConfiguration()
+        {
+            ToTable("TourBusTransferArrivalCities");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransferArrivalCities_Transfer_City", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.CityId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourBusTransferArrivalCities_Transfer_City", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferArrivalCities_City"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.ArrivalCities)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferOptionConfiguration : EntityTypeConfiguration<TourBusTransferOption>
+    {
+        public TourBusTransferOptionConfiguration()
+        {
+            ToTable("TourBusTransferOptions");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransferOptions_Transfer_Option", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.BusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourBusTransferOptions_Transfer_Option", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferOptions_BusTransfer"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.Options)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferBoardingPointConfiguration
+        : EntityTypeConfiguration<TourBusTransferBoardingPoint>
+    {
+        public TourBusTransferBoardingPointConfiguration()
+        {
+            ToTable("TourBusTransferBoardingPoints");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransferBoardingPoints_Transfer_Point", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.BoardingPointId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourBusTransferBoardingPoints_Transfer_Point", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferBoardingPoints_Point"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.BoardingPoints)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
+
+    public class TourBusTransferTransportConfiguration
+        : EntityTypeConfiguration<TourBusTransferTransport>
+    {
+        public TourBusTransferTransportConfiguration()
+        {
+            ToTable("TourBusTransferTransports");
+            HasKey(x => x.Id);
+            Property(x => x.TourBusTransferId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("UX_TourBusTransferTransports_Transfer_Transport", 0)
+                        {
+                            IsUnique = true,
+                        }
+                    )
+                );
+            Property(x => x.TransportId)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new[]
+                        {
+                            new IndexAttribute("UX_TourBusTransferTransports_Transfer_Transport", 1)
+                            {
+                                IsUnique = true,
+                            },
+                            new IndexAttribute("IX_TourBusTransferTransports_Transport"),
+                        }
+                    )
+                );
+            HasRequired(x => x.TourBusTransfer)
+                .WithMany(x => x.Transports)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .WillCascadeOnDelete(true);
+        }
+    }
 }

@@ -255,4 +255,142 @@ namespace TourCore.Infrastructure.Postgres.Configurations.Tours
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
+    public class TourBusTransferConfiguration : IEntityTypeConfiguration<TourBusTransfer>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransfer> builder)
+        {
+            builder.ToTable("TourBusTransfers");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.DepartureTimeFrom).HasColumnType("time without time zone");
+            builder.Property(x => x.DepartureTimeTo).HasColumnType("time without time zone");
+            builder.Property(x => x.ArrivalTimeFrom).HasColumnType("time without time zone");
+            builder.Property(x => x.ArrivalTimeTo).HasColumnType("time without time zone");
+            builder.HasIndex(x => x.TourServiceId).IsUnique();
+            builder
+                .HasOne(x => x.TourService)
+                .WithMany()
+                .HasForeignKey(x => x.TourServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferDepartureCountryConfiguration
+        : IEntityTypeConfiguration<TourBusTransferDepartureCountry>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferDepartureCountry> builder)
+        {
+            builder.ToTable("TourBusTransferDepartureCountries");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.CountryId }).IsUnique();
+            builder.HasIndex(x => x.CountryId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.DepartureCountries)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferDepartureCityConfiguration
+        : IEntityTypeConfiguration<TourBusTransferDepartureCity>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferDepartureCity> builder)
+        {
+            builder.ToTable("TourBusTransferDepartureCities");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.CityId }).IsUnique();
+            builder.HasIndex(x => x.CityId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.DepartureCities)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferArrivalCountryConfiguration
+        : IEntityTypeConfiguration<TourBusTransferArrivalCountry>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferArrivalCountry> builder)
+        {
+            builder.ToTable("TourBusTransferArrivalCountries");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.CountryId }).IsUnique();
+            builder.HasIndex(x => x.CountryId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.ArrivalCountries)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferArrivalCityConfiguration
+        : IEntityTypeConfiguration<TourBusTransferArrivalCity>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferArrivalCity> builder)
+        {
+            builder.ToTable("TourBusTransferArrivalCities");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.CityId }).IsUnique();
+            builder.HasIndex(x => x.CityId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.ArrivalCities)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferOptionConfiguration
+        : IEntityTypeConfiguration<TourBusTransferOption>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferOption> builder)
+        {
+            builder.ToTable("TourBusTransferOptions");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.BusTransferId }).IsUnique();
+            builder.HasIndex(x => x.BusTransferId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.Options)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferBoardingPointConfiguration
+        : IEntityTypeConfiguration<TourBusTransferBoardingPoint>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferBoardingPoint> builder)
+        {
+            builder.ToTable("TourBusTransferBoardingPoints");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.BoardingPointId }).IsUnique();
+            builder.HasIndex(x => x.BoardingPointId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.BoardingPoints)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+
+    public class TourBusTransferTransportConfiguration
+        : IEntityTypeConfiguration<TourBusTransferTransport>
+    {
+        public void Configure(EntityTypeBuilder<TourBusTransferTransport> builder)
+        {
+            builder.ToTable("TourBusTransferTransports");
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => new { x.TourBusTransferId, x.TransportId }).IsUnique();
+            builder.HasIndex(x => x.TransportId);
+            builder
+                .HasOne(x => x.TourBusTransfer)
+                .WithMany(x => x.Transports)
+                .HasForeignKey(x => x.TourBusTransferId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
 }

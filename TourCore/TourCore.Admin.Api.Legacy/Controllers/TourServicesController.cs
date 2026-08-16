@@ -118,7 +118,15 @@ namespace TourCore.Admin.Api.Legacy.Controllers.Tours
         }
 
         /// <summary>Удалить услугу и уплотнить порядок состава.</summary>
-        /// <remarks>Сервер перенумеровывает оставшиеся OrderIndex до 1..N и увеличивает Revision тура. Услугу с дочерними элементами удалить нельзя. Возможные ошибки: tour_not_found, tour_service_not_found, tour_service_has_children.</remarks>
+        /// <remarks>
+        /// Вместе с услугой каскадно удаляется принадлежащая ей специализированная
+        /// структура: группы и ограничения перелётов, варианты проживания либо
+        /// настройки автобусного/железнодорожного переезда. Услугу, являющуюся
+        /// родителем других TourService, удалить нельзя. Сервер перенумеровывает
+        /// оставшиеся OrderIndex до 1..N и увеличивает Revision тура.
+        /// Возможные ошибки: tour_not_found, tour_service_not_found,
+        /// tour_service_has_children.
+        /// </remarks>
         /// <param name="tourId">Идентификатор тура.</param>
         /// <param name="id">Идентификатор услуги.</param>
         /// <returns>Пустой ответ 204 No Content.</returns>

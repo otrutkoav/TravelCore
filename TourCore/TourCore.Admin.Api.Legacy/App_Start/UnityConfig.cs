@@ -1,10 +1,11 @@
 #pragma warning disable 1591
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using TourCore.Application.Abstractions;
+using TourCore.Application.Abstractions.Caching;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Abstractions.Persistence.Avia;
 using TourCore.Application.Abstractions.Persistence.Bus;
@@ -14,9 +15,9 @@ using TourCore.Application.Abstractions.Persistence.Hotels;
 using TourCore.Application.Abstractions.Persistence.Railway;
 using TourCore.Application.Abstractions.Persistence.Seating;
 using TourCore.Application.Abstractions.Persistence.Services;
+using TourCore.Application.Abstractions.Persistence.Tours;
 using TourCore.Application.Abstractions.Persistence.Transfers;
 using TourCore.Application.Abstractions.Persistence.Transportation;
-using TourCore.Application.Abstractions.Persistence.Tours;
 using TourCore.Application.Abstractions.Services;
 using TourCore.Application.Avia.AirClasses.Commands;
 using TourCore.Application.Avia.AirClasses.Handlers;
@@ -54,7 +55,9 @@ using TourCore.Application.Bus.BusTransfers.Commands;
 using TourCore.Application.Bus.BusTransfers.Handlers;
 using TourCore.Application.Bus.BusTransfers.Queries;
 using TourCore.Application.Bus.BusTransfers.Validators;
+using TourCore.Application.Common.Data;
 using TourCore.Application.Common.Models;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Finance.Rates.Commands;
 using TourCore.Application.Finance.Rates.Handlers;
 using TourCore.Application.Finance.Rates.Queries;
@@ -67,6 +70,7 @@ using TourCore.Application.Geography.Cities.Commands;
 using TourCore.Application.Geography.Cities.Handlers;
 using TourCore.Application.Geography.Cities.Queries;
 using TourCore.Application.Geography.Cities.Validators;
+using TourCore.Application.Geography.Countries.Catalog;
 using TourCore.Application.Geography.Countries.Commands;
 using TourCore.Application.Geography.Countries.Handlers;
 using TourCore.Application.Geography.Countries.Queries;
@@ -127,6 +131,7 @@ using TourCore.Application.Services.ServiceTypes.Commands;
 using TourCore.Application.Services.ServiceTypes.Handlers;
 using TourCore.Application.Services.ServiceTypes.Queries;
 using TourCore.Application.Services.ServiceTypes.Validators;
+using TourCore.Application.Tours;
 using TourCore.Application.Transfers.TransferDirections.Commands;
 using TourCore.Application.Transfers.TransferDirections.Handlers;
 using TourCore.Application.Transfers.TransferDirections.Queries;
@@ -139,7 +144,6 @@ using TourCore.Application.Transportation.Transports.Commands;
 using TourCore.Application.Transportation.Transports.Handlers;
 using TourCore.Application.Transportation.Transports.Queries;
 using TourCore.Application.Transportation.Transports.Validators;
-using TourCore.Application.Tours;
 using TourCore.Contracts.Avia.AirClasses;
 using TourCore.Contracts.Avia.Aircrafts;
 using TourCore.Contracts.Avia.Airlines;
@@ -168,11 +172,13 @@ using TourCore.Contracts.Railway.TrainSchedules;
 using TourCore.Contracts.Seating.SeatingCells;
 using TourCore.Contracts.Seating.VehiclePlans;
 using TourCore.Contracts.Services.ServiceTypes;
+using TourCore.Contracts.Tours;
 using TourCore.Contracts.Transfers.TransferDirections;
 using TourCore.Contracts.Transfers.Transfers;
 using TourCore.Contracts.Transportation.Transports;
-using TourCore.Contracts.Tours;
 using TourCore.Infrastructure.Services;
+using TourCore.Infrastructure.SqlServer.Caching.Legacy;
+using TourCore.Infrastructure.SqlServer.Common;
 using TourCore.Infrastructure.SqlServer.Persistence;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Avia;
@@ -182,18 +188,12 @@ using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Hotels;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Railway;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Seating;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Services;
+using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Tours;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transfers;
 using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Transportation;
-using TourCore.Infrastructure.SqlServer.Persistence.Repositories.Tours;
 using Unity;
 using Unity.Lifetime;
 using Unity.WebApi;
-using TourCore.Application.Common.Data;
-using TourCore.Application.Common.Queries;
-using TourCore.Infrastructure.SqlServer.Common;
-using TourCore.Application.Abstractions.Caching;
-using TourCore.Infrastructure.SqlServer.Caching.Legacy;
-using TourCore.Application.Geography.Countries.Catalog;
 
 namespace TourCore.Admin.Api.Legacy
 {
@@ -211,8 +211,9 @@ namespace TourCore.Admin.Api.Legacy
             RegisterPersistence(container);
             VerifyControllerRegistrations(container);
 
-            GlobalConfiguration.Configuration.DependencyResolver =
-                new UnityDependencyResolver(container);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(
+                container
+            );
         }
 
         private static void RegisterCore(IUnityContainer container)
@@ -223,7 +224,6 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<IAsyncQueryExecutor, Ef6AsyncQueryExecutor>();
 
             container.RegisterType<PagedQueryExecutor>();
-
         }
 
         private static void RegisterCaching(IUnityContainer container)
@@ -231,27 +231,21 @@ namespace TourCore.Admin.Api.Legacy
             #region Caching
 
             // Caching
-            container.RegisterType<
-                ICatalogCacheProvider,
-                LegacyCatalogCacheProvider>(
-                new ContainerControlledLifetimeManager());
+            container.RegisterType<ICatalogCacheProvider, LegacyCatalogCacheProvider>(
+                new ContainerControlledLifetimeManager()
+            );
 
-            container.RegisterType<
-                ICatalogCacheInvalidator,
-                LegacyCatalogCacheInvalidator>(
-                new ContainerControlledLifetimeManager());
+            container.RegisterType<ICatalogCacheInvalidator, LegacyCatalogCacheInvalidator>(
+                new ContainerControlledLifetimeManager()
+            );
 
-            container.RegisterType<
-                ICatalogCacheUpdater,
-                LegacyCatalogCacheUpdater>(
-                new ContainerControlledLifetimeManager());
+            container.RegisterType<ICatalogCacheUpdater, LegacyCatalogCacheUpdater>(
+                new ContainerControlledLifetimeManager()
+            );
 
-            container.RegisterType<
-                ICountryCatalogReader,
-                CountryCatalogReader>();
+            container.RegisterType<ICountryCatalogReader, CountryCatalogReader>();
 
             #endregion
-
         }
 
         private static void RegisterValidators(IUnityContainer container)
@@ -354,6 +348,8 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<TourServiceCommandValidator>();
             container.RegisterType<TourFlightCommandValidator>();
             container.RegisterType<TourHotelCommandValidator>();
+            container.RegisterType<TourBusTransferCommandValidator>();
+            container.RegisterType<TourRailwayTransferCommandValidator>();
 
             // Transfer validators
             container.RegisterType<CreateTransferCommandValidator>();
@@ -384,7 +380,6 @@ namespace TourCore.Admin.Api.Legacy
             container.RegisterType<UpdateHotelCommandValidator>();
 
             #endregion
-
         }
 
         private static void RegisterCommands(IUnityContainer container)
@@ -394,290 +389,397 @@ namespace TourCore.Admin.Api.Legacy
             // Country commands
             container.RegisterType<
                 ICommandHandler<CreateCountryCommand, CountryDto>,
-                CreateCountryHandler>();
+                CreateCountryHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateCountryCommand, CountryDto>,
-                UpdateCountryHandler>();
+                UpdateCountryHandler
+            >();
 
             // Region commands
             container.RegisterType<
                 ICommandHandler<CreateRegionCommand, RegionDto>,
-                CreateRegionHandler>();
+                CreateRegionHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateRegionCommand, RegionDto>,
-                UpdateRegionHandler>();
+                UpdateRegionHandler
+            >();
 
             // City commands
             container.RegisterType<
                 ICommandHandler<CreateCityCommand, CityDto>,
-                CreateCityHandler>();
+                CreateCityHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateCityCommand, CityDto>,
-                UpdateCityHandler>();
+                UpdateCityHandler
+            >();
 
             // Resort commands
             container.RegisterType<
                 ICommandHandler<CreateResortCommand, ResortDto>,
-                CreateResortHandler>();
+                CreateResortHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateResortCommand, ResortDto>,
-                UpdateResortHandler>();
+                UpdateResortHandler
+            >();
 
             // Hotel commands
             container.RegisterType<
                 ICommandHandler<CreateHotelCommand, HotelDto>,
-                CreateHotelHandler>();
+                CreateHotelHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateHotelCommand, HotelDto>,
-                UpdateHotelHandler>();
+                UpdateHotelHandler
+            >();
 
             // MealType commands
             container.RegisterType<
                 ICommandHandler<CreateMealTypeCommand, MealTypeDto>,
-                CreateMealTypeHandler>();
+                CreateMealTypeHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateMealTypeCommand, MealTypeDto>,
-                UpdateMealTypeHandler>();
+                UpdateMealTypeHandler
+            >();
 
             // RoomCategory commands
             container.RegisterType<
                 ICommandHandler<CreateRoomCategoryCommand, RoomCategoryDto>,
-                CreateRoomCategoryHandler>();
+                CreateRoomCategoryHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateRoomCategoryCommand, RoomCategoryDto>,
-                UpdateRoomCategoryHandler>();
+                UpdateRoomCategoryHandler
+            >();
 
             // RoomType commands
             container.RegisterType<
                 ICommandHandler<CreateRoomTypeCommand, RoomTypeDto>,
-                CreateRoomTypeHandler>();
+                CreateRoomTypeHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateRoomTypeCommand, RoomTypeDto>,
-                UpdateRoomTypeHandler>();
+                UpdateRoomTypeHandler
+            >();
 
             // HotelCategory commands
             container.RegisterType<
                 ICommandHandler<CreateHotelCategoryCommand, HotelCategoryDto>,
-                CreateHotelCategoryHandler>();
+                CreateHotelCategoryHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateHotelCategoryCommand, HotelCategoryDto>,
-                UpdateHotelCategoryHandler>();
+                UpdateHotelCategoryHandler
+            >();
 
             // Rate commands
             container.RegisterType<
                 ICommandHandler<CreateRateCommand, RateDto>,
-                CreateRateHandler>();
+                CreateRateHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateRateCommand, RateDto>,
-                UpdateRateHandler>();
+                UpdateRateHandler
+            >();
 
             // RealCourse commands
             container.RegisterType<
                 ICommandHandler<CreateRealCourseCommand, RealCourseDto>,
-                CreateRealCourseHandler>();
+                CreateRealCourseHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateRealCourseCommand, RealCourseDto>,
-                UpdateRealCourseHandler>();
+                UpdateRealCourseHandler
+            >();
 
             // AirClass commands
             container.RegisterType<
                 ICommandHandler<CreateAirClassCommand, AirClassDto>,
-                CreateAirClassHandler>();
+                CreateAirClassHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateAirClassCommand, AirClassDto>,
-                UpdateAirClassHandler>();
+                UpdateAirClassHandler
+            >();
 
             // Aircraft commands
             container.RegisterType<
                 ICommandHandler<CreateAircraftCommand, AircraftDto>,
-                CreateAircraftHandler>();
+                CreateAircraftHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateAircraftCommand, AircraftDto>,
-                UpdateAircraftHandler>();
+                UpdateAircraftHandler
+            >();
 
             // Airline commands
             container.RegisterType<
                 ICommandHandler<CreateAirlineCommand, AirlineDto>,
-                CreateAirlineHandler>();
+                CreateAirlineHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateAirlineCommand, AirlineDto>,
-                UpdateAirlineHandler>();
+                UpdateAirlineHandler
+            >();
 
             // Airport commands
             container.RegisterType<
                 ICommandHandler<CreateAirportCommand, AirportDto>,
-                CreateAirportHandler>();
+                CreateAirportHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateAirportCommand, AirportDto>,
-                UpdateAirportHandler>();
+                UpdateAirportHandler
+            >();
 
             // Charter commands
             container.RegisterType<
                 ICommandHandler<CreateCharterCommand, CharterDto>,
-                CreateCharterHandler>();
+                CreateCharterHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateCharterCommand, CharterDto>,
-                UpdateCharterHandler>();
+                UpdateCharterHandler
+            >();
 
             // CharterSeason commands
             container.RegisterType<
                 ICommandHandler<CreateCharterSeasonCommand, CharterSeasonDto>,
-                CreateCharterSeasonHandler>();
+                CreateCharterSeasonHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateCharterSeasonCommand, CharterSeasonDto>,
-                UpdateCharterSeasonHandler>();
+                UpdateCharterSeasonHandler
+            >();
 
             // BusTransfer commands
             container.RegisterType<
                 ICommandHandler<CreateBusTransferCommand, BusTransferDto>,
-                CreateBusTransferHandler>();
+                CreateBusTransferHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateBusTransferCommand, BusTransferDto>,
-                UpdateBusTransferHandler>();
+                UpdateBusTransferHandler
+            >();
 
             // BusTransferPoint commands
             container.RegisterType<
                 ICommandHandler<CreateBusTransferPointCommand, BusTransferPointDto>,
-                CreateBusTransferPointHandler>();
+                CreateBusTransferPointHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateBusTransferPointCommand, BusTransferPointDto>,
-                UpdateBusTransferPointHandler>();
+                UpdateBusTransferPointHandler
+            >();
 
             // BusSchedule commands
             container.RegisterType<
                 ICommandHandler<CreateBusScheduleCommand, BusScheduleDto>,
-                CreateBusScheduleHandler>();
+                CreateBusScheduleHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateBusScheduleCommand, BusScheduleDto>,
-                UpdateBusScheduleHandler>();
+                UpdateBusScheduleHandler
+            >();
 
             // RailwayTransfer commands
             container.RegisterType<
                 ICommandHandler<CreateRailwayTransferCommand, RailwayTransferDto>,
-                CreateRailwayTransferHandler>();
+                CreateRailwayTransferHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateRailwayTransferCommand, RailwayTransferDto>,
-                UpdateRailwayTransferHandler>();
+                UpdateRailwayTransferHandler
+            >();
 
             // TrainSchedule commands
             container.RegisterType<
                 ICommandHandler<CreateTrainScheduleCommand, TrainScheduleDto>,
-                CreateTrainScheduleHandler>();
+                CreateTrainScheduleHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateTrainScheduleCommand, TrainScheduleDto>,
-                UpdateTrainScheduleHandler>();
+                UpdateTrainScheduleHandler
+            >();
 
             // Transport commands
             container.RegisterType<
                 ICommandHandler<CreateTransportCommand, TransportDto>,
-                CreateTransportHandler>();
+                CreateTransportHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateTransportCommand, TransportDto>,
-                UpdateTransportHandler>();
+                UpdateTransportHandler
+            >();
 
             // ServiceType commands
             container.RegisterType<
                 ICommandHandler<CreateServiceTypeCommand, ServiceTypeDto>,
-                CreateServiceTypeHandler>();
+                CreateServiceTypeHandler
+            >();
             container.RegisterType<
                 ICommandHandler<UpdateServiceTypeCommand, ServiceTypeDto>,
-                UpdateServiceTypeHandler>();
+                UpdateServiceTypeHandler
+            >();
             container.RegisterType<
                 ICommandHandler<DeleteServiceTypeCommand, bool>,
-                DeleteServiceTypeHandler>();
+                DeleteServiceTypeHandler
+            >();
 
-            container.RegisterType<ICommandHandler<CreateTourTypeCommand, TourTypeDto>, CreateTourTypeHandler>();
-            container.RegisterType<ICommandHandler<UpdateTourTypeCommand, TourTypeDto>, UpdateTourTypeHandler>();
-            container.RegisterType<ICommandHandler<DeleteTourTypeCommand, bool>, DeleteTourTypeHandler>();
-            container.RegisterType<ICommandHandler<CreateTourCommand, TourDto>, CreateTourHandler>();
-            container.RegisterType<ICommandHandler<UpdateTourCommand, TourDto>, UpdateTourHandler>();
+            container.RegisterType<
+                ICommandHandler<CreateTourTypeCommand, TourTypeDto>,
+                CreateTourTypeHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<UpdateTourTypeCommand, TourTypeDto>,
+                UpdateTourTypeHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<DeleteTourTypeCommand, bool>,
+                DeleteTourTypeHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<CreateTourCommand, TourDto>,
+                CreateTourHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<UpdateTourCommand, TourDto>,
+                UpdateTourHandler
+            >();
             container.RegisterType<ICommandHandler<DeleteTourCommand, bool>, DeleteTourHandler>();
-            container.RegisterType<ICommandHandler<CreateTourServiceCommand, TourServiceDto>, CreateTourServiceHandler>();
-            container.RegisterType<ICommandHandler<UpdateTourServiceCommand, TourServiceDto>, UpdateTourServiceHandler>();
-            container.RegisterType<ICommandHandler<DeleteTourServiceCommand, bool>, DeleteTourServiceHandler>();
-            container.RegisterType<ICommandHandler<ReorderTourServicesCommand, IReadOnlyCollection<TourServiceDto>>, ReorderTourServicesHandler>();
-            container.RegisterType<ICommandHandler<ReplaceTourFlightsCommand, IReadOnlyCollection<TourFlightGroupDto>>, ReplaceTourFlightsHandler>();
-            container.RegisterType<ICommandHandler<ReplaceTourHotelsCommand, IReadOnlyCollection<TourHotelGroupDto>>, ReplaceTourHotelsHandler>();
+            container.RegisterType<
+                ICommandHandler<CreateTourServiceCommand, TourServiceDto>,
+                CreateTourServiceHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<UpdateTourServiceCommand, TourServiceDto>,
+                UpdateTourServiceHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<DeleteTourServiceCommand, bool>,
+                DeleteTourServiceHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<ReorderTourServicesCommand, IReadOnlyCollection<TourServiceDto>>,
+                ReorderTourServicesHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<ReplaceTourFlightsCommand, IReadOnlyCollection<TourFlightGroupDto>>,
+                ReplaceTourFlightsHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<ReplaceTourHotelsCommand, IReadOnlyCollection<TourHotelGroupDto>>,
+                ReplaceTourHotelsHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<ReplaceTourBusTransferCommand, TourBusTransferDto>,
+                ReplaceTourBusTransferHandler
+            >();
+            container.RegisterType<
+                ICommandHandler<ReplaceTourRailwayTransferCommand, TourRailwayTransferDto>,
+                ReplaceTourRailwayTransferHandler
+            >();
 
             // Transfer commands
             container.RegisterType<
                 ICommandHandler<CreateTransferCommand, TransferDto>,
-                CreateTransferHandler>();
+                CreateTransferHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateTransferCommand, TransferDto>,
-                UpdateTransferHandler>();
+                UpdateTransferHandler
+            >();
 
             // TransferDirection commands
             container.RegisterType<
                 ICommandHandler<CreateTransferDirectionCommand, TransferDirectionDto>,
-                CreateTransferDirectionHandler>();
+                CreateTransferDirectionHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateTransferDirectionCommand, TransferDirectionDto>,
-                UpdateTransferDirectionHandler>();
+                UpdateTransferDirectionHandler
+            >();
 
             // SeatingCell commands
             container.RegisterType<
                 ICommandHandler<CreateSeatingCellCommand, SeatingCellDto>,
-                CreateSeatingCellHandler>();
+                CreateSeatingCellHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateSeatingCellCommand, SeatingCellDto>,
-                UpdateSeatingCellHandler>();
+                UpdateSeatingCellHandler
+            >();
 
             // VehiclePlan commands
             container.RegisterType<
                 ICommandHandler<CreateVehiclePlanCommand, VehiclePlanDto>,
-                CreateVehiclePlanHandler>();
+                CreateVehiclePlanHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateVehiclePlanCommand, VehiclePlanDto>,
-                UpdateVehiclePlanHandler>();
+                UpdateVehiclePlanHandler
+            >();
 
             // AccommodationPlacementRule commands
             container.RegisterType<
-                ICommandHandler<CreateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto>,
-                CreateAccommodationPlacementRuleHandler>();
+                ICommandHandler<
+                    CreateAccommodationPlacementRuleCommand,
+                    AccommodationPlacementRuleDto
+                >,
+                CreateAccommodationPlacementRuleHandler
+            >();
 
             container.RegisterType<
-                ICommandHandler<UpdateAccommodationPlacementRuleCommand, AccommodationPlacementRuleDto>,
-                UpdateAccommodationPlacementRuleHandler>();
+                ICommandHandler<
+                    UpdateAccommodationPlacementRuleCommand,
+                    AccommodationPlacementRuleDto
+                >,
+                UpdateAccommodationPlacementRuleHandler
+            >();
 
             // AccommodationType commands
             container.RegisterType<
                 ICommandHandler<CreateAccommodationTypeCommand, AccommodationTypeDto>,
-                CreateAccommodationTypeHandler>();
+                CreateAccommodationTypeHandler
+            >();
 
             container.RegisterType<
                 ICommandHandler<UpdateAccommodationTypeCommand, AccommodationTypeDto>,
-                UpdateAccommodationTypeHandler>();
+                UpdateAccommodationTypeHandler
+            >();
 
             #endregion
-
         }
 
         private static void RegisterQueries(IUnityContainer container)
@@ -687,283 +789,383 @@ namespace TourCore.Admin.Api.Legacy
             // Country queries
             container.RegisterType<
                 IQueryHandler<GetCountriesQuery, PagedResponseDto<CountryListItemDto>>,
-                GetCountriesHandler>();
+                GetCountriesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetCountryByIdQuery, CountryDto>,
-                GetCountryByIdHandler>();
+                GetCountryByIdHandler
+            >();
 
             // Region queries
             container.RegisterType<
                 IQueryHandler<GetRegionsQuery, PagedResponseDto<RegionListItemDto>>,
-                GetRegionsHandler>();
+                GetRegionsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetRegionByIdQuery, RegionDto>,
-                GetRegionByIdHandler>();
+                GetRegionByIdHandler
+            >();
 
             // City queries
             container.RegisterType<
                 IQueryHandler<GetCitiesQuery, PagedResponseDto<CityListItemDto>>,
-                GetCitiesHandler>();
+                GetCitiesHandler
+            >();
 
-            container.RegisterType<
-                IQueryHandler<GetCityByIdQuery, CityDto>,
-                GetCityByIdHandler>();
+            container.RegisterType<IQueryHandler<GetCityByIdQuery, CityDto>, GetCityByIdHandler>();
 
             // Resort queries
             container.RegisterType<
                 IQueryHandler<GetResortsQuery, PagedResponseDto<ResortListItemDto>>,
-                GetResortsHandler>();
+                GetResortsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetResortByIdQuery, ResortDto>,
-                GetResortByIdHandler>();
+                GetResortByIdHandler
+            >();
 
             // MealType queries
             container.RegisterType<
                 IQueryHandler<GetMealTypesQuery, PagedResponseDto<MealTypeListItemDto>>,
-                GetMealTypesHandler>();
+                GetMealTypesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetMealTypeByIdQuery, MealTypeDto>,
-                GetMealTypeByIdHandler>();
+                GetMealTypeByIdHandler
+            >();
 
             // RoomCategory queries
             container.RegisterType<
                 IQueryHandler<GetRoomCategoriesQuery, PagedResponseDto<RoomCategoryListItemDto>>,
-                GetRoomCategoriesHandler>();
+                GetRoomCategoriesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetRoomCategoryByIdQuery, RoomCategoryDto>,
-                GetRoomCategoryByIdHandler>();
+                GetRoomCategoryByIdHandler
+            >();
 
             // RoomType queries
             container.RegisterType<
                 IQueryHandler<GetRoomTypesQuery, PagedResponseDto<RoomTypeListItemDto>>,
-                GetRoomTypesHandler>();
+                GetRoomTypesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetRoomTypeByIdQuery, RoomTypeDto>,
-                GetRoomTypeByIdHandler>();
+                GetRoomTypeByIdHandler
+            >();
 
             // HotelCategory queries
             container.RegisterType<
                 IQueryHandler<GetHotelCategoriesQuery, PagedResponseDto<HotelCategoryListItemDto>>,
-                GetHotelCategoriesHandler>();
+                GetHotelCategoriesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetHotelCategoryByIdQuery, HotelCategoryDto>,
-                GetHotelCategoryByIdHandler>();
+                GetHotelCategoryByIdHandler
+            >();
 
             // Rate queries
             container.RegisterType<
                 IQueryHandler<GetRatesQuery, PagedResponseDto<RateListItemDto>>,
-                GetRatesHandler>();
+                GetRatesHandler
+            >();
 
-            container.RegisterType<
-                IQueryHandler<GetRateByIdQuery, RateDto>,
-                GetRateByIdHandler>();
+            container.RegisterType<IQueryHandler<GetRateByIdQuery, RateDto>, GetRateByIdHandler>();
 
             // RealCourse queries
             container.RegisterType<
                 IQueryHandler<GetRealCoursesQuery, PagedResponseDto<RealCourseListItemDto>>,
-                GetRealCoursesHandler>();
+                GetRealCoursesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetRealCourseByIdQuery, RealCourseDto>,
-                GetRealCourseByIdHandler>();
+                GetRealCourseByIdHandler
+            >();
 
             // AirClass queries
             container.RegisterType<
                 IQueryHandler<GetAirClassesQuery, PagedResponseDto<AirClassListItemDto>>,
-                GetAirClassesHandler>();
+                GetAirClassesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetAirClassByIdQuery, AirClassDto>,
-                GetAirClassByIdHandler>();
+                GetAirClassByIdHandler
+            >();
 
             // Aircraft queries
             container.RegisterType<
                 IQueryHandler<GetAircraftsQuery, PagedResponseDto<AircraftListItemDto>>,
-                GetAircraftsHandler>();
+                GetAircraftsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetAircraftByIdQuery, AircraftDto>,
-                GetAircraftByIdHandler>();
+                GetAircraftByIdHandler
+            >();
 
             // Airline queries
             container.RegisterType<
                 IQueryHandler<GetAirlinesQuery, PagedResponseDto<AirlineListItemDto>>,
-                GetAirlinesHandler>();
+                GetAirlinesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetAirlineByIdQuery, AirlineDto>,
-                GetAirlineByIdHandler>();
+                GetAirlineByIdHandler
+            >();
 
             // Airport queries
             container.RegisterType<
                 IQueryHandler<GetAirportsQuery, PagedResponseDto<AirportListItemDto>>,
-                GetAirportsHandler>();
+                GetAirportsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetAirportByIdQuery, AirportDto>,
-                GetAirportByIdHandler>();
+                GetAirportByIdHandler
+            >();
 
             // Charter queries
             container.RegisterType<
                 IQueryHandler<GetChartersQuery, PagedResponseDto<CharterListItemDto>>,
-                GetChartersHandler>();
+                GetChartersHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetCharterByIdQuery, CharterDto>,
-                GetCharterByIdHandler>();
+                GetCharterByIdHandler
+            >();
 
             // CharterSeason queries
             container.RegisterType<
                 IQueryHandler<GetCharterSeasonByIdQuery, CharterSeasonDto>,
-                GetCharterSeasonByIdHandler>();
+                GetCharterSeasonByIdHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetCharterSeasonsQuery, PagedResponseDto<CharterSeasonListItemDto>>,
-                GetCharterSeasonsHandler>();
+                GetCharterSeasonsHandler
+            >();
 
             // BusTransfer queries
             container.RegisterType<
                 IQueryHandler<GetBusTransfersQuery, PagedResponseDto<BusTransferListItemDto>>,
-                GetBusTransfersHandler>();
+                GetBusTransfersHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetBusTransferByIdQuery, BusTransferDto>,
-                GetBusTransferByIdHandler>();
+                GetBusTransferByIdHandler
+            >();
 
             // BusTransferPoint queries
             container.RegisterType<
-                IQueryHandler<GetBusTransferPointsQuery, PagedResponseDto<BusTransferPointListItemDto>>,
-                GetBusTransferPointsHandler>();
+                IQueryHandler<
+                    GetBusTransferPointsQuery,
+                    PagedResponseDto<BusTransferPointListItemDto>
+                >,
+                GetBusTransferPointsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetBusTransferPointByIdQuery, BusTransferPointDto>,
-                GetBusTransferPointByIdHandler>();
+                GetBusTransferPointByIdHandler
+            >();
 
             // BusSchedule queries
             container.RegisterType<
                 IQueryHandler<GetBusSchedulesQuery, PagedResponseDto<BusScheduleListItemDto>>,
-                GetBusSchedulesHandler>();
+                GetBusSchedulesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetBusScheduleByIdQuery, BusScheduleDto>,
-                GetBusScheduleByIdHandler>();
+                GetBusScheduleByIdHandler
+            >();
 
             // RailwayTransfer queries
             container.RegisterType<
-                IQueryHandler<GetRailwayTransfersQuery, PagedResponseDto<RailwayTransferListItemDto>>,
-                GetRailwayTransfersHandler>();
+                IQueryHandler<
+                    GetRailwayTransfersQuery,
+                    PagedResponseDto<RailwayTransferListItemDto>
+                >,
+                GetRailwayTransfersHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetRailwayTransferByIdQuery, RailwayTransferDto>,
-                GetRailwayTransferByIdHandler>();
+                GetRailwayTransferByIdHandler
+            >();
 
             // TrainSchedule queries
             container.RegisterType<
                 IQueryHandler<GetTrainSchedulesQuery, PagedResponseDto<TrainScheduleListItemDto>>,
-                GetTrainSchedulesHandler>();
+                GetTrainSchedulesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetTrainScheduleByIdQuery, TrainScheduleDto>,
-                GetTrainScheduleByIdHandler>();
+                GetTrainScheduleByIdHandler
+            >();
 
             // Transport queries
             container.RegisterType<
                 IQueryHandler<GetTransportsQuery, PagedResponseDto<TransportListItemDto>>,
-                GetTransportsHandler>();
+                GetTransportsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetTransportByIdQuery, TransportDto>,
-                GetTransportByIdHandler>();
+                GetTransportByIdHandler
+            >();
 
             // ServiceType queries
             container.RegisterType<
                 IQueryHandler<GetServiceTypesQuery, PagedResponseDto<ServiceTypeListItemDto>>,
-                GetServiceTypesHandler>();
+                GetServiceTypesHandler
+            >();
             container.RegisterType<
                 IQueryHandler<GetServiceTypeByIdQuery, ServiceTypeDto>,
-                GetServiceTypeByIdHandler>();
+                GetServiceTypeByIdHandler
+            >();
 
-            container.RegisterType<IQueryHandler<GetTourTypesQuery, PagedResponseDto<TourTypeListItemDto>>, GetTourTypesHandler>();
-            container.RegisterType<IQueryHandler<GetTourTypeByIdQuery, TourTypeDto>, GetTourTypeByIdHandler>();
-            container.RegisterType<IQueryHandler<GetToursQuery, PagedResponseDto<TourListItemDto>>, GetToursHandler>();
+            container.RegisterType<
+                IQueryHandler<GetTourTypesQuery, PagedResponseDto<TourTypeListItemDto>>,
+                GetTourTypesHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetTourTypeByIdQuery, TourTypeDto>,
+                GetTourTypeByIdHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetToursQuery, PagedResponseDto<TourListItemDto>>,
+                GetToursHandler
+            >();
             container.RegisterType<IQueryHandler<GetTourByIdQuery, TourDto>, GetTourByIdHandler>();
-            container.RegisterType<IQueryHandler<GetTourServicesQuery, IReadOnlyCollection<TourServiceDto>>, GetTourServicesHandler>();
-            container.RegisterType<IQueryHandler<GetTourServiceByIdQuery, TourServiceDto>, GetTourServiceByIdHandler>();
-            container.RegisterType<IQueryHandler<GetTourFlightsQuery, IReadOnlyCollection<TourFlightGroupDto>>, GetTourFlightsHandler>();
-            container.RegisterType<IQueryHandler<GetTourHotelsQuery, IReadOnlyCollection<TourHotelGroupDto>>, GetTourHotelsHandler>();
+            container.RegisterType<
+                IQueryHandler<GetTourServicesQuery, IReadOnlyCollection<TourServiceDto>>,
+                GetTourServicesHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetTourServiceByIdQuery, TourServiceDto>,
+                GetTourServiceByIdHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetTourFlightsQuery, IReadOnlyCollection<TourFlightGroupDto>>,
+                GetTourFlightsHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetTourHotelsQuery, IReadOnlyCollection<TourHotelGroupDto>>,
+                GetTourHotelsHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetTourBusTransferQuery, TourBusTransferDto>,
+                GetTourBusTransferHandler
+            >();
+            container.RegisterType<
+                IQueryHandler<GetTourRailwayTransferQuery, TourRailwayTransferDto>,
+                GetTourRailwayTransferHandler
+            >();
 
             // Transfer queries
             container.RegisterType<
                 IQueryHandler<GetTransfersQuery, PagedResponseDto<TransferListItemDto>>,
-                GetTransfersHandler>();
+                GetTransfersHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetTransferByIdQuery, TransferDto>,
-                GetTransferByIdHandler>();
+                GetTransferByIdHandler
+            >();
 
             // TransferDirection queries
             container.RegisterType<
-                IQueryHandler<GetTransferDirectionsQuery, PagedResponseDto<TransferDirectionListItemDto>>,
-                GetTransferDirectionsHandler>();
+                IQueryHandler<
+                    GetTransferDirectionsQuery,
+                    PagedResponseDto<TransferDirectionListItemDto>
+                >,
+                GetTransferDirectionsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetTransferDirectionByIdQuery, TransferDirectionDto>,
-                GetTransferDirectionByIdHandler>();
+                GetTransferDirectionByIdHandler
+            >();
 
             // SeatingCell queries
             container.RegisterType<
                 IQueryHandler<GetSeatingCellsQuery, PagedResponseDto<SeatingCellListItemDto>>,
-                GetSeatingCellsHandler>();
+                GetSeatingCellsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetSeatingCellByIdQuery, SeatingCellDto>,
-                GetSeatingCellByIdHandler>();
+                GetSeatingCellByIdHandler
+            >();
 
             // VehiclePlan queries
             container.RegisterType<
                 IQueryHandler<GetVehiclePlansQuery, PagedResponseDto<VehiclePlanListItemDto>>,
-                GetVehiclePlansHandler>();
+                GetVehiclePlansHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetVehiclePlanByIdQuery, VehiclePlanDto>,
-                GetVehiclePlanByIdHandler>();
+                GetVehiclePlanByIdHandler
+            >();
 
             // AccommodationPlacementRule queries
             container.RegisterType<
-                IQueryHandler<GetAccommodationPlacementRulesQuery, PagedResponseDto<AccommodationPlacementRuleListItemDto>>,
-                GetAccommodationPlacementRulesHandler>();
+                IQueryHandler<
+                    GetAccommodationPlacementRulesQuery,
+                    PagedResponseDto<AccommodationPlacementRuleListItemDto>
+                >,
+                GetAccommodationPlacementRulesHandler
+            >();
 
             container.RegisterType<
-                IQueryHandler<GetAccommodationPlacementRuleByIdQuery, AccommodationPlacementRuleDto>,
-                GetAccommodationPlacementRuleByIdHandler>();
+                IQueryHandler<
+                    GetAccommodationPlacementRuleByIdQuery,
+                    AccommodationPlacementRuleDto
+                >,
+                GetAccommodationPlacementRuleByIdHandler
+            >();
 
             // AccommodationType queries
             container.RegisterType<
-                IQueryHandler<GetAccommodationTypesQuery, PagedResponseDto<AccommodationTypeListItemDto>>,
-                GetAccommodationTypesHandler>();
+                IQueryHandler<
+                    GetAccommodationTypesQuery,
+                    PagedResponseDto<AccommodationTypeListItemDto>
+                >,
+                GetAccommodationTypesHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetAccommodationTypeByIdQuery, AccommodationTypeDto>,
-                GetAccommodationTypeByIdHandler>();
+                GetAccommodationTypeByIdHandler
+            >();
 
             // Hotel queries
             container.RegisterType<
                 IQueryHandler<GetHotelsQuery, PagedResponseDto<HotelListItemDto>>,
-                GetHotelsHandler>();
+                GetHotelsHandler
+            >();
 
             container.RegisterType<
                 IQueryHandler<GetHotelByIdQuery, HotelDto>,
-                GetHotelByIdHandler>();
+                GetHotelByIdHandler
+            >();
 
             #endregion
-
         }
 
         private static void RegisterPersistence(IUnityContainer container)
@@ -971,131 +1173,174 @@ namespace TourCore.Admin.Api.Legacy
             #region Persistence
 
             // Persistence
-            container.RegisterType<TourCoreDbContext>(
-                new HierarchicalLifetimeManager());
+            container.RegisterType<TourCoreDbContext>(new HierarchicalLifetimeManager());
 
             container.RegisterType(
                 typeof(IQueryableRepository<>),
                 typeof(QueryableRepository<>),
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ICountryRepository, CountryRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IRegionRepository, RegionRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ICityRepository, CityRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IResortRepository, ResortRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
-            container.RegisterType<IUnitOfWork, UnitOfWork>(
-                new HierarchicalLifetimeManager());
+            container.RegisterType<IUnitOfWork, UnitOfWork>(new HierarchicalLifetimeManager());
 
             container.RegisterType<IMealTypeRepository, MealTypeRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IRoomCategoryRepository, RoomCategoryRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IRoomTypeRepository, RoomTypeRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IHotelCategoryRepository, HotelCategoryRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IRateRepository, RateRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IRealCourseRepository, RealCourseRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IAirClassRepository, AirClassRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IAircraftRepository, AircraftRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IAirlineRepository, AirlineRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IAirportRepository, AirportRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ICharterRepository, CharterRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ICharterSeasonRepository, CharterSeasonRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IBusTransferRepository, BusTransferRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IBusTransferPointRepository, BusTransferPointRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IBusScheduleRepository, BusScheduleRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IRailwayTransferRepository, RailwayTransferRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ITrainScheduleRepository, TrainScheduleRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ITransportRepository, TransportRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IServiceTypeRepository, ServiceTypeRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
-            container.RegisterType<ITourTypeRepository, TourTypeRepository>(new HierarchicalLifetimeManager());
-            container.RegisterType<ITourRepository, TourRepository>(new HierarchicalLifetimeManager());
-            container.RegisterType<ITourServiceRepository, TourServiceRepository>(new HierarchicalLifetimeManager());
+            container.RegisterType<ITourTypeRepository, TourTypeRepository>(
+                new HierarchicalLifetimeManager()
+            );
+            container.RegisterType<ITourRepository, TourRepository>(
+                new HierarchicalLifetimeManager()
+            );
+            container.RegisterType<ITourServiceRepository, TourServiceRepository>(
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ITransferRepository, TransferRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ITransferDirectionRepository, TransferDirectionRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<ISeatingCellRepository, SeatingCellRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IVehiclePlanRepository, VehiclePlanRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
-            container.RegisterType<IAccommodationPlacementRuleRepository, AccommodationPlacementRuleRepository>(
-                new HierarchicalLifetimeManager());
+            container.RegisterType<
+                IAccommodationPlacementRuleRepository,
+                AccommodationPlacementRuleRepository
+            >(new HierarchicalLifetimeManager());
 
             container.RegisterType<IAccommodationTypeRepository, AccommodationTypeRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             container.RegisterType<IHotelRepository, HotelRepository>(
-                new HierarchicalLifetimeManager());
+                new HierarchicalLifetimeManager()
+            );
 
             #endregion
         }
 
         private static void VerifyControllerRegistrations(IUnityContainer container)
         {
-            var missingDependencies = typeof(UnityConfig).Assembly
-                .GetTypes()
+            var missingDependencies = typeof(UnityConfig)
+                .Assembly.GetTypes()
                 .Where(type => !type.IsAbstract && typeof(ApiController).IsAssignableFrom(type))
-                .SelectMany(type => type.GetConstructors()
-                    .SelectMany(constructor => constructor.GetParameters())
-                    .Where(parameter => parameter.ParameterType.IsInterface || parameter.ParameterType.IsAbstract)
-                    .Where(parameter => !container.IsRegistered(parameter.ParameterType))
-                    .Select(parameter => $"{type.FullName}: {parameter.ParameterType.FullName}"))
+                .SelectMany(type =>
+                    type.GetConstructors()
+                        .SelectMany(constructor => constructor.GetParameters())
+                        .Where(parameter =>
+                            parameter.ParameterType.IsInterface
+                            || parameter.ParameterType.IsAbstract
+                        )
+                        .Where(parameter => !container.IsRegistered(parameter.ParameterType))
+                        .Select(parameter => $"{type.FullName}: {parameter.ParameterType.FullName}")
+                )
                 .Distinct()
                 .ToArray();
 
             if (missingDependencies.Length > 0)
                 throw new InvalidOperationException(
-                    "Не зарегистрированы зависимости контроллеров:" + Environment.NewLine +
-                    string.Join(Environment.NewLine, missingDependencies));
+                    "Не зарегистрированы зависимости контроллеров:"
+                        + Environment.NewLine
+                        + string.Join(Environment.NewLine, missingDependencies)
+                );
         }
     }
 }
