@@ -6,7 +6,7 @@
 2. Разделение бизнес-модулей и разделение баз — связанные, но не идентичные решения.
 3. Между независимыми базами не используются физические внешние ключи и межбазовые JOIN.
 4. Кеш, индекс, актуальные фильтры и отчётная read-модель являются производными данными и должны восстанавливаться из источников истины.
-5. SQL Server и PostgreSQL — две технологические реализации одной логической модели там, где требуется Legacy/Modern совместимость.
+5. PostgreSQL — единственное целевое транзакционное хранилище TourCore. Старые СУБД рассматриваются только как источники миграции.
 
 ## Планируемые источники истины
 
@@ -43,13 +43,6 @@ Search не планируется как владелец транзакцио�
 Инфраструктура общая по provider'у:
 
 ```text
-TourCore.Infrastructure.SqlServer
-├── Core
-├── Search
-├── HotelPricing
-├── Booking
-└── Quotas
-
 TourCore.Infrastructure.Postgres
 ├── Core
 ├── Search
@@ -70,7 +63,7 @@ QuotasDbContext
 ExternalSystemsDbContext
 ```
 
-Host подключает только нужные регистрации. Метод `AddAllInfrastructure()` запрещён как архитектурный шаблон; используются явные регистрации вида `AddPostgresCoreInfrastructure()` и `AddSqlServerBookingInfrastructure()`.
+Host подключает только нужные регистрации. Метод `AddAllInfrastructure()` запрещён как архитектурный шаблон; используются явные регистрации вида `AddPostgresCoreInfrastructure()` и `AddPostgresBookingInfrastructure()`.
 
 ## Ссылки между базами
 

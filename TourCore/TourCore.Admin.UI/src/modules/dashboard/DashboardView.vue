@@ -1,6 +1,6 @@
 <template>
  <section>
-  <div class="page-heading"><div><p class="eyebrow">TourCore Admin</p><h2>Управление туристическим продуктом</h2><p>Единый интерфейс для Legacy и Modern API.</p></div></div>
+  <div class="page-heading"><div><p class="eyebrow">TourCore Admin</p><h2>Управление туристическим продуктом</h2><p>Интерфейс управления TourCore на PostgreSQL.</p></div></div>
   <div class="dashboard-grid">
    <RouterLink to="/tours" class="feature-card"><span>Туры</span><strong>Шаблоны и состав туров</strong><p>Даты, услуги, перелёты и проживание.</p></RouterLink>
    <RouterLink to="/catalog/hotels" class="feature-card"><span>Отели</span><strong>Гостиничный каталог</strong><p>Отели и справочники размещения.</p></RouterLink>

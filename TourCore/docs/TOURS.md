@@ -350,7 +350,7 @@ API использует полную атомарную замену:
 - `PUT /api/v1/tours/{tourId}/services/{serviceId}/railway-transfer`.
 
 Успешный `PUT` увеличивает `TourService.Revision` и `Tour.Revision` в той же
-транзакции. Modern и Legacy API используют общий контракт и общий обработчик.
+транзакции. HTTP API использует общий контракт и Application-обработчик.
 
 ### Инварианты железнодорожного переезда
 

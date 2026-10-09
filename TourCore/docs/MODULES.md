@@ -42,7 +42,7 @@ Core не может ссылаться на Search, Booking, Quotas, Pricing и
 ```text
 TourCore.Search.Contracts
 TourCore.Search.Application
-TourCore.Search.Api.Legacy
+TourCore.Search.Api              # в будущем
 ```
 
 Ответственность:
@@ -52,7 +52,10 @@ TourCore.Search.Api.Legacy
 - формирование кандидатов тура;
 - чтение данных через `ITourSearchDataSource`.
 
-Текущий EF6/SQL Server источник находится в общем `TourCore.Infrastructure.SqlServer/Search`. Это пробная реализация вертикального среза. Публичный API и Application не должны зависеть от способа получения данных.
+Старый EF6/SQL Server источник удалён вместе с Legacy-контуром. Следующий
+вертикальный срез поиска должен получить современный host и источник данных на
+основе PostgreSQL или SearchCache. Публичный API и Application не должны
+зависеть от способа получения данных.
 
 ## Планируемые модули
 

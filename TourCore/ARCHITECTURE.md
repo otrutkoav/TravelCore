@@ -27,13 +27,10 @@ TourCore.Booking.*          # в будущем
 TourCore.Quotas.*           # в будущем
 TourCore.*Pricing.*         # в будущем
 
-Общие провайдеры:
-TourCore.Infrastructure.SqlServer  # .NET Framework 4.8, EF6, SQL Server
-TourCore.Infrastructure.Postgres   # современный .NET, EF Core, PostgreSQL
+Общий провайдер:
+TourCore.Infrastructure.Postgres   # .NET 8, EF Core, PostgreSQL
 
 Отдельные host'ы:
-TourCore.Admin.Api.Legacy
-TourCore.Search.Api.Legacy
 TourCore.Admin.Api
 TourCore.Search.Api                # в будущем
 TourCore.Booking.Api.*             # в будущем
@@ -41,9 +38,13 @@ TourCore.Booking.Api.*             # в будущем
 
 Core включает географию, базовые модели отелей, транспорта, финансовые и другие фундаментальные справочники. Search, Booking, Quotas, Pricing и последующие области оформляются отдельными модульными Contracts/Application/Domain-проектами. Модуль может зависеть от устойчивых контрактов Core, но Core никогда не зависит от модулей.
 
-Admin API использует Core Application. Search API использует `TourCore.Search.Application` и `TourCore.Search.Contracts`. Реализация SQL-поиска находится в общем провайдере под namespace `TourCore.Infrastructure.SqlServer.Search`.
+Admin API использует Core Application. Будущий Search API использует
+`TourCore.Search.Application` и `TourCore.Search.Contracts`. Источник поисковых
+данных должен быть реализован поверх PostgreSQL или отдельного SearchCache.
 
-SQL Server и PostgreSQL остаются отдельными проектами из-за несовместимых runtime и ORM-зависимостей, но каждый является общим провайдером для Admin, Search и будущего Booking.
+PostgreSQL является единственным целевым транзакционным provider-ом. SQL Server
+может использоваться внешним инструментом миграции только как источник старых
+данных и не входит в runtime TourCore.
 
 ## Разрешённые зависимости
 
@@ -69,30 +70,14 @@ Shared -> без ссылок на проекты решения
 
 В `TourCore.Shared` запрещены бизнес-сущности и правила Admin/Search/Booking, EF, SQL, HTTP-host configuration, кеши конкретного контура и ссылки на другие проекты решения. Если тип имеет смысл только для одного контура, он остаётся в этом контуре.
 
-## Совместимость Legacy и Modern
+## Целевая платформа
 
-`TourCore.Shared`, Contracts, Domain и Application должны собираться для `netstandard2.0`, пока поддерживается .NET Framework 4.8. В них нельзя использовать API, доступные только в современных версиях .NET, или добавлять зависимости, несовместимые с `net48`.
-
-Различаться могут только host и Infrastructure:
-
-```text
-Api.Legacy + EF6 + SQL Server
-Api        + EF Core + PostgreSQL
-```
-
-Обе реализации проходят через одинаковые Application-абстракции. Добавление PostgreSQL не создаёт второй handler с бизнес-логикой.
+Все backend-проекты собираются для `.NET 8`. Единственная runtime-композиция —
+ASP.NET Core + EF Core + PostgreSQL. Application и Domain по-прежнему не зависят
+от ORM и конкретной СУБД; эта граница нужна для тестируемости и смены
+инфраструктурных реализаций, а не для поддержки устаревшего host-а.
 
 ## Версионирование API
 
-Канонический маршрут Legacy API содержит версию: `/api/v1/...`. Старые `/api/...` временно поддерживаются внутренним compatibility handler и не публикуются как основной контракт в Swagger. Новая несовместимая версия создаётся отдельным `/api/v2/...`, без изменения поведения v1.
-
-## Legacy NuGet и runtime-зависимости
-
-Для классических проектов `packages.config` транзитивные зависимости должны быть явно зафиксированы в `packages.config`, `.csproj` и `Web.config` binding redirects. Проверка выполняется после чистой сборки:
-
-```powershell
-& "$env:ProgramFiles\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" TourCore.sln /t:Rebuild /p:Configuration=Debug
-.\Verify-LegacyRuntime.ps1
-```
-
-Нельзя считать incremental build достаточной проверкой: старые DLL в `bin` могут скрывать отсутствующую зависимость.
+Канонический маршрут API содержит версию: `/api/v1/...`. Новая несовместимая
+версия создаётся отдельным `/api/v2/...`, без молчаливого изменения поведения v1.
