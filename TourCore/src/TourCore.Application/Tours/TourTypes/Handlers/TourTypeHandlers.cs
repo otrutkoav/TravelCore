@@ -179,7 +179,7 @@ namespace TourCore.Application.Tours
         )
         {
             q = q ?? new GetTourTypesQuery();
-            var x = r.Query();
+            var x = QuerySpecification.For(r);
             if (!string.IsNullOrWhiteSpace(q.Search))
             {
                 var s = q.Search.Trim();

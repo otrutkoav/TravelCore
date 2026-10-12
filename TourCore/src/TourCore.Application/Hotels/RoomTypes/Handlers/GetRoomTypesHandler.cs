@@ -29,7 +29,7 @@ namespace TourCore.Application.Hotels.RoomTypes.Handlers
         {
             query = query ?? new GetRoomTypesQuery();
 
-            var roomTypes = _roomTypeRepository.Query();
+            var roomTypes = QuerySpecification.For(_roomTypeRepository);
 
             if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {

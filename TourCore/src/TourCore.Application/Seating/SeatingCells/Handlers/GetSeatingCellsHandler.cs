@@ -29,7 +29,7 @@ namespace TourCore.Application.Seating.SeatingCells.Handlers
         {
             query = query ?? new GetSeatingCellsQuery();
 
-            var seatingCells = _seatingCellRepository.Query();
+            var seatingCells = QuerySpecification.For(_seatingCellRepository);
 
             if (query.Filter != null)
             {

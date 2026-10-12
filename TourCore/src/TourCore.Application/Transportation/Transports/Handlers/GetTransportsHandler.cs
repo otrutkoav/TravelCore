@@ -30,7 +30,7 @@ namespace TourCore.Application.Transportation.Transports.Handlers
         {
             query = query ?? new GetTransportsQuery();
 
-            var transports = _transportRepository.Query();
+            var transports = QuerySpecification.For(_transportRepository);
 
             if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {

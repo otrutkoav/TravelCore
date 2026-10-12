@@ -30,7 +30,7 @@ namespace TourCore.Application.Transfers.TransferDirections.Handlers
         {
             query = query ?? new GetTransferDirectionsQuery();
 
-            var directions = _transferDirectionRepository.Query();
+            var directions = QuerySpecification.For(_transferDirectionRepository);
 
             if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {

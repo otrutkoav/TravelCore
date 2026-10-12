@@ -29,7 +29,7 @@ namespace TourCore.Application.Avia.CharterSeasons.Handlers
         {
             query = query ?? new GetCharterSeasonsQuery();
 
-            var charterSeasons = _charterSeasonRepository.Query();
+            var charterSeasons = QuerySpecification.For(_charterSeasonRepository);
 
             if (query.Filter != null)
             {

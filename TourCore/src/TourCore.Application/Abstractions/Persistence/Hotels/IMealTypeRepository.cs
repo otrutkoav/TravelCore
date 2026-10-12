@@ -6,7 +6,7 @@ using TourCore.Domain.Hotels.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Hotels
 {
-    public interface IMealTypeRepository : IQueryableRepository<MealType>
+    public interface IMealTypeRepository : IRepository<MealType>
     {
         Task<MealType> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<MealType>> ListAsync(CancellationToken cancellationToken);

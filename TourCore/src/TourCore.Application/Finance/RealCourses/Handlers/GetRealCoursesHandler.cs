@@ -29,7 +29,7 @@ namespace TourCore.Application.Finance.RealCourses.Handlers
         {
             query = query ?? new GetRealCoursesQuery();
 
-            var courses = _realCourseRepository.Query();
+            var courses = QuerySpecification.For(_realCourseRepository);
 
             if (query.Filter != null)
             {

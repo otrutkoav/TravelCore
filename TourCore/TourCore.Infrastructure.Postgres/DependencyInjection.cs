@@ -15,7 +15,7 @@ public static class DependencyInjection
     {
         services.AddDbContext<TourCoreDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IAsyncQueryExecutor, EfCoreAsyncQueryExecutor>();
+        services.AddScoped<IQuerySpecificationExecutor, EfCoreQuerySpecificationExecutor>();
 
         var repositoryInterfaceNamespace = "TourCore.Application.Abstractions.Persistence";
         var repositoryTypes = typeof(DependencyInjection).Assembly.GetTypes()

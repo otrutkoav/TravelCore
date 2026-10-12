@@ -30,7 +30,7 @@ namespace TourCore.Application.Hotels.AccommodationTypes.Handlers
         {
             query = query ?? new GetAccommodationTypesQuery();
 
-            var accommodationTypes = _accommodationTypeRepository.Query();
+            var accommodationTypes = QuerySpecification.For(_accommodationTypeRepository);
 
             if (query.Filter != null)
             {

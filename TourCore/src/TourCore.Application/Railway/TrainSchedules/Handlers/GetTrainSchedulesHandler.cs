@@ -30,7 +30,7 @@ namespace TourCore.Application.Railway.TrainSchedules.Handlers
         {
             query = query ?? new GetTrainSchedulesQuery();
 
-            var schedules = _trainScheduleRepository.Query();
+            var schedules = QuerySpecification.For(_trainScheduleRepository);
 
             if (query.Filter != null && query.Filter.RailwayTransferId.HasValue)
             {
@@ -54,7 +54,7 @@ namespace TourCore.Application.Railway.TrainSchedules.Handlers
             }
 
             var pagedEntities = await _pagedQueryExecutor.ExecuteAsync(
-                schedules,
+                schedules.Select(x => x),
                 query,
                 cancellationToken);
 

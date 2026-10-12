@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
@@ -15,9 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TourCore.Application\TourCore.Application.csproj" />
-    <ProjectReference Include="..\..\src\TourCore.Contracts\TourCore.Contracts.csproj" />
-    <ProjectReference Include="..\..\src\TourCore.Domain\TourCore.Domain.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Catalog.Application\TourCore.Catalog.Application.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Catalog.Contracts\TourCore.Catalog.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Catalog.Domain\TourCore.Catalog.Domain.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Product.Application\TourCore.Product.Application.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Product.Contracts\TourCore.Product.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Product.Domain\TourCore.Product.Domain.csproj" />
   </ItemGroup>
 
 </Project>

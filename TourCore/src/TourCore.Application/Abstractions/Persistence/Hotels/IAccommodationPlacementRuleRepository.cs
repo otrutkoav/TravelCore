@@ -7,7 +7,7 @@ using TourCore.Domain.Hotels.Entities;
 namespace TourCore.Application.Abstractions.Persistence.Hotels
 {
     public interface IAccommodationPlacementRuleRepository
-        : IQueryableRepository<AccommodationPlacementRule>
+        : IRepository<AccommodationPlacementRule>
     {
         Task<AccommodationPlacementRule> GetByIdAsync(int id, CancellationToken cancellationToken);
 

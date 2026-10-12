@@ -6,7 +6,7 @@ using TourCore.Domain.Services.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Services
 {
-    public interface IServiceTypeRepository : IQueryableRepository<ServiceType>
+    public interface IServiceTypeRepository : IRepository<ServiceType>
     {
         Task<ServiceType> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<ServiceType>> ListAsync(CancellationToken cancellationToken);

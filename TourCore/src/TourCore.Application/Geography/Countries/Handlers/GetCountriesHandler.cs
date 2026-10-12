@@ -29,7 +29,7 @@ namespace TourCore.Application.Geography.Countries.Handlers
         {
             query = query ?? new GetCountriesQuery();
 
-            var countries = _countryRepository.Query();
+            var countries = QuerySpecification.For(_countryRepository);
 
             if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {

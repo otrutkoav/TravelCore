@@ -29,7 +29,7 @@ namespace TourCore.Application.Seating.VehiclePlans.Handlers
         {
             query = query ?? new GetVehiclePlansQuery();
 
-            var vehiclePlans = _vehiclePlanRepository.Query();
+            var vehiclePlans = QuerySpecification.For(_vehiclePlanRepository);
 
             if (query.Filter != null)
             {

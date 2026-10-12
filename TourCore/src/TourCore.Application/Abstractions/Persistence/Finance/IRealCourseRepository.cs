@@ -7,7 +7,7 @@ using TourCore.Domain.Finance.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Finance
 {
-    public interface IRealCourseRepository : IQueryableRepository<RealCourse>
+    public interface IRealCourseRepository : IRepository<RealCourse>
     {
         Task<RealCourse> GetByIdAsync(int id, CancellationToken cancellationToken);
 

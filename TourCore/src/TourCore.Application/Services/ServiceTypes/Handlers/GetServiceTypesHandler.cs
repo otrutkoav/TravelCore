@@ -24,7 +24,7 @@ namespace TourCore.Application.Services.ServiceTypes.Handlers
         public async Task<PagedResponseDto<ServiceTypeListItemDto>> Handle(GetServiceTypesQuery query, CancellationToken cancellationToken)
         {
             query = query ?? new GetServiceTypesQuery();
-            var serviceTypes = _serviceTypeRepository.Query();
+            var serviceTypes = QuerySpecification.For(_serviceTypeRepository);
 
             if (query.Filter != null)
             {

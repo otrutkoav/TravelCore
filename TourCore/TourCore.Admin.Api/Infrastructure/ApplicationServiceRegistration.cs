@@ -9,11 +9,18 @@ namespace TourCore.Admin.Api.Infrastructure;
 
 internal static class ApplicationServiceRegistration
 {
-    public static IServiceCollection AddTourCoreApplication(this IServiceCollection services)
+    public static IServiceCollection AddCatalogAndProductApplication(this IServiceCollection services)
     {
-        var applicationAssembly = typeof(PagedQueryExecutor).Assembly;
+        var applicationAssemblies = new[]
+        {
+            typeof(PagedQueryExecutor).Assembly,
+            typeof(TourCommandValidator).Assembly
+        };
         var handlerDefinitions = new[] { typeof(ICommandHandler<,>), typeof(IQueryHandler<,>) };
-        var applicationTypes = applicationAssembly.GetTypes();
+        var applicationTypes = applicationAssemblies
+            .SelectMany(assembly => assembly.GetTypes())
+            .Distinct()
+            .ToArray();
         var requiredHandlers = typeof(ApplicationServiceRegistration)
             .Assembly.GetTypes()
             .Where(type => !type.IsAbstract && typeof(ControllerBase).IsAssignableFrom(type))

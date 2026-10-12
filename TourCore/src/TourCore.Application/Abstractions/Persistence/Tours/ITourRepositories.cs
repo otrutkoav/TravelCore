@@ -6,7 +6,7 @@ using TourCore.Domain.Tours;
 
 namespace TourCore.Application.Abstractions.Persistence.Tours
 {
-    public interface ITourTypeRepository : IQueryableRepository<TourType>
+    public interface ITourTypeRepository : IRepository<TourType>
     {
         Task<TourType> GetByIdAsync(int id, CancellationToken ct);
         Task<IReadOnlyCollection<TourType>> GetByIdsAsync(
@@ -21,7 +21,7 @@ namespace TourCore.Application.Abstractions.Persistence.Tours
         void Remove(TourType entity);
     }
 
-    public interface ITourRepository : IQueryableRepository<Tour>
+    public interface ITourRepository : IRepository<Tour>
     {
         Task<Tour> GetByIdAsync(int id, CancellationToken ct);
         Task AddAsync(Tour entity, CancellationToken ct);
@@ -29,7 +29,7 @@ namespace TourCore.Application.Abstractions.Persistence.Tours
         void Remove(Tour entity);
     }
 
-    public interface ITourServiceRepository : IQueryableRepository<TourService>
+    public interface ITourServiceRepository : IRepository<TourService>
     {
         Task<TourService> GetByIdAsync(int tourId, int id, CancellationToken ct);
         Task<IReadOnlyCollection<TourService>> ListByTourIdAsync(int tourId, CancellationToken ct);

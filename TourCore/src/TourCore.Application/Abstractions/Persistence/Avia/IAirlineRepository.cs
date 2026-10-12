@@ -6,7 +6,7 @@ using TourCore.Domain.Avia.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Avia
 {
-    public interface IAirlineRepository : IQueryableRepository<Airline>
+    public interface IAirlineRepository : IRepository<Airline>
     {
         Task<Airline> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<Airline>> ListAsync(CancellationToken cancellationToken);

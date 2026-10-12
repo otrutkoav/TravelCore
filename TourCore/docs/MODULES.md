@@ -1,6 +1,37 @@
 # Карта модулей TourCore
 
-## Core
+## Реализованная граница Catalog / Product
+
+Каталог и определение турпродукта компилируются в разные наборы сборок:
+
+```text
+TourCore.Catalog.Domain
+TourCore.Catalog.Application
+TourCore.Catalog.Contracts
+
+TourCore.Product.Domain
+TourCore.Product.Application
+TourCore.Product.Contracts
+```
+
+`Catalog` владеет географией, отелями, транспортом, типами услуг и финансовыми
+справочниками. `Product` владеет турами, их составом, вариантами услуг и
+ограничениями. Зависимость направлена от Product к Catalog; обратная ссылка
+запрещена проверкой `Directory.Build.targets`.
+
+На переходном этапе оба модуля запускаются одним `TourCore.Admin.Api`, используют
+один PostgreSQL provider и один `TourCoreDbContext`. Это сознательная граница
+кода перед последующим разделением контекстов и хранилищ. Исходные `.cs` пока
+остаются в прежних каталогах, а состав каждой сборки задаётся новыми проектами.
+
+Старые `TourCore.Domain`, `TourCore.Application` и `TourCore.Contracts` исключены
+из solution и больше не являются runtime-зависимостями.
+
+Списочные запросы Catalog не получают `IQueryable` из репозиториев. Application
+описывает фильтры, сортировку, проекцию и paging через независимую от провайдера
+спецификацию, а её EF Core-исполнение находится в `TourCore.Infrastructure.Postgres`.
+
+## Историческая модель Core
 
 Core — предметный фундамент TourCore, а не синоним Admin. Без его сущностей остальные модули не имеют самостоятельного смысла.
 

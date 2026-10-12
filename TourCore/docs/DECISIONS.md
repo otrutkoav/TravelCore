@@ -33,7 +33,7 @@ Admin, Search, Booking, Quotas и другие публичные контуры
 ### PostgreSQL является единственной runtime-СУБД
 
 ```text
-.NET 8 + EF Core + PostgreSQL
+.NET 10 + EF Core + PostgreSQL
 ```
 
 SQL Server, EF6 и ASP.NET Framework не входят в runtime TourCore. Доступ к старой

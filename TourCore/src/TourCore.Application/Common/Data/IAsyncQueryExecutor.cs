@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TourCore.Application.Common.Queries;
 
 namespace TourCore.Application.Common.Data
 {
-    public interface IAsyncQueryExecutor
+    public interface IQuerySpecificationExecutor
     {
-        Task<int> CountAsync<T>(
-            IQueryable<T> query,
-            CancellationToken cancellationToken);
+        Task<int> CountAsync<TEntity, TResult>(ProjectedQuerySpecification<TEntity, TResult> query, CancellationToken cancellationToken)
+            where TEntity : class;
 
-        Task<IReadOnlyCollection<T>> ToArrayAsync<T>(
-            IQueryable<T> query,
-            CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<TResult>> ToArrayAsync<TEntity, TResult>(ProjectedQuerySpecification<TEntity, TResult> query, int? skip, int? take, CancellationToken cancellationToken)
+            where TEntity : class;
     }
 }

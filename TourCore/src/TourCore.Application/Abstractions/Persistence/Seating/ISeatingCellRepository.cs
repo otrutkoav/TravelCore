@@ -6,7 +6,7 @@ using TourCore.Domain.Seating.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Seating
 {
-    public interface ISeatingCellRepository : IQueryableRepository<SeatingCell>
+    public interface ISeatingCellRepository : IRepository<SeatingCell>
     {
         Task<SeatingCell> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<SeatingCell>> ListAsync(CancellationToken cancellationToken);

@@ -6,7 +6,7 @@ using TourCore.Domain.Railway.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Railway
 {
-    public interface ITrainScheduleRepository : IQueryableRepository<TrainSchedule>
+    public interface ITrainScheduleRepository : IRepository<TrainSchedule>
     {
         Task<TrainSchedule> GetByIdAsync(int id, CancellationToken cancellationToken);
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TourCore.Application.Abstractions.Caching;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Data;
+using TourCore.Application.Common.Queries;
 using TourCore.Application.Geography.Countries.Mappings;
 using TourCore.Application.Geography.Countries.Queries;
 using TourCore.Contracts.Geography.Countries;
@@ -14,14 +15,14 @@ namespace TourCore.Application.Geography.Countries.Catalog
 {
     public class CountryCatalogReader : ICountryCatalogReader
     {
-        private readonly IQueryableRepository<Country> _repository;
+        private readonly IRepository<Country> _repository;
         private readonly ICatalogCacheProvider _cacheProvider;
-        private readonly IAsyncQueryExecutor _asyncQueryExecutor;
+        private readonly IQuerySpecificationExecutor _asyncQueryExecutor;
 
         public CountryCatalogReader(
-            IQueryableRepository<Country> repository,
+            IRepository<Country> repository,
             ICatalogCacheProvider cacheProvider,
-            IAsyncQueryExecutor asyncQueryExecutor)
+            IQuerySpecificationExecutor asyncQueryExecutor)
         {
             _repository = repository;
             _cacheProvider = cacheProvider;
@@ -35,14 +36,13 @@ namespace TourCore.Application.Geography.Countries.Catalog
                 CatalogCacheKeys.Countries,
                 async () =>
                 {
-                    var query = _repository
-                        .Query()
+                    var query = QuerySpecification.For(_repository)
                         .OrderBy(x => x.SortOrder)
                         .ThenBy(x => x.Name)
                         .Select(CountryProjections.ListItem);
 
                     var items = await _asyncQueryExecutor
-                        .ToArrayAsync(query, cancellationToken);
+                        .ToArrayAsync(query, null, null, cancellationToken);
 
                     return (IReadOnlyCollection<CountryListItemDto>)items;
                 },

@@ -2,9 +2,9 @@
 
 namespace TourCore.Application.Common.Data
 {
-    public interface IQueryableRepository<TEntity>
+    public interface IRepository<TEntity>
         where TEntity : class
     {
-        IQueryable<TEntity> Query();
     }
+
 }

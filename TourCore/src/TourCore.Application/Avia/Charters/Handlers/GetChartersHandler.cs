@@ -29,7 +29,7 @@ namespace TourCore.Application.Avia.Charters.Handlers
         {
             query = query ?? new GetChartersQuery();
 
-            var charters = _charterRepository.Query();
+            var charters = QuerySpecification.For(_charterRepository);
 
             if (query.Filter != null)
             {

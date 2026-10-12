@@ -6,7 +6,7 @@ using TourCore.Domain.Transfers.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Transfers
 {
-    public interface ITransferDirectionRepository : IQueryableRepository<TransferDirection>
+    public interface ITransferDirectionRepository : IRepository<TransferDirection>
     {
         Task<TransferDirection> GetByIdAsync(int id, CancellationToken cancellationToken);
 

@@ -29,7 +29,7 @@ namespace TourCore.Application.Avia.Airlines.Handlers
         {
             query = query ?? new GetAirlinesQuery();
 
-            var airlines = _airlineRepository.Query();
+            var airlines = QuerySpecification.For(_airlineRepository);
 
             if (query.Filter != null)
             {

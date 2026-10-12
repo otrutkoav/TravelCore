@@ -29,7 +29,7 @@ namespace TourCore.Application.Geography.Resorts.Handlers
         {
             query = query ?? new GetResortsQuery();
 
-            var resorts = _resortRepository.Query();
+            var resorts = QuerySpecification.For(_resortRepository);
 
             if (query.Filter != null)
             {

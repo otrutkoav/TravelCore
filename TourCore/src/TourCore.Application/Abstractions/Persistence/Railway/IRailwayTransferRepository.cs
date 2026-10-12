@@ -6,7 +6,7 @@ using TourCore.Domain.Railway.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Railway
 {
-    public interface IRailwayTransferRepository : IQueryableRepository<RailwayTransfer>
+    public interface IRailwayTransferRepository : IRepository<RailwayTransfer>
     {
         Task<RailwayTransfer> GetByIdAsync(int id, CancellationToken cancellationToken);
 

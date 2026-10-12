@@ -29,7 +29,7 @@ namespace TourCore.Application.Geography.Cities.Handlers
         {
             query = query ?? new GetCitiesQuery();
 
-            var cities = _cityRepository.Query();
+            var cities = QuerySpecification.For(_cityRepository);
 
             if (query.Filter != null)
             {

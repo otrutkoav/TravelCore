@@ -6,7 +6,7 @@ using TourCore.Domain.Finance.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Finance
 {
-    public interface IRateRepository : IQueryableRepository<Rate>
+    public interface IRateRepository : IRepository<Rate>
     {
         Task<Rate> GetByIdAsync(int id, CancellationToken cancellationToken);
 

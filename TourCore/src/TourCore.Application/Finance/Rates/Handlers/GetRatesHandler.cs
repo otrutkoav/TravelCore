@@ -29,7 +29,7 @@ namespace TourCore.Application.Finance.Rates.Handlers
         {
             query = query ?? new GetRatesQuery();
 
-            var rates = _rateRepository.Query();
+            var rates = QuerySpecification.For(_rateRepository);
 
             if (query.Filter != null)
             {

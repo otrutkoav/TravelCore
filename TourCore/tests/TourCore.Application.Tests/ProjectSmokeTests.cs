@@ -6,8 +6,8 @@ namespace TourCore.Application.Tests;
 public sealed class ProjectSmokeTests
 {
     [TestMethod]
-    public void Test_project_runs_on_modern_dotnet()
+    public void Test_project_runs_on_net_10()
     {
-        Assert.IsTrue(Environment.Version.Major >= 8);
+        Assert.IsTrue(Environment.Version.Major >= 10);
     }
 }

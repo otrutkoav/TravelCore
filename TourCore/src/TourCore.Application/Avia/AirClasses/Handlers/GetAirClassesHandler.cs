@@ -29,7 +29,7 @@ namespace TourCore.Application.Avia.AirClasses.Handlers
         {
             query = query ?? new GetAirClassesQuery();
 
-            var airClasses = _airClassRepository.Query();
+            var airClasses = QuerySpecification.For(_airClassRepository);
 
             if (query.Filter != null)
             {

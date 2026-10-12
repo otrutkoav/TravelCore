@@ -29,7 +29,7 @@ namespace TourCore.Application.Bus.BusTransfers.Handlers
         {
             query = query ?? new GetBusTransfersQuery();
 
-            var busTransfers = _busTransferRepository.Query();
+            var busTransfers = QuerySpecification.For(_busTransferRepository);
 
             if (query.Filter != null)
             {

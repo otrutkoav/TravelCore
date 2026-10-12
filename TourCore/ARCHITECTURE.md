@@ -28,7 +28,7 @@ TourCore.Quotas.*           # в будущем
 TourCore.*Pricing.*         # в будущем
 
 Общий провайдер:
-TourCore.Infrastructure.Postgres   # .NET 8, EF Core, PostgreSQL
+TourCore.Infrastructure.Postgres   # .NET 10, EF Core, PostgreSQL
 
 Отдельные host'ы:
 TourCore.Admin.Api
@@ -72,7 +72,7 @@ Shared -> без ссылок на проекты решения
 
 ## Целевая платформа
 
-Все backend-проекты собираются для `.NET 8`. Единственная runtime-композиция —
+Все backend-проекты собираются для `.NET 10`. Единственная runtime-композиция —
 ASP.NET Core + EF Core + PostgreSQL. Application и Domain по-прежнему не зависят
 от ORM и конкретной СУБД; эта граница нужна для тестируемости и смены
 инфраструктурных реализаций, а не для поддержки устаревшего host-а.

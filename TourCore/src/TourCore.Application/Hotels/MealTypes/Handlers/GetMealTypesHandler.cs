@@ -29,7 +29,7 @@ namespace TourCore.Application.Hotels.MealTypes.Handlers
         {
             query = query ?? new GetMealTypesQuery();
 
-            var mealTypes = _mealTypeRepository.Query();
+            var mealTypes = QuerySpecification.For(_mealTypeRepository);
 
             if (query.Filter != null)
             {

@@ -6,7 +6,7 @@ using TourCore.Domain.Bus.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Bus
 {
-    public interface IBusTransferPointRepository : IQueryableRepository<BusTransferPoint>
+    public interface IBusTransferPointRepository : IRepository<BusTransferPoint>
     {
         Task<BusTransferPoint> GetByIdAsync(int id, CancellationToken cancellationToken);
 

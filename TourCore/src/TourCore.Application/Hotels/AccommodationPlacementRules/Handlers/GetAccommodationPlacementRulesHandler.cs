@@ -30,7 +30,7 @@ namespace TourCore.Application.Hotels.AccommodationPlacementRules.Handlers
         {
             query = query ?? new GetAccommodationPlacementRulesQuery();
 
-            var rules = _repository.Query();
+            var rules = QuerySpecification.For(_repository);
 
             if (query.Filter != null)
             {

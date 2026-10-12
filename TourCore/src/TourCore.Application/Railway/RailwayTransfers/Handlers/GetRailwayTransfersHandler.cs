@@ -30,7 +30,7 @@ namespace TourCore.Application.Railway.RailwayTransfers.Handlers
         {
             query = query ?? new GetRailwayTransfersQuery();
 
-            var railwayTransfers = _railwayTransferRepository.Query();
+            var railwayTransfers = QuerySpecification.For(_railwayTransferRepository);
 
             if (query.Filter != null)
             {

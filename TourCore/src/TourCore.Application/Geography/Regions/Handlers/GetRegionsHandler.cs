@@ -29,7 +29,7 @@ namespace TourCore.Application.Geography.Regions.Handlers
         {
             query = query ?? new GetRegionsQuery();
 
-            var regions = _regionRepository.Query();
+            var regions = QuerySpecification.For(_regionRepository);
 
             if (query.Filter != null)
             {

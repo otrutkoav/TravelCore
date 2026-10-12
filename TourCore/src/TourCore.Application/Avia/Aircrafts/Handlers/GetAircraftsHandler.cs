@@ -29,7 +29,7 @@ namespace TourCore.Application.Avia.Aircrafts.Handlers
         {
             query = query ?? new GetAircraftsQuery();
 
-            var aircrafts = _aircraftRepository.Query();
+            var aircrafts = QuerySpecification.For(_aircraftRepository);
 
             if (query.Filter != null && !string.IsNullOrWhiteSpace(query.Filter.Search))
             {

@@ -30,7 +30,7 @@ namespace TourCore.Application.Bus.BusSchedules.Handlers
         {
             query = query ?? new GetBusSchedulesQuery();
 
-            var schedules = _busScheduleRepository.Query();
+            var schedules = QuerySpecification.For(_busScheduleRepository);
 
             if (query.Filter != null && query.Filter.BusTransferId.HasValue)
             {
@@ -54,7 +54,7 @@ namespace TourCore.Application.Bus.BusSchedules.Handlers
             }
 
             var pagedEntities = await _pagedQueryExecutor.ExecuteAsync(
-                schedules,
+                schedules.Select(x => x),
                 query,
                 cancellationToken);
 

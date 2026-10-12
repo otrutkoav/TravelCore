@@ -6,7 +6,7 @@ using TourCore.Domain.Geography.Entities;
 
 namespace TourCore.Application.Abstractions.Persistence.Geography
 {
-    public interface IRegionRepository : IQueryableRepository<Region>
+    public interface IRegionRepository : IRepository<Region>
     {
         Task<Region> GetByIdAsync(int id, CancellationToken cancellationToken);
 

@@ -30,7 +30,7 @@ namespace TourCore.Application.Transfers.Transfers.Handlers
         {
             query = query ?? new GetTransfersQuery();
 
-            var transfers = _transferRepository.Query();
+            var transfers = QuerySpecification.For(_transferRepository);
 
             if (query.Filter != null)
             {

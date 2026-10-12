@@ -30,7 +30,7 @@ namespace TourCore.Application.Bus.BusTransferPoints.Handlers
         {
             query = query ?? new GetBusTransferPointsQuery();
 
-            var points = _busTransferPointRepository.Query();
+            var points = QuerySpecification.For(_busTransferPointRepository);
 
             if (query.Filter != null)
             {

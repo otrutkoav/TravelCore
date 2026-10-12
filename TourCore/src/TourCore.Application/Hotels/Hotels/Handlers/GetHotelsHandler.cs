@@ -29,7 +29,7 @@ namespace TourCore.Application.Hotels.Hotels.Handlers
         {
             query = query ?? new GetHotelsQuery();
 
-            var hotels = _hotelRepository.Query();
+            var hotels = QuerySpecification.For(_hotelRepository);
 
             if (query.Filter != null)
             {
