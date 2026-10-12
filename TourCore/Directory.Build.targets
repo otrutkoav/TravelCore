@@ -18,6 +18,10 @@
       <_ForbiddenArchitectureReference Include="@(ProjectReference)"
         Condition="('$(MSBuildProjectName)' == 'TourCore.Catalog.Domain' or '$(MSBuildProjectName)' == 'TourCore.Catalog.Application' or '$(MSBuildProjectName)' == 'TourCore.Catalog.Contracts') and $([System.String]::Copy('%(ProjectReference.Filename)').StartsWith('TourCore.Product.'))" />
       <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="('$(MSBuildProjectName)' == 'TourCore.Product.Domain' or '$(MSBuildProjectName)' == 'TourCore.Product.Application') and ($([System.String]::Copy('%(ProjectReference.Filename)').EndsWith('.Catalog.Domain')) or $([System.String]::Copy('%(ProjectReference.Filename)').EndsWith('.Catalog.Application')))" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
+        Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('.Contracts')) and '%(ProjectReference.Filename)' != 'TourCore.Shared'" />
+      <_ForbiddenArchitectureReference Include="@(ProjectReference)"
         Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('.Domain')) and ($([System.String]::Copy('%(ProjectReference.Filename)').EndsWith('.Application')) or $([System.String]::Copy('%(ProjectReference.Filename)').EndsWith('.Contracts')) or $([System.String]::Copy('%(ProjectReference.Filename)').Contains('.Infrastructure')) or $([System.String]::Copy('%(ProjectReference.Filename)').EndsWith('.Api')))" />
     </ItemGroup>
 

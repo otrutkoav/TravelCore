@@ -2,15 +2,11 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\TourCore.Application\**\*.cs"
-             Exclude="..\TourCore.Application\Tours\**\*.cs;..\TourCore.Application\Abstractions\Persistence\Tours\**\*.cs;..\TourCore.Application\Common\Data\IQueryableRepository.cs;..\TourCore.Application\Common\Data\IAsyncQueryExecutor.cs;..\TourCore.Application\Common\Queries\QueryablePagingExtensions.cs;..\TourCore.Application\Common\Queries\QueryableFilterExtensions.cs;..\TourCore.Application\bin\**\*.cs;..\TourCore.Application\obj\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\TourCore.Application.BuildingBlocks\TourCore.Application.BuildingBlocks.csproj" />
     <ProjectReference Include="..\TourCore.Catalog.Contracts\TourCore.Catalog.Contracts.csproj" />
     <ProjectReference Include="..\TourCore.Catalog.Domain\TourCore.Catalog.Domain.csproj" />
     <ProjectReference Include="..\TourCore.Shared\TourCore.Shared.csproj" />

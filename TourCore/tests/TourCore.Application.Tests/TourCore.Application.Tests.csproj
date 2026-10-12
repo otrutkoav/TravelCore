@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\src\TourCore.Product.Application\TourCore.Product.Application.csproj" />
     <ProjectReference Include="..\..\src\TourCore.Product.Contracts\TourCore.Product.Contracts.csproj" />
     <ProjectReference Include="..\..\src\TourCore.Product.Domain\TourCore.Product.Domain.csproj" />
+    <ProjectReference Include="..\..\src\TourCore.Search.Contracts\TourCore.Search.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

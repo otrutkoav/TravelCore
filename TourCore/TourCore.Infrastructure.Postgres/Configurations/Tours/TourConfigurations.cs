@@ -40,7 +40,7 @@ namespace TourCore.Infrastructure.Postgres.Configurations.Tours
             b.Property(x => x.DescriptionUrl).HasMaxLength(2048);
             b.Property(x => x.DescriptionHtml).HasColumnType("text");
             b.Property(x => x.BookingConditionsHtml).HasColumnType("text");
-            b.HasOne(x => x.Currency)
+            b.HasOne<Rate>()
                 .WithMany()
                 .HasForeignKey(x => x.CurrencyId)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -100,7 +100,7 @@ namespace TourCore.Infrastructure.Postgres.Configurations.Tours
                 .WithMany(x => x.Services)
                 .HasForeignKey(x => x.TourId)
                 .OnDelete(DeleteBehavior.Cascade);
-            b.HasOne(x => x.ServiceType)
+            b.HasOne<TourCore.Domain.Services.Entities.ServiceType>()
                 .WithMany()
                 .HasForeignKey(x => x.ServiceTypeId)
                 .OnDelete(DeleteBehavior.Restrict);

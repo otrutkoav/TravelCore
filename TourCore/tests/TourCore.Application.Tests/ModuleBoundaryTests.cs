@@ -25,4 +25,27 @@ public sealed class ModuleBoundaryTests
 
         Assert.AreEqual(0, productTypes.Length);
     }
+
+    [TestMethod]
+    public void Product_domain_does_not_reference_catalog_assemblies()
+    {
+        var references = typeof(Tour).Assembly.GetReferencedAssemblies()
+            .Select(reference => reference.Name)
+            .Where(name => name?.StartsWith("TourCore.Catalog.", StringComparison.Ordinal) == true)
+            .ToArray();
+
+        Assert.AreEqual(0, references.Length);
+    }
+
+    [TestMethod]
+    public void Product_application_does_not_reference_catalog_implementation_or_domain()
+    {
+        var references = typeof(TourCore.Application.Tours.CreateTourHandler).Assembly
+            .GetReferencedAssemblies()
+            .Select(reference => reference.Name)
+            .Where(name => name is "TourCore.Catalog.Application" or "TourCore.Catalog.Domain")
+            .ToArray();
+
+        Assert.AreEqual(0, references.Length);
+    }
 }

@@ -12,13 +12,13 @@
 TourCore состоит из предметного Core, отдельных бизнес-модулей, общих инфраструктурных провайдеров и отдельных запускаемых API/Service host'ов. Core содержит базовые туристические сущности, без которых остальные модули не имеют смысла. Admin является интерфейсом управления Core, а не отдельным бизнес-ядром.
 
 ```text
-Предметный Core:
-TourCore.Contracts
-TourCore.Application
-TourCore.Domain
+Предметные контексты:
+TourCore.Catalog.Contracts / Application / Domain
+TourCore.Product.Contracts / Application / Domain
 
 Технический фундамент:
 TourCore.Shared
+TourCore.Application.BuildingBlocks
 
 Отдельные бизнес-модули:
 TourCore.Search.Contracts
@@ -36,7 +36,7 @@ TourCore.Search.Api                # в будущем
 TourCore.Booking.Api.*             # в будущем
 ```
 
-Core включает географию, базовые модели отелей, транспорта, финансовые и другие фундаментальные справочники. Search, Booking, Quotas, Pricing и последующие области оформляются отдельными модульными Contracts/Application/Domain-проектами. Модуль может зависеть от устойчивых контрактов Core, но Core никогда не зависит от модулей.
+Catalog включает географию, базовые модели отелей, транспорта, финансовые и другие фундаментальные справочники. Product владеет определением турпродукта. Search, Booking, Quotas, Pricing и последующие области оформляются отдельными модульными Contracts/Application/Domain-проектами. Межконтекстная ссылка передаётся как ID или через Contracts; один контекст не ссылается на Domain/Application другого.
 
 Admin API использует Core Application. Будущий Search API использует
 `TourCore.Search.Application` и `TourCore.Search.Contracts`. Источник поисковых
@@ -51,13 +51,13 @@ PostgreSQL является единственным целевым транза
 ```text
 Api -> Application, Contracts, Shared, Infrastructure
 Infrastructure -> Application, Domain, Contracts, Shared
-Application -> Domain, Contracts, Shared
+Application -> собственные Domain/Contracts, Application.BuildingBlocks, Shared, внешние Contracts
 Domain -> Shared
 Contracts -> Shared или без зависимостей
 Shared -> без ссылок на проекты решения
 ```
 
-Запрещены зависимости `Application -> Api`, `Application -> Infrastructure`, `Infrastructure -> Api`, ссылки Core на бизнес-модули и любые project references из `TourCore.Shared`. Правила проверяются автоматически файлом `Directory.Build.targets` при сборке.
+Запрещены зависимости `Application -> Api`, `Application -> Infrastructure`, `Infrastructure -> Api`, ссылки на чужие Domain/Application и любые project references из `TourCore.Shared`. Правила проверяются автоматически файлом `Directory.Build.targets` и архитектурными тестами.
 
 ## Правило для TourCore.Shared
 

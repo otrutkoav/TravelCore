@@ -13,9 +13,9 @@ internal static class ApplicationServiceRegistration
     {
         var applicationAssemblies = new[]
         {
-            typeof(PagedQueryExecutor).Assembly,
+            typeof(ICatalogCacheProvider).Assembly,
             typeof(TourCommandValidator).Assembly
-        };
+        }.Distinct().ToArray();
         var handlerDefinitions = new[] { typeof(ICommandHandler<,>), typeof(IQueryHandler<,>) };
         var applicationTypes = applicationAssemblies
             .SelectMany(assembly => assembly.GetTypes())

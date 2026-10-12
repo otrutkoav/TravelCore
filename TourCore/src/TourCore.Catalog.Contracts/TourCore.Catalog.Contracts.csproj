@@ -2,12 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <Version>1.0.0</Version>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="..\TourCore.Contracts\**\*.cs"
-             Exclude="..\TourCore.Contracts\Tours\**\*.cs;..\TourCore.Contracts\bin\**\*.cs;..\TourCore.Contracts\obj\**\*.cs" />
-  </ItemGroup>
 </Project>

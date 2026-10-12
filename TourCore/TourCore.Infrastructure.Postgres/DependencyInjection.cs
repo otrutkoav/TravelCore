@@ -4,6 +4,7 @@ using TourCore.Infrastructure.Postgres.Common;
 using TourCore.Infrastructure.Postgres.Persistence;
 using TourCore.Application.Abstractions.Persistence;
 using TourCore.Application.Common.Data;
+using TourCore.Product.Application.Abstractions.Catalog;
 
 namespace TourCore.Infrastructure.Postgres;
 
@@ -16,6 +17,7 @@ public static class DependencyInjection
         services.AddDbContext<TourCoreDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IQuerySpecificationExecutor, EfCoreQuerySpecificationExecutor>();
+        services.AddScoped<IProductCatalogReferences, ProductCatalogReferences>();
 
         var repositoryInterfaceNamespace = "TourCore.Application.Abstractions.Persistence";
         var repositoryTypes = typeof(DependencyInjection).Assembly.GetTypes()
