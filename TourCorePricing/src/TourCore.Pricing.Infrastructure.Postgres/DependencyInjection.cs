@@ -21,6 +21,13 @@ public static class DependencyInjection
         services.AddScoped<IPriceBlockRepository, PriceBlockRepository>();
         services.AddScoped<ISPOTypeRepository, SPOTypeRepository>();
         services.AddScoped<ISeasonRepository, SeasonRepository>();
+        services.AddScoped<IHotelPriceRepository, HotelPriceRepository>();
+        services.AddScoped<IHotelCatalogReferenceRepository, HotelCatalogReferenceRepository>();
+        services.AddScoped<IFlightPriceRepository, FlightPriceRepository>();
+        services.AddScoped<IFlightCatalogReferenceRepository, FlightCatalogReferenceRepository>();
+        services.AddScoped<IBusTransferPriceRepository, BusTransferPriceRepository>();
+        services.AddScoped<IRailwayTransferPriceRepository, RailwayTransferPriceRepository>();
+        services.AddScoped<ITransportPriceCatalogReferenceRepository, TransportPriceCatalogReferenceRepository>();
         return services;
     }
 }

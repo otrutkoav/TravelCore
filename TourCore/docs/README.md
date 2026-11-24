@@ -15,5 +15,6 @@
 - [`OBSERVABILITY.md`](OBSERVABILITY.md) — health checks, JSON-логи, trace correlation, OpenTelemetry и OTLP/Prometheus.
 - [`AUTHORIZATION.md`](AUTHORIZATION.md) — JWT Resource Server, policies, роли и переход на внешний Identity Provider.
 - [`SERVICE-TEMPLATE-V1.md`](SERVICE-TEMPLATE-V1.md) — первая версия шаблона нового сервиса: 12 архитектурных требований, критерии приёмки и оценка текущего TourCore.
+- [`../../docs/architecture/SERVICE-AUDIT-2026-11-24.md`](../../docs/architecture/SERVICE-AUDIT-2026-11-24.md) — актуальная сравнительная оценка Core, Pricing и Identity по всем 12 пунктам.
 
 При противоречии обязательные правила из `ARCHITECTURE.md` имеют приоритет. Существенное изменение границ Core, модулей, инфраструктуры или владения данными должно сопровождаться обновлением этих документов.

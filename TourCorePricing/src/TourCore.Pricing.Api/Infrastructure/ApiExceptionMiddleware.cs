@@ -1,4 +1,5 @@
 using TourCore.Pricing.Application.Common;
+using TourCore.Pricing.Contracts.Common;
 using TourCore.Pricing.Domain.Common;
 
 namespace TourCore.Pricing.Api.Infrastructure;
@@ -24,10 +25,10 @@ internal sealed class ApiExceptionMiddleware
         {
             var (statusCode, response) = exception switch
             {
-                DomainException domainException => (StatusCodes.Status400BadRequest, new { Code = "domain_error", Message = domainException.Message, Details = (object?)null }),
-                ValidationException validationException => (StatusCodes.Status400BadRequest, new { Code = validationException.Code, Message = validationException.Message, Details = (object?)validationException.Errors }),
-                NotFoundException notFoundException => (StatusCodes.Status404NotFound, new { Code = notFoundException.Code, Message = notFoundException.Message, Details = (object?)null }),
-                _ => (StatusCodes.Status500InternalServerError, new { Code = "internal_error", Message = "Внутренняя ошибка сервера.", Details = (object?)null })
+                DomainException domainException => (StatusCodes.Status400BadRequest, Error("domain_error", domainException.Message)),
+                ValidationException validationException => (StatusCodes.Status400BadRequest, Error(validationException.Code, validationException.Message, validationException.Errors)),
+                NotFoundException notFoundException => (StatusCodes.Status404NotFound, Error(notFoundException.Code, notFoundException.Message)),
+                _ => (StatusCodes.Status500InternalServerError, Error("internal_error", "Внутренняя ошибка сервера."))
             };
 
             if (statusCode == StatusCodes.Status500InternalServerError)
@@ -37,4 +38,10 @@ internal sealed class ApiExceptionMiddleware
             await context.Response.WriteAsJsonAsync(response);
         }
     }
+
+    private static PricingApiErrorDto Error(
+        string code,
+        string message,
+        IReadOnlyDictionary<string, string[]>? details = null) =>
+        new() { Code = code, Message = message, Details = details };
 }

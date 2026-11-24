@@ -1,8 +1,8 @@
 # JWT-аутентификация и авторизация
 
 `TourCore.Admin.Api` является JWT Resource Server: он проверяет access token, но
-не хранит пользователей и не проверяет пароли. Токены для текущего вертикального
-среза выдаёт отдельный `TourCore.Identity.Api`. В дальнейшем его реализацию можно
+не хранит пользователей и не проверяет пароли. Токены выдаёт самостоятельный
+сервис `../TourCoreIdentity`, не входящий в решение Core. В дальнейшем его реализацию можно
 заменить на Keycloak, Microsoft Entra ID или полноценный Identity-сервис, не меняя
 Catalog policies и контроллеры.
 
@@ -67,7 +67,7 @@ Identity Provider.
 
 ## Swagger
 
-При одновременном запуске `TourCore.Identity.Api` и `TourCore.Admin.Api` Swagger
+При одновременном запуске `TourCoreIdentity` и `TourCore.Admin.Api` Swagger
 Catalog содержит OAuth2 password flow. Нажмите `Authorize`, введите локальные
 логин и пароль, после чего Swagger самостоятельно получит JWT и добавит заголовок
 `Authorization: Bearer <token>` к запросам.
@@ -82,7 +82,8 @@ Password: TourCore.Admin.2026!
 
 Пароль существует только для профиля `Development`. В репозитории хранится его
 PBKDF2-SHA256 хеш, а не исходное значение. Для Compose логин и пароль задаются
-через `TOURCORE_ADMIN_USERNAME` и `TOURCORE_ADMIN_PASSWORD` в `.env`.
+через `TOURCORE_IDENTITY_USERNAME` и `TOURCORE_IDENTITY_PASSWORD` в `.env`
+самостоятельного сервиса `TourCoreIdentity`.
 
 Прямой JSON endpoint входа:
 

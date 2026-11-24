@@ -22,6 +22,492 @@ namespace TourCore.Pricing.Infrastructure.Postgres.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TourCore.Pricing.Domain.BusPrices.BusTransferPrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<short?>("AgeFrom")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("AgeTo")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("BruttoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("BusTransferPointId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("DaysOfWeekMask")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("NettoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<short?>("PassengerCountFrom")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("PassengerCountTo")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("PeriodUnit")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("PriceBlockId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("SaleDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("SaleDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<byte>("Scope")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TransportId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("TravelDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("TravelDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceBlockId", "BusTransferPointId", "TransportId")
+                        .HasDatabaseName("IX_BusTransferPrices_Block_Point_Transport");
+
+                    b.HasIndex("BusTransferPointId", "TransportId", "TravelDateFrom", "TravelDateTo")
+                        .HasDatabaseName("IX_BusTransferPrices_Search");
+
+                    b.ToTable("BusTransferPrices", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BusTransferPrices_Ages", "(\"AgeFrom\" IS NULL OR \"AgeFrom\" >= 0) AND (\"AgeTo\" IS NULL OR \"AgeTo\" >= 0) AND (\"AgeFrom\" IS NULL OR \"AgeTo\" IS NULL OR \"AgeFrom\" <= \"AgeTo\")");
+
+                            t.HasCheckConstraint("CK_BusTransferPrices_Amounts", "(\"NettoAmount\" IS NOT NULL OR \"BruttoAmount\" IS NOT NULL) AND (\"NettoAmount\" IS NULL OR \"NettoAmount\" >= 0) AND (\"BruttoAmount\" IS NULL OR \"BruttoAmount\" >= 0)");
+
+                            t.HasCheckConstraint("CK_BusTransferPrices_Days", "\"DaysOfWeekMask\" BETWEEN 1 AND 127");
+
+                            t.HasCheckConstraint("CK_BusTransferPrices_Passengers", "(\"PassengerCountFrom\" IS NULL OR \"PassengerCountFrom\" > 0) AND (\"PassengerCountTo\" IS NULL OR \"PassengerCountTo\" > 0) AND (\"PassengerCountFrom\" IS NULL OR \"PassengerCountTo\" IS NULL OR \"PassengerCountFrom\" <= \"PassengerCountTo\")");
+
+                            t.HasCheckConstraint("CK_BusTransferPrices_Priority", "\"Priority\" >= 0");
+
+                            t.HasCheckConstraint("CK_BusTransferPrices_SaleDates", "\"SaleDateFrom\" IS NULL OR \"SaleDateTo\" IS NULL OR \"SaleDateFrom\" <= \"SaleDateTo\"");
+
+                            t.HasCheckConstraint("CK_BusTransferPrices_TravelDates", "\"TravelDateFrom\" IS NULL OR \"TravelDateTo\" IS NULL OR \"TravelDateFrom\" <= \"TravelDateTo\"");
+                        });
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.FlightPrices.FlightPrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<short?>("AgeFrom")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("AgeTo")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("AirClassId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("BruttoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("CharterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("DaysOfWeekMask")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("NettoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("PriceBlockId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("SaleDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("SaleDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("TravelDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("TravelDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceBlockId", "CharterId", "AirClassId")
+                        .HasDatabaseName("IX_FlightPrices_Block_Charter_AirClass");
+
+                    b.HasIndex("CharterId", "AirClassId", "TravelDateFrom", "TravelDateTo")
+                        .HasDatabaseName("IX_FlightPrices_Search");
+
+                    b.ToTable("FlightPrices", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FlightPrices_Ages", "(\"AgeFrom\" IS NULL OR \"AgeFrom\" >= 0) AND (\"AgeTo\" IS NULL OR \"AgeTo\" >= 0) AND (\"AgeFrom\" IS NULL OR \"AgeTo\" IS NULL OR \"AgeFrom\" <= \"AgeTo\")");
+
+                            t.HasCheckConstraint("CK_FlightPrices_Amounts", "(\"NettoAmount\" IS NOT NULL OR \"BruttoAmount\" IS NOT NULL) AND (\"NettoAmount\" IS NULL OR \"NettoAmount\" >= 0) AND (\"BruttoAmount\" IS NULL OR \"BruttoAmount\" >= 0)");
+
+                            t.HasCheckConstraint("CK_FlightPrices_DaysOfWeek", "\"DaysOfWeekMask\" BETWEEN 1 AND 127");
+
+                            t.HasCheckConstraint("CK_FlightPrices_Priority", "\"Priority\" >= 0");
+
+                            t.HasCheckConstraint("CK_FlightPrices_SaleDates", "\"SaleDateFrom\" IS NULL OR \"SaleDateTo\" IS NULL OR \"SaleDateFrom\" <= \"SaleDateTo\"");
+
+                            t.HasCheckConstraint("CK_FlightPrices_TravelDates", "\"TravelDateFrom\" <= \"TravelDateTo\"");
+                        });
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.HotelPrices.HotelMealPriceRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AccommodationTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<short?>("AgeFrom")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("AgeTo")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ApplicationUnit")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("BruttoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<DateOnly?>("CheckInDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("CheckInDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("DaysOfWeekMask")
+                        .HasColumnType("smallint");
+
+                    b.Property<int?>("FromMealTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte?>("GuestType")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("HotelId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("NettoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<byte>("Operation")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("Percent")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("numeric(9,4)");
+
+                    b.Property<byte?>("PercentageBase")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("PlacementType")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("PriceBlockId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RoomCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RoomTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StayDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("StayDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<int>("ToMealTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceBlockId", "HotelId")
+                        .HasDatabaseName("IX_HotelMealPriceRules_Block_Hotel");
+
+                    b.HasIndex("HotelId", "FromMealTypeId", "ToMealTypeId", "StayDateFrom", "StayDateTo")
+                        .HasDatabaseName("IX_HotelMealPriceRules_Search");
+
+                    b.ToTable("HotelMealPriceRules", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_Ages", "(\"AgeFrom\" IS NULL OR \"AgeFrom\" >= 0) AND (\"AgeTo\" IS NULL OR \"AgeTo\" >= 0) AND (\"AgeFrom\" IS NULL OR \"AgeTo\" IS NULL OR \"AgeFrom\" <= \"AgeTo\")");
+
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_Amounts", "(\"NettoAmount\" IS NULL OR \"NettoAmount\" >= 0) AND (\"BruttoAmount\" IS NULL OR \"BruttoAmount\" >= 0)");
+
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_CheckInDates", "(\"CheckInDateFrom\" IS NULL AND \"CheckInDateTo\" IS NULL) OR (\"CheckInDateFrom\" <= \"CheckInDateTo\")");
+
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_DaysOfWeek", "\"DaysOfWeekMask\" BETWEEN 1 AND 127");
+
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_Meals", "\"FromMealTypeId\" IS NULL OR \"FromMealTypeId\" <> \"ToMealTypeId\"");
+
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_Priority", "\"Priority\" >= 0");
+
+                            t.HasCheckConstraint("CK_HotelMealPriceRules_StayDates", "\"StayDateFrom\" <= \"StayDateTo\"");
+                        });
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.HotelPrices.HotelPriceComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<short?>("AgeFrom")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("AgeTo")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ApplicationUnit")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("BruttoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<byte?>("GuestType")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("HotelPriceRuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("NettoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<byte>("Operation")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("Percent")
+                        .HasPrecision(9, 4)
+                        .HasColumnType("numeric(9,4)");
+
+                    b.Property<byte?>("PercentageBase")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("PlacementType")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelPriceRuleId")
+                        .HasDatabaseName("IX_HotelPriceComponents_RuleId");
+
+                    b.ToTable("HotelPriceComponents", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_HotelPriceComponents_Ages", "(\"AgeFrom\" IS NULL OR \"AgeFrom\" >= 0) AND (\"AgeTo\" IS NULL OR \"AgeTo\" >= 0) AND (\"AgeFrom\" IS NULL OR \"AgeTo\" IS NULL OR \"AgeFrom\" <= \"AgeTo\")");
+
+                            t.HasCheckConstraint("CK_HotelPriceComponents_Amounts", "(\"NettoAmount\" IS NULL OR \"NettoAmount\" >= 0) AND (\"BruttoAmount\" IS NULL OR \"BruttoAmount\" >= 0)");
+
+                            t.HasCheckConstraint("CK_HotelPriceComponents_Percent", "\"Percent\" IS NULL OR (\"Percent\" > 0 AND \"Percent\" <= 1000)");
+                        });
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.HotelPrices.HotelPriceRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AccommodationTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("AgeCalculationDate")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("ApplicationUnit")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("BruttoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<DateOnly?>("CheckInDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("CheckInDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("DaysOfWeekMask")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("HotelId")
+                        .HasColumnType("integer");
+
+                    b.Property<short?>("MaxNights")
+                        .HasColumnType("smallint");
+
+                    b.Property<int?>("MealTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<short?>("MinNights")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("Model")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("NettoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("PriceBlockId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoomCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoomTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StayDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("StayDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceBlockId", "HotelId")
+                        .HasDatabaseName("IX_HotelPriceRules_Block_Hotel");
+
+                    b.HasIndex("HotelId", "RoomTypeId", "RoomCategoryId", "StayDateFrom", "StayDateTo")
+                        .HasDatabaseName("IX_HotelPriceRules_Search");
+
+                    b.ToTable("HotelPriceRules", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_HotelPriceRules_Amounts", "(\"NettoAmount\" IS NULL OR \"NettoAmount\" >= 0) AND (\"BruttoAmount\" IS NULL OR \"BruttoAmount\" >= 0)");
+
+                            t.HasCheckConstraint("CK_HotelPriceRules_CheckInDates", "(\"CheckInDateFrom\" IS NULL AND \"CheckInDateTo\" IS NULL) OR (\"CheckInDateFrom\" <= \"CheckInDateTo\")");
+
+                            t.HasCheckConstraint("CK_HotelPriceRules_DaysOfWeek", "\"DaysOfWeekMask\" BETWEEN 1 AND 127");
+
+                            t.HasCheckConstraint("CK_HotelPriceRules_Nights", "(\"MinNights\" IS NULL OR \"MinNights\" > 0) AND (\"MaxNights\" IS NULL OR \"MaxNights\" > 0) AND (\"MinNights\" IS NULL OR \"MaxNights\" IS NULL OR \"MinNights\" <= \"MaxNights\")");
+
+                            t.HasCheckConstraint("CK_HotelPriceRules_Priority", "\"Priority\" >= 0");
+
+                            t.HasCheckConstraint("CK_HotelPriceRules_StayDates", "\"StayDateFrom\" <= \"StayDateTo\"");
+                        });
+                });
+
             modelBuilder.Entity("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", b =>
                 {
                     b.Property<int>("Id")
@@ -198,6 +684,99 @@ namespace TourCore.Pricing.Infrastructure.Postgres.Migrations
                     b.ToTable("PricePackages", (string)null);
                 });
 
+            modelBuilder.Entity("TourCore.Pricing.Domain.RailwayPrices.RailwayTransferPrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<short?>("AgeFrom")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("AgeTo")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("BruttoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<byte>("DaysOfWeekMask")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal?>("NettoAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<byte>("PeriodUnit")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("PriceBlockId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RailwayTransferId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("SaleDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("SaleDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<byte>("Scope")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TransportId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("TravelDateFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("TravelDateTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceBlockId", "RailwayTransferId", "TransportId")
+                        .HasDatabaseName("IX_RailwayTransferPrices_Block_Transfer_Transport");
+
+                    b.HasIndex("RailwayTransferId", "TransportId", "TravelDateFrom", "TravelDateTo")
+                        .HasDatabaseName("IX_RailwayTransferPrices_Search");
+
+                    b.ToTable("RailwayTransferPrices", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_RailwayTransferPrices_Ages", "(\"AgeFrom\" IS NULL OR \"AgeFrom\" >= 0) AND (\"AgeTo\" IS NULL OR \"AgeTo\" >= 0) AND (\"AgeFrom\" IS NULL OR \"AgeTo\" IS NULL OR \"AgeFrom\" <= \"AgeTo\")");
+
+                            t.HasCheckConstraint("CK_RailwayTransferPrices_Amounts", "(\"NettoAmount\" IS NOT NULL OR \"BruttoAmount\" IS NOT NULL) AND (\"NettoAmount\" IS NULL OR \"NettoAmount\" >= 0) AND (\"BruttoAmount\" IS NULL OR \"BruttoAmount\" >= 0)");
+
+                            t.HasCheckConstraint("CK_RailwayTransferPrices_Days", "\"DaysOfWeekMask\" BETWEEN 1 AND 127");
+
+                            t.HasCheckConstraint("CK_RailwayTransferPrices_Priority", "\"Priority\" >= 0");
+
+                            t.HasCheckConstraint("CK_RailwayTransferPrices_SaleDates", "\"SaleDateFrom\" IS NULL OR \"SaleDateTo\" IS NULL OR \"SaleDateFrom\" <= \"SaleDateTo\"");
+
+                            t.HasCheckConstraint("CK_RailwayTransferPrices_TravelDates", "\"TravelDateFrom\" IS NULL OR \"TravelDateTo\" IS NULL OR \"TravelDateFrom\" <= \"TravelDateTo\"");
+                        });
+                });
+
             modelBuilder.Entity("TourCore.Pricing.Domain.SPOTypes.SPOType", b =>
                 {
                     b.Property<int>("Id")
@@ -285,6 +864,51 @@ namespace TourCore.Pricing.Infrastructure.Postgres.Migrations
                     b.ToTable("Seasons", (string)null);
                 });
 
+            modelBuilder.Entity("TourCore.Pricing.Domain.BusPrices.BusTransferPrice", b =>
+                {
+                    b.HasOne("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", null)
+                        .WithMany()
+                        .HasForeignKey("PriceBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.FlightPrices.FlightPrice", b =>
+                {
+                    b.HasOne("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", null)
+                        .WithMany()
+                        .HasForeignKey("PriceBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.HotelPrices.HotelMealPriceRule", b =>
+                {
+                    b.HasOne("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", null)
+                        .WithMany()
+                        .HasForeignKey("PriceBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.HotelPrices.HotelPriceComponent", b =>
+                {
+                    b.HasOne("TourCore.Pricing.Domain.HotelPrices.HotelPriceRule", null)
+                        .WithMany()
+                        .HasForeignKey("HotelPriceRuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.HotelPrices.HotelPriceRule", b =>
+                {
+                    b.HasOne("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", null)
+                        .WithMany()
+                        .HasForeignKey("PriceBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", b =>
                 {
                     b.HasOne("TourCore.Pricing.Domain.PricePackages.PricePackage", null)
@@ -303,6 +927,15 @@ namespace TourCore.Pricing.Infrastructure.Postgres.Migrations
                         .WithMany()
                         .HasForeignKey("SeasonId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TourCore.Pricing.Domain.RailwayPrices.RailwayTransferPrice", b =>
+                {
+                    b.HasOne("TourCore.Pricing.Domain.PriceBlocks.PriceBlock", null)
+                        .WithMany()
+                        .HasForeignKey("PriceBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

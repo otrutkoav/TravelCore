@@ -9,27 +9,33 @@
 
 ## Первый запуск
 
-Из каталога `TourCore`:
+Сначала из каталога `TourCoreIdentity`:
+
+```powershell
+Copy-Item .env.example .env
+docker compose up --build -d
+```
+
+Затем из каталога `TourCore`:
 
 ```powershell
 Copy-Item .env.example .env
 docker compose up --build
 ```
 
-Перед использованием измените `TOURCORE_POSTGRES_PASSWORD` и
-`TOURCORE_ADMIN_PASSWORD` в `.env`. Также замените `TOURCORE_JWT_SIGNING_KEY`
-случайным секретом длиной не менее 32 символов.
+Перед использованием измените пароль PostgreSQL. Одинаковый
+`TOURCORE_JWT_SIGNING_KEY` длиной не менее 32 символов должен быть настроен в
+`.env` Identity и Core.
 
 Compose выполняет запуск в следующем порядке:
 
 1. запускает PostgreSQL и ждёт успешного `pg_isready`;
 2. запускает образ API с аргументом `--migrate-only`;
 3. применяет все EF Core migrations и системные начальные данные;
-4. запускает отдельный Identity API;
-5. после успешного завершения мигратора и готовности Identity запускает Catalog API.
+4. запускает Catalog API. Identity работает отдельным сервисом и отдельным Compose-проектом.
 
-Catalog Swagger доступен по адресу `http://localhost:8080/swagger`, Identity
-Swagger — `http://localhost:8081/swagger`. В Catalog Swagger кнопка `Authorize`
+Catalog Swagger доступен по адресу `http://localhost:8080/swagger`, Swagger
+отдельного Identity — `http://localhost:8081/swagger`. В Catalog Swagger кнопка `Authorize`
 принимает логин и пароль, после чего получает JWT через Identity API.
 Порт API и PostgreSQL можно изменить в `.env`.
 

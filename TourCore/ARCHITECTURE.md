@@ -34,6 +34,10 @@ TourCore.Infrastructure.Postgres   # .NET 10, EF Core, PostgreSQL
 TourCore.Admin.Api
 TourCore.Search.Api                # в будущем
 TourCore.Booking.Api.*             # в будущем
+
+Внешние сервисы решения TravelCore:
+../TourCoreIdentity                # аутентификация и выпуск JWT
+../TourCorePricing                 # управление ценами
 ```
 
 Catalog включает географию, базовые модели отелей, транспорта, финансовые и другие фундаментальные справочники. Product владеет определением турпродукта. Search, Booking, Quotas, Pricing и последующие области оформляются отдельными модульными Contracts/Application/Domain-проектами. Межконтекстная ссылка передаётся как ID или через Contracts; один контекст не ссылается на Domain/Application другого.

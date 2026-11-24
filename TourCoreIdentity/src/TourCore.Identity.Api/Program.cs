@@ -24,8 +24,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddHealthChecks();
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+if (allowedOrigins.Length == 0 || allowedOrigins.Any(string.IsNullOrWhiteSpace))
+    throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one trusted origin.");
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
-    .AllowAnyOrigin()
+    .WithOrigins(allowedOrigins)
     .AllowAnyHeader()
     .AllowAnyMethod()));
 

@@ -25,13 +25,20 @@ public static class IdentityRegistration
     private static void Validate(JwtIssuerOptions jwt, LocalIdentityOptions user)
     {
         if (string.IsNullOrWhiteSpace(jwt.Issuer)) throw new InvalidOperationException("Authentication:Jwt:Issuer is required.");
-        if (string.IsNullOrWhiteSpace(jwt.Audience)) throw new InvalidOperationException("Authentication:Jwt:Audience is required.");
+        if (GetAudiences(jwt).Length == 0) throw new InvalidOperationException("Authentication:Jwt:Audience or Audiences is required.");
         if (string.IsNullOrWhiteSpace(jwt.SigningKey) || jwt.SigningKey.Length < 32) throw new InvalidOperationException("Authentication:Jwt:SigningKey must contain at least 32 characters.");
         if (jwt.AccessTokenMinutes is < 1 or > 1440) throw new InvalidOperationException("Authentication:Jwt:AccessTokenMinutes must be between 1 and 1440.");
         if (string.IsNullOrWhiteSpace(user.Username)) throw new InvalidOperationException("Identity:LocalUser:Username is required.");
         if (string.IsNullOrWhiteSpace(user.PasswordHash) && string.IsNullOrWhiteSpace(user.Password)) throw new InvalidOperationException("Identity:LocalUser:Password or PasswordHash is required.");
         if (user.Roles.Length == 0 || user.Roles.Any(string.IsNullOrWhiteSpace)) throw new InvalidOperationException("Identity:LocalUser:Roles must contain at least one role.");
     }
+
+    private static string[] GetAudiences(JwtIssuerOptions jwt) =>
+        jwt.Audiences
+            .Append(jwt.Audience)
+            .Where(audience => !string.IsNullOrWhiteSpace(audience))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
 }
 
 public interface IPasswordVerifier { bool Verify(string password, string encodedHash); }
@@ -65,8 +72,18 @@ public sealed class JwtAccessTokenIssuer(IOptions<JwtIssuerOptions> options) : I
         var expires = now.AddMinutes(_options.AccessTokenMinutes);
         var claims = new List<Claim> { new(JwtRegisteredClaimNames.Sub, username), new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")) };
         claims.AddRange(roles.Select(role => new Claim("role", role)));
-        var token = new JwtSecurityToken(_options.Issuer, _options.Audience, claims, now, expires,
-            new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey)), SecurityAlgorithms.HmacSha256));
+        var audiences = _options.Audiences
+            .Append(_options.Audience)
+            .Where(audience => !string.IsNullOrWhiteSpace(audience))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        var payload = new JwtPayload(_options.Issuer, null, claims, now, expires);
+        foreach (var audience in audiences)
+            payload.AddClaim(new Claim(JwtRegisteredClaimNames.Aud, audience));
+        var header = new JwtHeader(new SigningCredentials(
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey)),
+            SecurityAlgorithms.HmacSha256));
+        var token = new JwtSecurityToken(header, payload);
         return new TokenResponse(new JwtSecurityTokenHandler().WriteToken(token), "Bearer", checked((int)(expires - now).TotalSeconds), username, roles.ToArray());
     }
 }

@@ -7,8 +7,8 @@
 Таблица первого среза называется `PricePackages`; имена таблиц и колонок следуют
 PascalCase-стилю существующей схемы TourCore.
 
-Первый вертикальный срез реализует ценовые пакеты (`PricePackage`). В следующих
-срезах в те же слои будут добавлены предметные области `PriceBlocks` и `Prices`.
+Реализованы ценовые пакеты, ценовые блоки, гостиничные правила и компоненты,
+правила питания, цены авиационных сегментов, автобусов и железнодорожных переездов.
 
 ## Структура
 
@@ -37,6 +37,15 @@ PascalCase-стилю существующей схемы TourCore.
 В Domain также закреплён общий enum `CostOfferState` со значениями `New`,
 `InChecked`, `ActivatedForNetto`, `Activated`, `Deactivated`.
 
+Гостиничные цены, формульные компоненты и отдельные правила питания описаны в
+[документации модели](docs/HOTEL_PRICING.md).
+
+Цены отдельных авиационных сегментов описаны в
+[документации авиационных цен](docs/FLIGHT_PRICING.md).
+
+Автобусные и железнодорожные цены описаны в
+[документации транспортных цен](docs/TRANSPORT_PRICING.md).
+
 Ценовые блоки доступны через CRUD `/api/pricing/blocks`. Блок содержит прямой
 `PricePackageId`; промежуточная таблица наподобие legacy `CostOfferPackets` не
 используется. Изменение состояния выполняется отдельно через
@@ -50,6 +59,26 @@ PascalCase-стилю существующей схемы TourCore.
 `CountryId` — стабильная ссылка на Catalog без межсервисного foreign key. Проверка
 существования страны требует отдельного межсервисного контракта и сознательно не
 входит в первый срез.
+
+## Ошибки связанных справочников
+
+API не полагается только на выбор значений в UI. При создании или изменении цены
+оно дополнительно проверяет существование связанных объектов Catalog и возвращает
+`404` со стабильным машинным кодом. Например:
+
+```json
+{
+  "Code": "hotel_not_found",
+  "Message": "Отель с идентификатором '123' не найден.",
+  "Details": null
+}
+```
+
+Аналогично возвращаются `room_type_not_found`, `room_category_not_found`,
+`accommodation_type_not_found`, `meal_type_not_found`, `charter_not_found`,
+`air_class_not_found`, `bus_transfer_point_not_found`,
+`railway_transfer_not_found` и `transport_not_found`. Ошибки формы и несовместимые
+параметры остаются `400 validation_error`.
 
 ## Локальный запуск
 
@@ -86,15 +115,18 @@ PostgreSQL integration test запускается при наличии пер�
 
 | № | Область | Статус | Решение |
 |---:|---|---|---|
-| 1 | Host и наблюдаемость | Соответствует | Structured logs, trace ID, OTLP, health checks |
-| 2 | Аутентификация | Соответствует для первого среза | JWT Resource Server и policies |
+| 1 | Host и наблюдаемость | Частично | Structured logs, OTLP и health checks есть; typed Options унифицированы не полностью |
+| 2 | Аутентификация | Частично | JWT Resource Server и policies есть; production OIDC/JWKS и machine identity отсутствуют |
 | 3 | Кеширование | Не применяется | Для CRUD пакетов сценарий не требует кеша |
 | 4 | Несколько хранилищ | Не применяется | Общая TourCoreDb, отдельный Pricing DbContext |
-| 5 | Собственная инфраструктура | Соответствует | Отдельные DbContext, migrations и DI module |
+| 5 | Собственная инфраструктура | Частично | Собственные DbContext/migrations; Catalog-ссылки временно проверяются прямым SQL в общей БД |
 | 6 | Бизнес-модуль | Соответствует | Domain и Application не зависят от EF/API |
 | 7 | DI | Соответствует | Microsoft DI и явная регистрация |
 | 8 | gRPC | Не применяется | Синхронного межсервисного сценария пока нет |
 | 9 | Брокер | Не применяется | Асинхронного процесса пока нет |
-| 10 | Тесты | Соответствует для первого среза | Unit, architecture и host smoke tests |
+| 10 | Тесты | Частично | Unit/architecture/liveness и один repository integration test; нет полного API/auth и persistence coverage |
 | 11 | Контейнеризация | Соответствует | Dockerfile, Compose, migrator, health checks |
 | 12 | Контракты | Соответствует | Независимая Contracts assembly |
+
+Полная сравнительная оценка всех сервисов находится в
+[`../docs/architecture/SERVICE-AUDIT-2026-11-24.md`](../docs/architecture/SERVICE-AUDIT-2026-11-24.md).

@@ -77,6 +77,35 @@ internal static class PricingAuthorization
         this Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options,
         IConfiguration configuration)
     {
+        var tokenUrl = configuration["Authentication:Swagger:TokenUrl"];
+        if (Uri.TryCreate(tokenUrl, UriKind.Absolute, out var tokenEndpoint))
+        {
+            var oauthScheme = new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Description = "Вход через TourCore Identity по логину и паролю.",
+                Flows = new OpenApiOAuthFlows
+                {
+                    Password = new OpenApiOAuthFlow
+                    {
+                        TokenUrl = tokenEndpoint,
+                        Scopes = new Dictionary<string, string>()
+                    }
+                },
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "TourCoreIdentity"
+                }
+            };
+            options.AddSecurityDefinition("TourCoreIdentity", oauthScheme);
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                [oauthScheme] = Array.Empty<string>()
+            });
+            return;
+        }
+
         var scheme = new OpenApiSecurityScheme
         {
             Name = "Authorization",

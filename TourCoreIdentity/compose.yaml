@@ -1,0 +1,31 @@
+name: tourcore-identity
+
+services:
+  api:
+    build:
+      context: .
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Authentication__Jwt__SigningKey: ${TOURCORE_JWT_SIGNING_KEY:?Set TOURCORE_JWT_SIGNING_KEY in .env}
+      Authentication__Jwt__Audiences__0: TourCore.Admin.Api
+      Authentication__Jwt__Audiences__1: TourCore.Pricing.Api
+      Identity__LocalUser__Username: ${TOURCORE_IDENTITY_USERNAME:-admin}
+      Identity__LocalUser__Password: ${TOURCORE_IDENTITY_PASSWORD:?Set TOURCORE_IDENTITY_PASSWORD in .env}
+      Identity__LocalUser__PasswordHash: ""
+      Identity__LocalUser__Roles__0: CatalogReader
+      Identity__LocalUser__Roles__1: CatalogEditor
+      Identity__LocalUser__Roles__2: CatalogAdmin
+      Identity__LocalUser__Roles__3: PricingReader
+      Identity__LocalUser__Roles__4: PricingEditor
+      Identity__LocalUser__Roles__5: PricingAdmin
+      Cors__AllowedOrigins__0: http://localhost:${TOURCORE_ADMIN_API_PORT:-8080}
+      Cors__AllowedOrigins__1: http://localhost:${TOURCORE_PRICING_API_PORT:-8082}
+    ports:
+      - "${TOURCORE_IDENTITY_PORT:-8081}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
