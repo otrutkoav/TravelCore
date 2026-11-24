@@ -1,0 +1,35 @@
+name: tourcore-pricing
+
+services:
+  migrate:
+    build:
+      context: .
+    command: ["--migrate-only"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__TourCoreDb: ${TOURCORE_DB_CONNECTION_STRING:?Set TOURCORE_DB_CONNECTION_STRING in .env}
+      Authentication__Jwt__SigningKey: ${PRICING_JWT_SIGNING_KEY:?Set PRICING_JWT_SIGNING_KEY in .env}
+      Authentication__Jwt__RequireHttpsMetadata: "false"
+    restart: "no"
+
+  api:
+    build:
+      context: .
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__TourCoreDb: ${TOURCORE_DB_CONNECTION_STRING:?Set TOURCORE_DB_CONNECTION_STRING in .env}
+      Authentication__Jwt__SigningKey: ${PRICING_JWT_SIGNING_KEY:?Set PRICING_JWT_SIGNING_KEY in .env}
+      Authentication__Jwt__RequireHttpsMetadata: "false"
+      OpenTelemetry__OtlpEndpoint: ${PRICING_OTLP_ENDPOINT:-}
+    ports:
+      - "${PRICING_API_PORT:-8082}:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
